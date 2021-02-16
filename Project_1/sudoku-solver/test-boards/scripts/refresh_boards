@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# V. Easy
+sudoku -g1 -c"very easy" > v1.txt
+sudoku -g1 -c"very easy" > v2.txt
+sudoku -g1 -c"very easy" > v3.txt
+sudoku -g1 -c"very easy" > v4.txt
+sudoku -g1 -c"very easy" > v5.txt
+
+# Easy
+sudoku -g1 -c"easy" > e1.txt
+sudoku -g1 -c"easy" > e2.txt
+sudoku -g1 -c"easy" > e3.txt
+sudoku -g1 -c"easy" > e4.txt
+sudoku -g1 -c"easy" > e5.txt
+
+# Medium
+sudoku -g1 -c"medium" > m1.txt
+sudoku -g1 -c"medium" > m2.txt
+sudoku -g1 -c"medium" > m3.txt
+sudoku -g1 -c"medium" > m4.txt
+sudoku -g1 -c"medium" > m5.txt
+
+# Hard
+sudoku -g1 -c"hard" > h1.txt
+sudoku -g1 -c"hard" > h2.txt
+sudoku -g1 -c"hard" > h3.txt
+sudoku -g1 -c"hard" > h4.txt
+sudoku -g1 -c"hard" > h5.txt
+
+# Fiendish
+sudoku -g1 -c"fiendish" > f1.txt
+sudoku -g1 -c"fiendish" > f2.txt
+sudoku -g1 -c"fiendish" > f3.txt
+sudoku -g1 -c"fiendish" > f4.txt
+sudoku -g1 -c"fiendish" > f5.txt

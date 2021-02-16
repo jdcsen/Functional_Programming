@@ -18,10 +18,7 @@ data TFCoord = TFCoord Int Int Int deriving (Data, Show)
 -- Transform Type
 data TFormE = RShuffle | -- Swaps two rows, VP
               CShuffle | -- Shuffles two rows, VP
-              Insert   | -- Inserts a single element, VP/NP
-              Shift     -- Moves a set of ops to a new location
-                         --   Note: Post-hoc addition for board
-                         --         parsing.
+              Insert     -- Inserts a single element, VP/NP
               deriving (Eq, Typeable, Data, Show)
 
 
@@ -91,12 +88,22 @@ fcform (FCForm fcform) = Just fcform
 fcform _ = Nothing
 
 -- A "tag" transform, with no paramaters, intended to reformat the transform
--- into a different representation. FTags don't generally persist inside the
--- transform, rather they change the representation and evaporate.
-type FTagR   = TTagE
-ftag :: FTransform -> Maybe TTagE
+-- into a different representation. FTags persist inside the transform, rather
+-- they change the representation and evaporate. FTags are purely left associative,
+-- and evaporate if applied to the left side of anything.
+--data FTagF = FTagF (FTransform -> FTransform) deriving (Typeable, Data)
+--data FTagR = FTagR TTagE FTagF  deriving (Typeable, Data)
+-- Our different kinds of tag Transforms.
+data FTagR where
+  Identity   :: FTagR
+  CanonForm  :: FTagR
+  CPressForm :: FTagR
+  Shift :: TFCoord -> FTagR
+  deriving (Typeable, Data, Show)
+ftag :: FTransform -> Maybe FTagR
 ftag (FTag ttag) = Just ttag
 ftag _ = Nothing
+
 
 -- Metadata for the board. A post-hoc way of integrating comments (or even other metadata! JSON board info?) into the transform system.
 type FMetaR = String
@@ -223,10 +230,21 @@ fmerge _         (FMeta b) = Nothing
 fmerge (FCForm a) _ = Nothing
 fmerge _ (FCForm a) = Nothing
 
--- Other Tags don't get merged (but really, they should never be there in the first place)
+-- Tag function definitions (Note: I should have just defined a typeclass with
+-- a special FTransform -> FTransform function, I think. That'd be cleaner.)
 fmerge (FTag Identity) a = Just a
 fmerge a (FTag Identity) = Just a
 
+-- Canon Form applied to the left is a No-op
+fmerge (FTag CanonForm) a = Just a
+fmerge a (FTag CanonForm) = Just a --TODO: Implement
+
+-- Shift Tags applied to the left are No-ops
+fmerge (FTag (Shift _)) a      = Just a
+fmerge a (FTag (Shift coords)) = Just cform
+  where cform = fromJust $ fmerge a (FTag CanonForm) --TODO: Implement
+
+-- All other tags just lay in the chain.
 fmerge (FTag a) _               = Nothing
 fmerge _               (FTag b) = Nothing
 
@@ -271,6 +289,4 @@ instance Semigroup FTransform where
   -- Merge elements according to mergability rules.
   (<>) a b = fmergeg a b
 
--- Our different kinds of tag Transforms.
-data TTagE = Identity | CanonForm | CPressForm deriving (Eq, Data, Show)
 

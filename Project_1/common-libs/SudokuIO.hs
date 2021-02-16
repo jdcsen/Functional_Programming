@@ -22,7 +22,7 @@ readBoard filename =
   where canonizer = foldr (<>) (FTag CanonForm)
         shifter =
          map (\(r, t) ->
-                t <> FUnit (FUnitR Shift (TFCoord r 0 0)))
+                t <> FTag (Shift (TFCoord r 0 0)))
         zip_idx = zip ([0..] :: [Int])
         filt_comments = filter (isNothing . fmeta)
         parse_line = map sParseLine

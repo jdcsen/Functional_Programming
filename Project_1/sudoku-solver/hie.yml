@@ -1,0 +1,16 @@
+cradle:
+  cabal:
+    - path: "lib"
+      component: "lib:sudoku"
+
+    - path: "sudoku-solver/Main.hs"
+      component: "sudoku:exe:sudoku-solver"
+
+    - path: "sudoku-generator/Main.hs"
+      component: "sudoku:exe:sudoku-generator"
+
+    - path: "test"
+      component: "sudoku:test:sudoku-solver-test"
+
+    - path: "profiling"
+      component: "sudoku:exe:sudoku-solver-profiling"
