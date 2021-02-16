@@ -8,45 +8,47 @@ import Data.List
 import Data.Monoid
 import Data.Char
 import Data.Maybe
+import Control.Exception
+
+rBoardHandler :: IOError -> IO String
+rBoardHandler e = return ""
 
 -- Our sudokuIO is done in the terms of transforms: Reading the board returns
 -- an IO action and a Canonical form.
 readBoard :: String -> IO FTransform
 readBoard filename =
   do handle <- openFile filename ReadMode
-     let canonizer = foldr (<>) (FTag CanonForm)
-         shifter =
-          map (\(r, t) ->
-                 t <> FUnit (FUnitR Shift (TFCoord r 0 0)))
-         zip_idx = zip ([0..] :: [Int])
-         filt_comments = filter (isNothing . fmeta)
-         stop_on_eof = takeWhile (\tform ->
-                                   ftag tform == Just Identity)
-         repeater = repeat
-         parser = canonizer .
-                  shifter .
-                  zip_idx .
-                  filt_comments .
-                  stop_on_eof .
-                  repeater
-     contents <- hGetContents handle
-     parser <$> sReadLine handle
+     parser <$> hGetContents handle
+  where canonizer = foldr (<>) (FTag CanonForm)
+        shifter =
+         map (\(r, t) ->
+                t <> FUnit (FUnitR Shift (TFCoord r 0 0)))
+        zip_idx = zip ([0..] :: [Int])
+        filt_comments = filter (isNothing . fmeta)
+        parse_line = map sParseLine
+        stop_on_eof = takeWhile (/= "") :: [String] -> [String]
+        repeater = repeat :: String -> [String]
+        parser = canonizer .
+                 shifter .
+                 zip_idx .
+                 filt_comments .
+                 parse_line .
+                 stop_on_eof .
+                 lines
 
-sReadLine :: Handle -> IO FTransform
-sReadLine handle =
-  do end <- isEOF
-     if end then return $ FTag Identity
-     else do lineType <- hGetChar handle
-             if lineType == '%' || lineType == '-'
-             then sParseComment handle
-             else sParseTform handle
+sParseLine :: String -> FTransform
+sParseLine string = tform
+  where lineType = head string
+        tform = case lineType of '%' -> sParseComment string
+                                 '-' -> sParseComment string
+                                 _   -> sParseTform   string
 
-sParseTform :: Handle -> IO FTransform
+sParseTform :: String -> FTransform
 -- Are y'all ready for this
-sParseTform handle = parser <$> hGetLine handle
-  where grouped = groupBy (\a b -> isDigit a && isDigit b)
-        filtered = filter (isDigit . head ) :: ([[Char]] -> [[Char]])
-        typed = map (\a -> read a :: Int)
+sParseTform = parser
+  where grouped = words --groupBy (\a b -> isDigit a && isDigit b)
+        filtered = filter (\str -> isDigit (head str) || '.' == head str)
+        typed = map (\a -> if head a /= '.' then read a else 0 :: Int)
         indexed = zip ([0..] :: [Int])
         constructed =
           map (\(col, val) ->
@@ -63,8 +65,8 @@ sParseTform handle = parser <$> hGetLine handle
 
 --               filter
 
-sParseComment :: Handle -> IO FTransform
-sParseComment handle = FMeta <$> hGetLine handle
+sParseComment :: String -> FTransform
+sParseComment = FMeta
 
 -- VP/VN wrappers
 readBoardVP :: String -> IO Transform

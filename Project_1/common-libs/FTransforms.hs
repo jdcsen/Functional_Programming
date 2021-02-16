@@ -13,7 +13,7 @@ sdrop   = Data.Sequence.drop
 
 -- Transform Coordinates
 -- TFCoord <Row> <Column> <Value>
-data TFCoord = TFCoord Int Int Int deriving (Data)
+data TFCoord = TFCoord Int Int Int deriving (Data, Show)
 
 -- Transform Type
 data TFormE = RShuffle | -- Swaps two rows, VP
@@ -22,7 +22,7 @@ data TFormE = RShuffle | -- Swaps two rows, VP
               Shift     -- Moves a set of ops to a new location
                          --   Note: Post-hoc addition for board
                          --         parsing.
-              deriving (Eq, Typeable, Data)
+              deriving (Eq, Typeable, Data, Show)
 
 
 -- Transformations are implemented as nested Semigroups, to organize the
@@ -73,7 +73,7 @@ data TFormE = RShuffle | -- Swaps two rows, VP
 -- us to only write one set of representation-conscious association functions.
 --   Note: Use 'type' and  'newtype' where we can.
 -- A single operation transform.
-data FUnitR  = FUnitR TFormE TFCoord deriving (Data)
+data FUnitR  = FUnitR TFormE TFCoord deriving (Data, Show)
 funit :: FTransform -> Maybe FUnitR
 funit (FUnit unitr) = Just unitr
 funit _ = Nothing
@@ -102,6 +102,7 @@ ftag _ = Nothing
 type FMetaR = String
 fmeta :: FTransform -> Maybe FMetaR
 fmeta (FMeta str) = Just str
+fmeta _ = Nothing
 
 -- A class with a function to let us decompose transforms into their constituent
 -- parts. I tried and tried to make the type system do this on its own, but after
@@ -121,7 +122,7 @@ data FTransform where
   FUnit  :: FUnitR  -> FTransform
   FTag   :: FTagR   -> FTransform
   FMeta  :: String  -> FTransform
-  deriving (Typeable, Data)
+  deriving (Typeable, Data, Show)
 
 -- A set of methods to access the contents of an FTransform
 
@@ -161,16 +162,43 @@ ftail (FMeta a) = FMeta a
 -- fseqchunk: Combine two sequences by chopping off the ends of each and merging them.
 -- fseqsplit: Combine two FTransforms into a single Sequence of two FTransforms
 fseqmerge :: FSeqR -> FSeqR -> Maybe FSeqR
+-- Merge empty sequences.
+fseqmerge a     Empty = Just a
+fseqmerge Empty b     = Just b
+
+-- Merge sequences of length +1
 fseqmerge (a_head :<| (aseq :|> a_tail))
           (b_head :<| (bseq :|> b_tail)) =
   if isJust (fmerge a_tail b_head) &&
      isJust (fmerge a_head b_tail)
-  then Just $ aseq >< bseq -- Base case
+  then Just $ singleton a_head >< aseq >< singleton a_tail ><
+              singleton b_head >< bseq >< singleton b_tail -- Base case
+  else Nothing
+
+-- Merge single sequences
+fseqmerge (Empty :|> a_tail)
+          (b_head :<| (bseq :|> b_tail)) =
+  if isJust (fmerge a_tail b_head) &&
+     isJust (fmerge a_tail b_head)
+  then Just $ singleton a_tail >< singleton b_head >< bseq >< singleton b_tail -- Base case
+  else Nothing
+
+fseqmerge (a_head :<| (aseq :|> a_tail))
+          (b_head :<| Empty) =
+  if isJust (fmerge a_tail b_head) &&
+     isJust (fmerge a_head b_head)
+  then Just $ singleton a_head >< aseq >< singleton a_tail >< singleton b_head -- Base case
+  else Nothing
+
+fseqmerge (Empty :|> a_tail)
+          (b_head :<| Empty) =
+  if isJust (fmerge a_tail b_head)
+  then Just $ singleton a_tail >< singleton b_head -- Base case
   else Nothing
 
 fseqchunk :: FSeqR -> FSeqR -> Maybe FSeqR
-fseqchunk (a_head :<| (aseq :|> a_tail))
-          (b_head :<| (bseq :|> b_tail))
+fseqchunk (aseq :|> a_tail)
+          (b_head :<| bseq)
   | isJust chunked_seq = chunked_seq
   | otherwise = Nothing
   where aseq_l = FSeq $ sdrop (slength aseq - 1) aseq
@@ -195,7 +223,10 @@ fmerge _         (FMeta b) = Nothing
 fmerge (FCForm a) _ = Nothing
 fmerge _ (FCForm a) = Nothing
 
--- Tags don't get merged (but really, they should never be there in the first place)
+-- Other Tags don't get merged (but really, they should never be there in the first place)
+fmerge (FTag Identity) a = Just a
+fmerge a (FTag Identity) = Just a
+
 fmerge (FTag a) _               = Nothing
 fmerge _               (FTag b) = Nothing
 
@@ -208,6 +239,10 @@ fmerge (FUnit (FUnitR rtype_e rcoord))
                                                  FUnit (FUnitR ltype_e lcoord)]
   | otherwise = Nothing
 
+-- Merge empty sequences
+fmerge (FSeq Empty) a = Just a
+fmerge a (FSeq Empty) = Just a
+
 -- Mergability is determined by the tail and head elements of the left and
 -- right elements
 --  -- If two 'far ends' (head of left, tail of right) can be merged, we can merge
@@ -218,8 +253,8 @@ fmerge (FUnit (FUnitR rtype_e rcoord))
 --     containers.
 fmerge (FSeq seq_r)
        (FSeq seq_l)
-  | isJust $ fseqmerge seq_r seq_l = Just $ FSeq $ fromJust $ fseqmerge seq_l seq_r
-  | isJust $ fseqchunk seq_r seq_l = Just $ FSeq $ fromJust $ fseqchunk seq_l seq_r
+  | isJust $ fseqmerge seq_r seq_l = Just $ FSeq $ fromJust $ fseqmerge seq_r seq_l
+  | isJust $ fseqchunk seq_r seq_l = Just $ FSeq $ fromJust $ fseqchunk seq_r seq_l
   | otherwise = Just (fseqsplit seq_r seq_l)
 
 -- Wrap single elements in a sequence.
@@ -237,5 +272,5 @@ instance Semigroup FTransform where
   (<>) a b = fmergeg a b
 
 -- Our different kinds of tag Transforms.
-data TTagE = Identity | CanonForm | CPressForm deriving (Eq, Data)
+data TTagE = Identity | CanonForm | CPressForm deriving (Eq, Data, Show)
 
