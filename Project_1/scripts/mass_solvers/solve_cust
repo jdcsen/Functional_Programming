@@ -1,0 +1,19 @@
+#!/bin/bash
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+unix_solver="${DIR}/../../sudoku-solver/sudoku-solver"
+
+# Runs the unix solver on all boards in the current directory, and writes a solved board to the same directory.
+parent_path=$( (cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P) )
+files=`find $parent_path -name 'board_*' -not -name 'board_*solved*'`
+
+for filename in $files
+do
+	solved_filename="${filename}_solved_cust"
+	$unix_solver -v $filename > $solved_filename
+done

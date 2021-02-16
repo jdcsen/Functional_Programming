@@ -1,0 +1,7 @@
+cradle:
+  cabal:
+    - path: "./common-libs"
+      component: "sudoku-generator:lib:common-libs"
+
+    - path: "./Main.hs"
+      component: "sudoku-generator:exe:sudoku-generator"

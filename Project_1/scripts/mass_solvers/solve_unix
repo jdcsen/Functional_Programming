@@ -1,0 +1,13 @@
+#!/bin/bash
+parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+unix_solver="sudoku"
+
+# Runs the unix solver on all boards in the current directory, and writes a solved board to the same directory.
+
+files=`find -name 'board_*' -not -name 'board_*solved*'`
+
+for filename in $files
+do
+	solved_filename="${filename}_solved_unix"
+	$unix_solver -v $filename > $solved_filename
+done
