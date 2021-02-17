@@ -1,4 +1,4 @@
-# Revision history for sudoku-generator
+# Revision history for sudoku-solver
 
 ## 0.1.0.0 -- YYYY-mm-dd
 

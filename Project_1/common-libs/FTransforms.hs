@@ -18,7 +18,12 @@ data TFCoord = TFCoord Int Int Int deriving (Data, Show)
 -- Transform Type
 data TFormE = RShuffle | -- Swaps two rows, VP
               CShuffle | -- Shuffles two rows, VP
-              Insert     -- Inserts a single element, VP/NP
+              Insert   | -- Inserts a single element, VP/NP
+              Shift      -- Post-hoc addition for board
+                         -- assembly. Re-defines the coordinate
+                         -- system, such that all following
+                         -- transforms are offset by the
+                         -- row/col coordinates of the shift.
               deriving (Eq, Typeable, Data, Show)
 
 
@@ -87,18 +92,13 @@ fcform :: FTransform -> Maybe FCFormR
 fcform (FCForm fcform) = Just fcform
 fcform _ = Nothing
 
--- A "tag" transform, with no paramaters, intended to reformat the transform
--- into a different representation. FTags persist inside the transform, rather
--- they change the representation and evaporate. FTags are purely left associative,
--- and evaporate if applied to the left side of anything.
---data FTagF = FTagF (FTransform -> FTransform) deriving (Typeable, Data)
---data FTagR = FTagR TTagE FTagF  deriving (Typeable, Data)
--- Our different kinds of tag Transforms.
+--  A "tag" transform, intended to reformat the transform
+-- into a different representation.
+-- -- Our different kinds of tag Transforms.
 data FTagR where
   Identity   :: FTagR
   CanonForm  :: FTagR
   CPressForm :: FTagR
-  Shift :: TFCoord -> FTagR
   deriving (Typeable, Data, Show)
 ftag :: FTransform -> Maybe FTagR
 ftag (FTag ttag) = Just ttag
@@ -136,18 +136,6 @@ data FTransform where
 -- Decomposing an FTransform is the identity
 instance FDecomposable FTransform where
   dcmpf tform = tform
-
--- Helper to return the tail element of a transform (since we have weird, nested,
--- heterogeneous-outside-of-the-same-list FSeqs). We need this because I'd like
--- to know whether or not an append can be homogeneous before I actually do it,
--- in order to keep FTransforms ~reasonably~ flat. I don't know if that's just
--- my imperative brain butting in where it doesn't belong though.
-ftail :: FTransform -> FTransform
-ftail (FSeq (as :|> a)) = ftail a
-ftail (FCForm a) = FCForm a
-ftail (FUnit a) = FUnit a
-ftail (FTag a) = FTag a
-ftail (FMeta a) = FMeta a
 
 -- Define a set of rules that dictate whether or not elements are merged
 -- into the same sequence.
@@ -237,12 +225,7 @@ fmerge a (FTag Identity) = Just a
 
 -- Canon Form applied to the left is a No-op
 fmerge (FTag CanonForm) a = Just a
-fmerge a (FTag CanonForm) = Just a --TODO: Implement
-
--- Shift Tags applied to the left are No-ops
-fmerge (FTag (Shift _)) a      = Just a
-fmerge a (FTag (Shift coords)) = Just cform
-  where cform = fromJust $ fmerge a (FTag CanonForm) --TODO: Implement
+fmerge a (FTag CanonForm) = Just $ FSeq (fromList [canonize a, FTag CanonForm])
 
 -- All other tags just lay in the chain.
 fmerge (FTag a) _               = Nothing
@@ -289,4 +272,27 @@ instance Semigroup FTransform where
   -- Merge elements according to mergability rules.
   (<>) a b = fmergeg a b
 
+-- Canonizing involves applying each transform we receive to the board
+-- NOTE: Without the Shift ops, A more efficient technique would probably be to
+-- rfold until every element of the board has a concrete value.
+-- With them, we have to read until the very first transform.
+canonize :: FTransform -> FTransform
+canonize (FCForm ft) = FCForm ft
+canonize (FTag a) = FTag a
+canonize (FMeta a) = FMeta a
+canonize (FUnit a) = FUnit a
+canonize (FSeq seq)  = FSeq seq -- Todo: Implement
+
+-- Helper to return the concreate head of a transform (since we have weird, nested,
+-- heterogeneous-outside-of-the-same-list FSeqs).
+fhead :: FTransform -> FTransform
+fhead (FSeq Empty) = FTag Identity
+fhead (FSeq (a :<| _)) = fhead a
+fhead (FCForm a) = FCForm a
+fhead (FUnit a) = FUnit a
+fhead (FTag a) = FTag a
+fhead (FMeta a) = FMeta a
+
+-- Apply a specified transform to an FCForm
+--apply :: FTransform -> FCFormR -> FCFormR
 
