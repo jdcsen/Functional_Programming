@@ -51,7 +51,7 @@ extra-source-files:  CHANGELOG.md
 
 library
   -- Modules exported by the library.
-  exposed-modules:     MyLib
+  exposed-modules:     SantoriniIO
 
   -- Modules included in this library but not exported.
   -- other-modules:
@@ -60,7 +60,8 @@ library
   -- other-extensions:
 
   -- Other library packages from which modules are imported.
-  build-depends:       base ^>=4.13.0.0
+  build-depends:       base ^>=4.13.0.0,
+                       aeson
 
   -- Directories containing source files.
   hs-source-dirs:      lib
@@ -100,10 +101,12 @@ test-suite santorini-test
   hs-source-dirs:      test
 
   -- The entrypoint to the test suite.
-  main-is:             MyLibTest.hs
+  main-is:             SudokuIOTest.hs
 
   -- Test dependencies.
-  build-depends:       base ^>=4.13.0.0
+  build-depends:       base ^>=4.13.0.0,
+                       santorini,
+                       HUnit
 
 executable santorini-profiling
   -- Base language which the package is written in.

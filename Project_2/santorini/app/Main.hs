@@ -1,8 +1,7 @@
 module Main where
 
-import qualified MyLib (someFunc)
+import SantoriniIO
 
 main :: IO ()
-main = do
-  putStrLn "Hello, Haskell!"
-  MyLib.someFunc
+main = do interact printLoop
+  where printLoop = show . jsonStream :: [Char] -> [Char]
