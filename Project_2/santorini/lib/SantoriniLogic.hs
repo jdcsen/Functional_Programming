@@ -1,7 +1,10 @@
+{-# LANGUAGE LambdaCase #-}
+
 module SantoriniLogic where
 import SantoriniRep
 import Data.Maybe
 import Data.List
+import Data.Data
 
 -- Determines whether or not the board is in a play state.
 isFullBoard :: IBoard -> Bool
@@ -38,3 +41,11 @@ getProx brd pt = vals
                       (col pt - col_oset) | row_oset <- osets,
                                             col_oset <- osets]
         vals = map (getTok brd) points
+
+-- Given a board and a position, returns all the buildable tiles near that position.
+getBuildable :: IBoard -> IPt -> [BrdTok]
+getBuildable brd pt = buildable
+  where predicate = \case (Space _ _) -> True
+                          _           -> False
+        filt = filter predicate
+        buildable = filt $ getProx brd pt

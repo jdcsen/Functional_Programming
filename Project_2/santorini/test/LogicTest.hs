@@ -5,8 +5,9 @@ import TestBoards
 import SantoriniLogic
 
 -- Top level test case.
-logicTests = TestList [TestLabel "Proximity Function Tests" proxTests,
-                       TestLabel "isFullBoard Tests" fbTests]
+logicTests = TestList [TestLabel "isFullBoard Tests" fbTests,
+                       TestLabel "Proximity Function Tests" proxTests,
+                       TestLabel "getBuildable Tests" buildableTests]
 
 -- Full Board tests
 fbTests = TestList [TestLabel "Player 1 Start" fbP1,
@@ -37,7 +38,8 @@ proxTests = TestList [TestLabel "Free Space Proximity" proxEmpt,
 
 proxEmpt = TestCase (assertEqual
                      "Assert that we can get a proximity from empty spaces."
-                     [Space (IPt 0 0) 0, Space (IPt 0 1)  0, Space (IPt 0 2) 0,
+                     [
+                      Space (IPt 0 0) 0, Space (IPt 0 1)  0, Space (IPt 0 2) 0,
                       Space (IPt 1 0) 0, Space (IPt 1 1)  0, Space (IPt 1 2) 0,
                       Space (IPt 2 0) 0, Space (IPt 2 1)  0, Space (IPt 2 2) 0
                      ]
@@ -51,7 +53,8 @@ proxWall = TestList [TestLabel "Top Left Corner" proxWallTL,
 
 proxWallTL = TestCase (assertEqual
                        "Assert that we get walls when we're in the top left corner."
-                       [Wall , Wall              , Wall             ,
+                       [
+                        Wall , Wall              , Wall             ,
                         Wall , Player (IPt 0 0) 0, Space (IPt 0 1) 0,
                         Wall , Space  (IPt 1 0) 0, Space (IPt 1 1) 0
                        ]
@@ -59,7 +62,8 @@ proxWallTL = TestCase (assertEqual
 
 proxWallTR = TestCase (assertEqual
                        "Assert that we get walls when we're in the top right corner."
-                       [Wall             , Wall              , Wall,
+                       [
+                        Wall             , Wall              , Wall,
                         Space (IPt 0 3) 0, Player (IPt 0 4) 0, Wall,
                         Space (IPt 1 3) 0, Space  (IPt 1 4) 0, Wall
                        ]
@@ -67,7 +71,8 @@ proxWallTR = TestCase (assertEqual
 
 proxWallBL = TestCase (assertEqual
                        "Assert that we get walls when we're in the bottom left corner."
-                       [Space (IPt 3 3) 0, Space  (IPt 3 4) 0, Wall,
+                       [
+                        Space (IPt 3 3) 0, Space  (IPt 3 4) 0, Wall,
                         Space (IPt 4 3) 0, Player (IPt 4 4) 0, Wall,
                         Wall             , Wall              , Wall
                        ]
@@ -75,7 +80,8 @@ proxWallBL = TestCase (assertEqual
 
 proxWallBR = TestCase (assertEqual
                        "Assert that we get walls when we're in the bottom right corner."
-                       [Wall , Space  (IPt 3 0) 0, Space (IPt 3 1) 0,
+                       [
+                        Wall , Space  (IPt 3 0) 0, Space (IPt 3 1) 0,
                         Wall , Player (IPt 4 0) 0, Space (IPt 4 1) 0,
                         Wall , Wall              , Wall
                        ]
@@ -83,7 +89,8 @@ proxWallBR = TestCase (assertEqual
 
 proxTrap = TestCase (assertEqual
                      "Assert that we get walls when we're near capped towers."
-                     [Wall , Wall              , Wall,
+                     [
+                      Wall , Wall              , Wall,
                       Wall , Player (IPt 1 1) 0, Wall,
                       Wall , Wall              , Wall
                      ]
@@ -91,7 +98,8 @@ proxTrap = TestCase (assertEqual
 
 proxRamp = TestCase (assertEqual
                      "Assert that we get proper ordering and values by checking the Ramp board"
-                     [Space (IPt 0 0) 2 ,Space  (IPt 0 1) 3, Space (IPt 0 2) 2,
+                     [
+                      Space (IPt 0 0) 2 ,Space  (IPt 0 1) 3, Space (IPt 0 2) 2,
                       Space (IPt 1 0) 1 ,Player (IPt 1 1) 0, Space (IPt 1 2) 2,
                       Space (IPt 2 0) 2 ,Space  (IPt 2 1) 3, Space (IPt 2 2) 2
                      ]
@@ -117,3 +125,55 @@ proxPlayersSteps = TestCase (assertEqual
                          Space  (IPt 2 0) 0, Space  (IPt 2 1) 0, Space (IPt 2 2) 0
                         ]
                         (getProx p1WIBoard (IPt 1 1)))
+
+-- Buildable Tests
+buildableTests = TestList [TestLabel "Flat Space is Buildable" bFlat,
+                           TestLabel "Stepped Space is Buildable" bRamp,
+                           TestLabel "Towers can be capped" bBlock,
+                           TestLabel "Players are not Buildable" nbPlayers,
+                           TestLabel "Walls are not Buildable" nbWalls]
+
+-- Verify that flat spaces are always buildable.
+bFlat = TestCase (assertEqual
+                  "Assert that we can build on empty spaces."
+                  [Space (IPt 0 0) 0, Space (IPt 0 1)  0, Space (IPt 0 2) 0,
+                   Space (IPt 1 0) 0, Space (IPt 1 1)  0, Space (IPt 1 2) 0,
+                   Space (IPt 2 0) 0, Space (IPt 2 1)  0, Space (IPt 2 2) 0
+                  ]
+                  (getBuildable emptIBoard (IPt 1 1)))
+
+bRamp = TestCase (assertEqual
+                  "Assert that we can build on other planes ('stepped' space)"
+                  [
+                   Space (IPt 0 0) 2 ,Space  (IPt 0 1) 2, Space (IPt 0 2) 2,
+                   Space (IPt 1 0) 1 ,{- PLAYER -}        Space (IPt 1 2) 2,
+                   Space (IPt 2 0) 2 ,Space  (IPt 2 1) 2, Space (IPt 2 2) 2
+                  ]
+                  (getBuildable ramp2BuildIBoard (IPt 1 1)))
+
+bBlock = TestCase (assertEqual
+                  "Assert that we can build to block players from winning."
+                  [
+                   Space (IPt 0 0) 2 ,Space  (IPt 0 1) 3, Space (IPt 0 2) 2,
+                   Space (IPt 1 0) 1 ,{- PLAYER -}        Space (IPt 1 2) 2,
+                   Space (IPt 2 0) 2 ,Space  (IPt 2 1) 3, Space (IPt 2 2) 2
+                  ]
+                  (getBuildable ramp2WinIBoard (IPt 1 1)))
+
+-- Verify that Players are NOT buildable.
+nbPlayers = TestCase (assertEqual
+                      "Assert that we can't build on player spaces."
+                      [Space (IPt 2 2) 0, Space (IPt 2 3)  0, Space (IPt 2 4) 0,
+                       Space (IPt 3 2) 0, -- MISSING, AS THERE ARE PLAYERS
+                       Space (IPt 4 2) 0  -- IN THESE LOCATIONS.
+                      ]
+                      (getBuildable emptIBoard (IPt 3 3)))
+
+-- Verify that walls are NOT Buildable.
+nbWalls = TestCase (assertEqual
+                    "Assert that we can't build on walls."
+                    [-- WALLS ----------------------------------
+                     {-Wall-} Space (IPt 0 0) 0, Space (IPt 0 1) 0,
+                     {-Wall-} Space (IPt 1 0) 0, Space (IPt 1 1) 0
+                    ]
+                    (getBuildable emptIBoard (IPt 0 0)))
