@@ -112,3 +112,27 @@ buildLvl brd loc = newBrd
                           ispaces  = newSpaces,
                           iplayers = iplayers brd
                         }
+
+-- Places a player at the target location.
+-- If the element at the location cannot have a player placed, throws UndefinedElement
+placePlayer :: IBoard -> IPt -> IBoard
+placePlayer brd loc = newBrd
+  where -- Ensure we can place a player at this location.
+        loc = case getTok brd loc
+                 of (Space loc ht) -> loc
+                    _              -> throw $ UndefinedElement "Tried to place a player on an invalid space."
+
+        -- Build the new player array.
+        --   Note: Currently, strictly matches arrays of size 1 and 2, so we fail
+        --         on other cases. There might be a better way to do this.
+        newP = case iplayers brd of [[]]                -> [[loc]]
+                                    [[p11]]             -> [loc : [p11]]
+                                    [[p21, p22]]        -> [[loc], [p21, p22]]
+                                    [[p11], [p21, p22]] -> [loc : [p11], [p21, p22]]
+        -- Rebuild the board.
+        newBrd = IBoard {
+                          iturn    = iturn brd,
+                          ispaces  = ispaces brd,
+                          iplayers = newP
+                        }
+

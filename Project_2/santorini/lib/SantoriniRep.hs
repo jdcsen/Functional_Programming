@@ -85,6 +85,20 @@ toJBoard IBoard{iturn    = trn,
                           players = map (map iPt2jPt) plrs
                         }
 
+-- In order to properly feed JSON back into other AIs, we need to flip the player
+-- tokens once we're done with them
+--   NOTE: Still need to get single-element replacement working for record syntax.
+--         This is extremely fragile wrt. changes in representation
+flipPlayers :: JBoard -> JBoard
+flipPlayers JBoard{turn    = trn,
+                   spaces  = spc,
+                   players = plrs} = newBrd
+  where newPlrs = case plrs of [a,b] -> [b,a]
+                               [a]   -> [a]
+        newBrd = JBoard{turn   = trn,
+                        spaces = spc,
+                        players = plrs
+                       }
 -- Our AI's are defined in terms of AI Kernels, which just
 -- map IBoards to new IBoards.
 type AIKernel = IBoard -> IBoard
@@ -114,6 +128,18 @@ data BrdTok where
   -- A wall. Impassable, not buildable.
   Wall   :: BrdTok
   deriving (Eq, Show)
+
+isSpace :: BrdTok -> Bool
+isSpace (Space _ _) = True
+isSpace _ = False
+
+isPlayer :: BrdTok -> Bool
+isPlayer (Player _ _) = True
+isPlayer _ = False
+
+isWall :: BrdTok -> Bool
+isWall Wall = True
+isWall _ = False
 
 -- TODO **********************************************************
 --

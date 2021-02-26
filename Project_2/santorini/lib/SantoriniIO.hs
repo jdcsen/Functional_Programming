@@ -5,6 +5,7 @@ module SantoriniIO where
 import SantoriniRep
 import Control.Monad
 import Control.Monad.ST.Lazy
+import Control.Exception
 import Data.Aeson
 import Data.Maybe
 import Data.Char
@@ -17,23 +18,26 @@ import qualified Data.ByteString.Lazy.Char8 as BL
 -- the first element of the return tuple will be empty. If there are any leading
 -- characters, they'll be trimmed.
 
---jsonInteract
-
 kernelRunner :: AIKernel -> IO ()
 kernelRunner kernel = forever $ do
         line <- getLine
-        maybe (return ()) putStrLn (par_pline line) --Just ignore unparsable lines.
-  where par_pline = kernelPipeline kernel
+        let outLine = case parPline line
+                        of (Just str) -> str
+                           Nothing    -> error "Failed to parse line: " ++ line
 
+        -- Flush standard out.
+        SIO.hFlush SIO.stdout
+  where parPline = kernelPipeline kernel
+
+-- Given a kernel and a String, attempts to deserialize the String into a JBoard,
+-- run the kernel, and return the output, ready for printing.
 kernelPipeline :: AIKernel -> String -> Maybe String
-kernelPipeline kernel str = out_str
-  where -- Deserialization Pipeline
-        -- Create a board.
-        out_str = if isJust $ deserJBoard str
-                  then Just $ toBuffer . toJBoard .
-                              kernel .
-                              fromJBoard . fromJust $ deserJBoard str
-                  else Nothing
+kernelPipeline kernel str = newStr
+  where newBoard = flipPlayers . toJBoard .
+                   kernel .
+                   fromJBoard <$> deserJBoard str :: Maybe JBoard
+        newStr   = toBuffer <$> newBoard
+
 
 -- Attempts to extract an JBoard from the string. Discards trailing and leading
 -- characters. If there is more than one board, only the first is returned.
