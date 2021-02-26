@@ -99,6 +99,14 @@ flipPlayers JBoard{turn    = trn,
                         spaces = spc,
                         players = plrs
                        }
+
+-- TODO: Parameterize isFullBoard by board type and move it here.
+isFullJBoard :: JBoard -> Bool
+isFullJBoard JBoard{turn   = Nothing,
+                    spaces  = Nothing,
+                    players = _} = False
+isFullJBoard _ = True
+
 -- Our AI's are defined in terms of AI Kernels, which just
 -- map IBoards to new IBoards.
 type AIKernel = IBoard -> IBoard

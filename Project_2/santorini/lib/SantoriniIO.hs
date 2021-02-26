@@ -24,7 +24,7 @@ kernelRunner kernel = forever $ do
         let outLine = case parPline line
                         of (Just str) -> str
                            Nothing    -> error "Failed to parse line: " ++ line
-
+        putStrLn outLine
         -- Flush standard out.
         SIO.hFlush SIO.stdout
   where parPline = kernelPipeline kernel
@@ -35,54 +35,31 @@ kernelPipeline :: AIKernel -> String -> Maybe String
 kernelPipeline kernel str = newStr
   where newBoard = flipPlayers . toJBoard .
                    kernel .
-                   fromJBoard <$> deserJBoard str :: Maybe JBoard
+                   fromJBoard <$> fromBuffer str :: Maybe JBoard
         newStr   = toBuffer <$> newBoard
 
 
--- Attempts to extract an JBoard from the string. Discards trailing and leading
--- characters. If there is more than one board, only the first is returned.
-deserJBoard :: [Char] -> Maybe JBoard
-deserJBoard str = board
-  where -- Deserialization Pipeline
-        scan   = scanl putBuffer NoBuffer
-        filt   = filter (isJust . bufToJBoard)
-        mapper = map bufToJBoard
-        boardList = mapper . filt . scan $ str
-        board = case boardList of [] -> Nothing
-                                  (x:_) -> x
-
--- JSONBuffers are just character accumulators so we can chunk up our JSON before
--- sending it off to our serialization/deserialization library.
-data JSONBuffer where
-  SaturatedBuffer :: [Char] -> JSONBuffer
-  FillingBuffer   :: (Char, Char) -> [Char] -> JSONBuffer
-  NoBuffer        :: JSONBuffer
-  deriving (Show, Eq)
-
-isSaturated :: JSONBuffer -> Bool
-isSaturated (SaturatedBuffer _) = True
-isSaturated _ = False
-
 toBuffer :: JBoard -> String
-toBuffer = BL.unpack . encode
+toBuffer brd
+  | isFullJBoard brd = BL.unpack . encode $ brd
+  | otherwise        = BL.unpack . encode $ players brd
 
-bufToJBoard :: JSONBuffer -> Maybe JBoard
-bufToJBoard (SaturatedBuffer buf) = decode $ BL.pack buf
-bufToJBoard _ = Nothing
+fromBuffer :: String -> Maybe JBoard
+fromBuffer buf
+  | isJust fullDcde = fullDcde
+  | isJust plrs     = Just JBoard {turn    = Nothing,
+                                   spaces  = Nothing,
+                                   players = fromJust plrs}
+  | buf == "[[]]" || --NOTE: This is a hack. Fix it.
+    buf == "{[]}"   = Just JBoard {turn    = Nothing,
+                                   spaces  = Nothing,
+                                   players = [[]]}
 
--- Puts a single character in a JSONBuffer.
-putBuffer :: JSONBuffer -> Char -> JSONBuffer
+  | otherwise        = Nothing
+  where fullEDecode  = eitherDecode . BL.pack $ buf :: Either String JBoard
+        fullDcde     = either (const Nothing) Just fullEDecode
+        fullDedeErr  = fromLeft "" fullEDecode
 
--- Saturated Buffers act as NoBuffers
-putBuffer (SaturatedBuffer buf) head = putBuffer NoBuffer head
-
--- Filling buffers fill until their delimeters are hit.
-putBuffer (FillingBuffer (ldelim, rdelim) buf) head
-  | head == rdelim = SaturatedBuffer ([ldelim] ++ buf ++ [rdelim])
-  | otherwise         = FillingBuffer (ldelim, rdelim) (buf ++ [head])
-
--- We try and start filling a new buffer with a NoBuffer
-putBuffer NoBuffer head
-  | head == '[' = FillingBuffer ('[', ']') []
-  | head == '{' = FillingBuffer ('{', '}') []
-  | otherwise   = NoBuffer
+        p2EDcder = eitherDecode . BL.pack $ buf :: Either String [[JPt]]
+        p2Dcder  = decode . BL.pack :: String -> Maybe [[JPt]]
+        plrs     = p2Dcder buf
