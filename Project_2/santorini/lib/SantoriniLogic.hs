@@ -49,3 +49,7 @@ getBuildable brd pt = buildable
                           _           -> False
         filt = filter predicate
         buildable = filt $ getProx brd pt
+
+-- Given a board and a position, returns all the movable tiles near that position.
+getMoveable :: IBoard -> IPt -> [BrdTok]
+getMoveable = getProx -- TODO: Implement.

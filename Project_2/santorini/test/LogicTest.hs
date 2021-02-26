@@ -7,7 +7,8 @@ import SantoriniLogic
 -- Top level test case.
 logicTests = TestList [TestLabel "isFullBoard Tests" fbTests,
                        TestLabel "Proximity Function Tests" proxTests,
-                       TestLabel "getBuildable Tests" buildableTests]
+                       TestLabel "getBuildable Tests" buildableTests,
+                       TestLabel "getMoveable Tests" moveableTests]
 
 -- Full Board tests
 fbTests = TestList [TestLabel "Player 1 Start" fbP1,
@@ -127,15 +128,16 @@ proxPlayersSteps = TestCase (assertEqual
                         (getProx p1WIBoard (IPt 1 1)))
 
 -- Buildable Tests
+-- NOTE: We can get away with testing this a little less thoroughly, because
+--       getProx is tested extensively.
 buildableTests = TestList [TestLabel "Flat Space is Buildable" bFlat,
                            TestLabel "Stepped Space is Buildable" bRamp,
                            TestLabel "Towers can be capped" bBlock,
                            TestLabel "Players are not Buildable" nbPlayers,
                            TestLabel "Walls are not Buildable" nbWalls]
 
--- Verify that flat spaces are always buildable.
 bFlat = TestCase (assertEqual
-                  "Assert that we can build on empty spaces."
+                  "Assert that we can build on flat, empty spaces."
                   [Space (IPt 0 0) 0, Space (IPt 0 1)  0, Space (IPt 0 2) 0,
                    Space (IPt 1 0) 0, Space (IPt 1 1)  0, Space (IPt 1 2) 0,
                    Space (IPt 2 0) 0, Space (IPt 2 1)  0, Space (IPt 2 2) 0
@@ -160,7 +162,6 @@ bBlock = TestCase (assertEqual
                   ]
                   (getBuildable ramp2WinIBoard (IPt 1 1)))
 
--- Verify that Players are NOT buildable.
 nbPlayers = TestCase (assertEqual
                       "Assert that we can't build on player spaces."
                       [Space (IPt 2 2) 0, Space (IPt 2 3)  0, Space (IPt 2 4) 0,
@@ -169,7 +170,6 @@ nbPlayers = TestCase (assertEqual
                       ]
                       (getBuildable emptIBoard (IPt 3 3)))
 
--- Verify that walls are NOT Buildable.
 nbWalls = TestCase (assertEqual
                     "Assert that we can't build on walls."
                     [-- WALLS ----------------------------------
@@ -177,3 +177,69 @@ nbWalls = TestCase (assertEqual
                      {-Wall-} Space (IPt 1 0) 0, Space (IPt 1 1) 0
                     ]
                     (getBuildable emptIBoard (IPt 0 0)))
+
+-- Movable Tests
+-- NOTE: This is the same as buildable. We test the general proximity function
+--       pretty well.
+
+-- NOTE 2: These test cases often return a space at the point called. In
+--         practice, there'll always be a player there, and we handle that
+--         independently, so it's not a problem. Maybe an advantage, when cards
+--         come along.
+moveableTests = TestList [TestLabel "Walls cannot be moved to" nmWalls,
+                          TestLabel "Players cannot be moved to" nmPlayers,
+                          TestLabel "We can move to flat spaces" mFlat,
+                          TestLabel "We can move up by 1 vertical level" mUp,
+                          TestLabel "We can move down by one vertical level" mDown,
+                          TestLabel "We can move either up or down" mUpDown]
+
+nmWalls = TestCase (assertEqual
+                    "Assert that we can't move to walls."
+                    [-- WALLS ----------------------------------
+                     {-Wall-} Space (IPt 0 0) 0, Space (IPt 0 1) 0,
+                     {-Wall-} Space (IPt 1 0) 0, Space (IPt 1 1) 0
+                    ]
+                    (getMoveable emptIBoard (IPt 0 0)))
+
+nmPlayers = TestCase (assertEqual
+                      "Assert that we can't move to player spaces."
+                      [Space (IPt 2 2) 0, Space (IPt 2 3)  0, Space (IPt 2 4) 0,
+                       Space (IPt 3 2) 0, -- MISSING, AS THERE ARE PLAYERS
+                       Space (IPt 4 2) 0  -- IN THESE LOCATIONS.
+                      ]
+                      (getMoveable emptIBoard (IPt 3 3)))
+
+mFlat = TestCase (assertEqual
+                  "Assert that we can move to flat, empty spaces."
+                  [
+                   Space (IPt 0 0) 0, Space (IPt 0 1)  0, Space (IPt 0 2) 0,
+                   Space (IPt 1 0) 0, Space (IPt 1 1)  0, Space (IPt 1 2) 0,
+                   Space (IPt 2 0) 0, Space (IPt 2 1)  0, Space (IPt 2 2) 0
+                  ]
+                  (getMoveable emptIBoard (IPt 1 1)))
+
+mUp = TestCase (assertEqual
+                "Assert that we can't move to planes more than 1 step above the source space"
+                [
+                 Space (IPt 0 0) 1, Space (IPt 0 1) 1, Space (IPt 0 2) 1,
+                 Space (IPt 1 0) 1, {-    Player    -} {-    Too High   -}
+                 Space (IPt 2 0) 1, {-   Too High   -} Space (IPt 2 2) 1
+                ]
+                (getMoveable moundIBoard (IPt 1 1)))
+
+mDown = TestCase (assertEqual
+                  "Assert that we can't move to planes more than 1 step below the source space"
+                  [
+                   Space (IPt 0 1) 1, Space (IPt 0 2)  1, Space (IPt 0 3) 1,
+                   {-   Too Low    -} Space (IPt 1 2)  2, {-   Too Low    -}
+                   Space (IPt 2 1) 2, Space (IPt 2 2)  1, Space (IPt 2 3) 2
+                  ]
+                  (getMoveable moundIBoard (IPt 1 2)))
+
+mUpDown = TestCase (assertEqual
+                    "Assert that we can move either up or down, given they're reachable."
+                    [{-    Wall    -} {-     Wall     -} {-     Wall     -}
+                     {-    Wall    -} Space (IPt 0 0) 2, Space (IPt 0 1)  3,
+                     {-    Wall    -} Space (IPt 1 0) 1  {-  Player/Low   -}
+                    ]
+                    (getMoveable ramp2WinIBoard (IPt 0 0)))

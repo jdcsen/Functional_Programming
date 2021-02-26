@@ -85,6 +85,18 @@ trapJBoard = JBoard {turn   = Just 1,
                     }
 trapIBoard = fromJBoard trapJBoard
 
+-- A board where all players are surrounded by movable, but uneven, spaces.
+moundJBoard = JBoard {turn   = Just 1,
+                      spaces = Just [[1,1,1,1,1],
+                                     [1,0,2,0,1],
+                                     [1,2,1,2,1],
+                                     [1,0,2,0,1],
+                                     [1,1,1,1,1]],
+                      players = [[JPt [2,2], JPt [2,4]],
+                                 [JPt [4,2], JPt [4,4]]]
+                     }
+moundIBoard = fromJBoard moundJBoard
+
 -- A board where all players are trapped. Buildable, just not movable.
 btrapJBoard = JBoard {turn   = Just 1,
                       spaces = Just [[2,2,2,2,2],
