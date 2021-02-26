@@ -1,7 +1,9 @@
 module Main where
 
 import SantoriniIO
+import AIKernels
+import qualified System.IO as SIO
 
 main :: IO ()
-main = do interact printLoop
-  where printLoop = show . jsonStream :: [Char] -> [Char]
+main = do SIO.hSetBuffering SIO.stdin SIO.NoBuffering
+          kernelRunner identityKernel
