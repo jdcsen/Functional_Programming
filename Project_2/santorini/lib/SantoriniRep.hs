@@ -6,12 +6,15 @@ module SantoriniRep where
 
 import Data.Aeson
 import Data.Maybe
+import Data.List
 import GHC.Generics
+import Control.Exception
 
 -- Global board information..
 gBrdBnd      = IPt 4 4 :: IPt
 gJWallHeight = 4       :: Int
 gIWallHeight = 5       :: Int
+gMaxTower    = 3       :: Int
 gMaxTravel   = 1       :: Int
 
 -- Datastructures to ease working with boards:
@@ -112,11 +115,18 @@ data BrdTok where
   Wall   :: BrdTok
   deriving (Eq, Show)
 
--- Given a token, returns the height of that token.
--- Walls have a height of 5, contradicting the JBoard representation. This allows
--- us to easily fit walls into our getMoveable code, because a board height of
--- 5 can be moved neither to nor from, given there's never a height of 4.
-getHeight :: BrdTok -> Int
-getHeight (Space pt height)  = height
-getHeight (Player pt height) = height
-getHeight Wall = gIWallHeight
+-- TODO **********************************************************
+--
+--  Exception throwing toSpace, toPlayer, and toWall methods.
+
+
+-- NOTE: This replaceNth function comes from the selected answer to this
+-- StackOverflow question. It may be replaced by tools from the 'lens' package
+-- in the future:
+-- https://stackoverflow.com/questions/5852722/replace-individual-list-elements-in-haskell
+-- Answered by username Philip JF, edited by user adius
+replaceNth :: Int -> a -> [a] -> [a]
+replaceNth _ _ [] = []
+replaceNth n newVal (x:xs)
+  | n == 0 = newVal:xs
+  | otherwise = x:replaceNth (n-1) newVal xs
