@@ -1,0 +1,1 @@
+cabal test && cat ./santorini-0.1.0.0-santorini-test.log

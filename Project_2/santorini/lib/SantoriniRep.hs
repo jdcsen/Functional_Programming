@@ -5,7 +5,12 @@
 module SantoriniRep where
 
 import Data.Aeson
+import Data.Maybe
 import GHC.Generics
+
+-- Global board information..
+gBrdBnd   = IPt 4 4 :: IPt
+gMaxTower = 4       :: Int
 
 -- Datastructures to ease working with boards:
 
@@ -44,8 +49,8 @@ instance ToJSON   JBoard
 -- All internal functions use IBoard for consistency.
 -- Right now, all we do is make the player points
 -- zero-indexed so we can use them to index into the board.
-data IBoard = IBoard { iturn :: Maybe Int,
-                       ispaces :: Maybe [[Int]],
+data IBoard = IBoard { iturn :: Int,
+                       ispaces :: [[Int]],
                        iplayers :: [[IPt]]
                      } deriving (Show, Generic, Eq)
 
@@ -55,8 +60,10 @@ fromJBoard JBoard{turn   = trn,
                   spaces  = spc,
                   players = plrs}  = iBoard
   where vpts = map (filter jPtValid) plrs
-        iBoard = IBoard { iturn    = trn,
-                          ispaces  = spc,
+        iBoard = IBoard { iturn    = fromMaybe (-1::Int) trn,
+                          ispaces  = fromMaybe (replicate (row gBrdBnd) $
+                                                  replicate (col gBrdBnd) 0
+                                               ) spc,
                           iplayers = map (map jPt2iPt) vpts
                         }
 
@@ -64,8 +71,8 @@ toJBoard   :: IBoard -> JBoard
 toJBoard IBoard{iturn    = trn,
                 ispaces  = spc,
                 iplayers = plrs} = jBoard
-  where jBoard = JBoard { turn    = trn,
-                          spaces  = spc,
+  where jBoard = JBoard { turn    = if trn == -1 then Nothing else Just trn,
+                          spaces  = if trn == -1 then Nothing else Just spc,
                           players = map (map iPt2jPt) plrs
                         }
 
@@ -80,17 +87,21 @@ iPt2jPt bpt = JPt [row bpt, col bpt]
 jPt2iPt :: JPt -> IPt
 jPt2iPt (JPt (row:col:xs)) = IPt (row-1) (col-1)
 
--- Tokens to build neighborhoods from.
+-- Tokens for reading from a board in a robust manner.
 -- Turn decisions are often determined in terms of a
 -- neighborhood, rather than an absolute position. We
 -- have to preserve location information, so they can
 -- be mapped back to the board (except for walls, which
 -- are immutable)
+--
+-- NOTE: This was originally going to be _just_ for determining
+--       legal turns, but it's proved useful enough that
+--       I upgraded it and am now using it everywhere.
 data BrdTok where
   -- A given space, parameterized by location and height.
   Space  :: IPt -> Int -> BrdTok
-  -- A player token, parameterized by location.
-  Player :: IPt -> BrdTok
+  -- A player token, parameterized by location and height.
+  Player :: IPt -> Int -> BrdTok
   -- A wall. Impassable, not buildable.
   Wall   :: BrdTok
   deriving (Eq, Show)
