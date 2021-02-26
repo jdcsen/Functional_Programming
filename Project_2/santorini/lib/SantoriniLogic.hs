@@ -18,7 +18,7 @@ isFullBoard _ = True
 getTok :: IBoard -> IPt -> BrdTok
 getTok brd pt
   | out_of_range = Wall
-  | height >= gMaxTower = Wall
+  | height >= gIWallHeight = Wall
   | has_player   = Player pt height
   | otherwise    = Space pt height
   where -- I thought this was clever. Rows and columns need
@@ -52,4 +52,9 @@ getBuildable brd pt = buildable
 
 -- Given a board and a position, returns all the movable tiles near that position.
 getMoveable :: IBoard -> IPt -> [BrdTok]
-getMoveable = getProx -- TODO: Implement.
+getMoveable brd pt = moveable
+  where hght = getHeight $ getTok brd pt
+        predicate = \case (Space _ shght) -> abs(hght - shght) <= gMaxTravel
+                          _               -> False
+        filt = filter predicate
+        moveable = filt $ getProx brd pt

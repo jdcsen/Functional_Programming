@@ -9,8 +9,10 @@ import Data.Maybe
 import GHC.Generics
 
 -- Global board information..
-gBrdBnd   = IPt 4 4 :: IPt
-gMaxTower = 4       :: Int
+gBrdBnd      = IPt 4 4 :: IPt
+gJWallHeight = 4       :: Int
+gIWallHeight = 5       :: Int
+gMaxTravel   = 1       :: Int
 
 -- Datastructures to ease working with boards:
 
@@ -55,24 +57,28 @@ data IBoard = IBoard { iturn :: Int,
                      } deriving (Show, Generic, Eq)
 
 
+-- Converts from a JSON Board rep to our Internal Board rep
 fromJBoard :: JBoard -> IBoard
 fromJBoard JBoard{turn   = trn,
                   spaces  = spc,
                   players = plrs}  = iBoard
   where vpts = map (filter jPtValid) plrs
+        rebuildWalls = map (map (\a -> if a == gJWallHeight then gIWallHeight else a))
         iBoard = IBoard { iturn    = fromMaybe (-1::Int) trn,
-                          ispaces  = fromMaybe (replicate (row gBrdBnd) $
-                                                  replicate (col gBrdBnd) 0
-                                               ) spc,
+                          ispaces  = rebuildWalls $ fromMaybe (replicate (row gBrdBnd) $
+                                                                replicate (col gBrdBnd) 0
+                                                              ) spc,
                           iplayers = map (map jPt2iPt) vpts
                         }
 
+-- Converts from our Internal Board rep to a JSON Board rep
 toJBoard   :: IBoard -> JBoard
 toJBoard IBoard{iturn    = trn,
                 ispaces  = spc,
                 iplayers = plrs} = jBoard
-  where jBoard = JBoard { turn    = if trn == -1 then Nothing else Just trn,
-                          spaces  = if trn == -1 then Nothing else Just spc,
+  where rebuildWalls = map(map (\a -> if a == gIWallHeight then gJWallHeight else a))
+        jBoard = JBoard { turn    = if trn == -1 then Nothing else Just trn,
+                          spaces  = if trn == -1 then Nothing else Just $ rebuildWalls spc,
                           players = map (map iPt2jPt) plrs
                         }
 
@@ -105,3 +111,12 @@ data BrdTok where
   -- A wall. Impassable, not buildable.
   Wall   :: BrdTok
   deriving (Eq, Show)
+
+-- Given a token, returns the height of that token.
+-- Walls have a height of 5, contradicting the JBoard representation. This allows
+-- us to easily fit walls into our getMoveable code, because a board height of
+-- 5 can be moved neither to nor from, given there's never a height of 4.
+getHeight :: BrdTok -> Int
+getHeight (Space pt height)  = height
+getHeight (Player pt height) = height
+getHeight Wall = gIWallHeight
