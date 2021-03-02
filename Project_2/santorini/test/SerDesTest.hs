@@ -14,8 +14,7 @@ serDeserTests =
   TestList
     [ TestLabel "Serialization: Empty" serEmpt,
       TestLabel "Serialization: Garbage" serGarb,
-      TestLabel "Serialization: First Player (CBracket Case)" serCFp,
-      TestLabel "Serialization: First Player (SBracket Case)" serSFp,
+      TestLabel "Serialization: First Player" serFp,
       TestLabel "Serialization: Second Player" serSp,
       TestLabel "Serialization: Provided Board" serPb,
       TestLabel "Serialization: Empty Board" serEb,
@@ -38,21 +37,7 @@ serGarb =
     )
 
 -- Starting State: First Player
-serCFp =
-  TestCase
-    ( assertEqual
-        "Asserts that we properly deserialize a first-player starting case (CBracket Case)."
-        ( Right
-            JBoard
-              { turn = Nothing,
-                spaces = Nothing,
-                players = [[]]
-              }
-        )
-        (fromBuffer "{[]}")
-    )
-
-serSFp =
+serFp =
   TestCase
     ( assertEqual
         "Asserts that we properly deserialize a first-player starting case (SBracket Case)."
@@ -60,10 +45,10 @@ serSFp =
             JBoard
               { turn = Nothing,
                 spaces = Nothing,
-                players = [[]]
+                players = []
               }
         )
-        (fromBuffer "[[]]")
+        (fromBuffer "[]")
     )
 
 -- Starting State: Second Player
@@ -75,10 +60,10 @@ serSp =
             JBoard
               { turn = Nothing,
                 spaces = Nothing,
-                players = [[JPt [2, 5], JPt [3, 5]]]
+                players = [[[2, 5], [3, 5]]]
               }
         )
-        (fromBuffer "{[[[2,5],[3,5]]]}")
+        (fromBuffer "[[[2,5],[3,5]]]")
     )
 
 -- Provided Board:

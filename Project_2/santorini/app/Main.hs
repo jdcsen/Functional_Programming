@@ -7,6 +7,9 @@ import qualified System.IO as SIO
 
 --TODO: Dynamically load kernels based on a CLI flag.
 main :: IO ()
-main = do kernelRunner kernel
-  where kernel = predKernel [(not . isFullBoard, cornerSetup),
-                             (isFullBoard, scorchedEarth)]
+main = do kernelRunner SIO.stdin SIO.stdout kernel
+  where kernel = cornerSetup
+        --  predKernel 
+        --    [ (not . isFullBoard, cornerSetup),
+        --      (isFullBoard, scorchedEarth)
+        --    ]

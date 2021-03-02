@@ -8,7 +8,8 @@ import SantoriniLogic
 logicTests = TestList [TestLabel "isFullBoard Tests" fbTests,
                        TestLabel "Proximity Function Tests" proxTests,
                        TestLabel "getBuildable Tests" buildableTests,
-                       TestLabel "getMoveable Tests" moveableTests]
+                       TestLabel "getMoveable Tests" moveableTests,
+                       TestLabel "placePlayer Tests" placePlayerTests]
 
 -- Full Board tests
 fbTests = TestList [TestLabel "Player 1 Start" fbP1,
@@ -243,3 +244,43 @@ mUpDown = TestCase (assertEqual
                      {-    Wall    -} Space (IPt 1 0) 1  {-  Player/Low   -}
                     ]
                     (getMoveable ramp2WinIBoard (IPt 0 0)))
+-- Board Mutation Tests
+
+-- Place Player Tests
+placePlayerTests = TestList [TestLabel "Players can be placed in the top left." placePlayerTL,
+                             TestLabel "Players can be placed in the top right." placePlayerTR,
+                             TestLabel "Players can be placed in the bottom right." placePlayerBR,
+                             TestLabel "Players can be placed in the bottom left." placePlayerBL
+                            ]
+
+placePlayerTL = 
+  TestCase 
+    ( assertEqual
+        "Assert that we can place a player in the top left corner."
+        cwPlayersIBoard1
+        (placePlayer emptIBoard (IPt 0 0))
+    )
+
+placePlayerTR = 
+  TestCase 
+    ( assertEqual
+        "Assert that we can place a player in the top right corner."
+        cwPlayersIBoard2
+        (placePlayer cwPlayersIBoard1 (IPt 0 4))
+    )
+
+placePlayerBL = 
+  TestCase 
+    ( assertEqual
+        "Assert that we can place a player in the bottom left corner."
+        cwPlayersIBoard3
+        (placePlayer cwPlayersIBoard2 (IPt 4 4))
+    )
+
+placePlayerBR = 
+  TestCase 
+    ( assertEqual
+        "Assert that we can place a player in the bottom right corner."
+        cwPlayersIBoard4
+        (placePlayer cwPlayersIBoard3 (IPt 0 4))
+    )

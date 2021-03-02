@@ -21,13 +21,14 @@ type SErr = String
 -- the first element of the return tuple will be empty. If there are any leading
 -- characters, they'll be trimmed.
 
-kernelRunner :: AIKernel -> IO ()
-kernelRunner kernel = forever $ do
-  line <- getLine
+-- The first handle is the input, the second the output.
+kernelRunner :: SIO.Handle -> SIO.Handle -> AIKernel -> IO ()
+kernelRunner inHdl outHdl kernel = forever $ do
+  line <- SIO.hGetLine inHdl
   let outLine = case parPline line of
         (Right str) -> str
         (Left err) -> error "Failed to parse line: " ++ line ++ ", Error: " ++ err
-  putStrLn outLine
+  SIO.hPutStrLn outHdl outLine
   -- Flush standard out.
   SIO.hFlush SIO.stdout
   where
@@ -43,7 +44,7 @@ kernelPipeline kernel str
     parsed = fromBuffer str
     errStr = fromLeft "" parsed
     valid = fromRight gJBoardEmpty parsed
-    
+
     newStr =
       toBuffer . flipPlayers . toJBoard
         . kernel
@@ -53,21 +54,20 @@ kernelPipeline kernel str
 
 fromBufferStart :: String -> Either SErr JBoard
 fromBufferStart buf
-  | isJust plrs =
+  | buf == "[[]]" || buf == "{[]}" =
+    Right gJBoardEmpty --NOTE: This is a hack. Fix it.
+  | isRight plrsE =
     Right
       JBoard
         { turn = Nothing,
           spaces = Nothing,
-          players = fromJust plrs
+          players = plrs
         }
-  | buf == "[[]]"
-      || buf == "{[]}" =
-    Right gJBoardEmpty --NOTE: This is a hack. Fix it.
   | otherwise = Left plrsErr
   where
-    decodeE = eitherDecode . BL.pack $ buf :: Either String [[JPt]]
-    plrs = either (const Nothing) Just decodeE
-    plrsErr = fromLeft "" decodeE
+    plrsE = eitherDecode . BL.pack $ buf :: Either String [[[Int]]]
+    plrsErr = fromLeft "" plrsE
+    plrs = fromRight [[]] plrsE
 
 fromBufferFull :: String -> Either SErr JBoard
 fromBufferFull buf = eitherDecode . BL.pack $ buf :: Either String JBoard
@@ -80,9 +80,12 @@ toBuffer brd
 fromBuffer :: String -> Either SErr JBoard
 fromBuffer buf
   | isRight full = fromBufferFull buf
-  | isRight start = fromBufferFull buf
+  | isRight start = fromBufferStart buf
   | otherwise = Left err_msg
   where
     full = fromBufferFull buf
+    fullErr = fromLeft "" full
     start = fromBufferStart buf
-    err_msg = "None of the buffers matched."
+    startErr = fromLeft "" start
+
+    err_msg = "None of the decoders matched. Full Error: " ++ fullErr ++ " Starter Error: " ++ startErr

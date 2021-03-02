@@ -29,19 +29,6 @@ data IPt = IPt
   }
   deriving (Eq, Show)
 
--- TODO: Should I make these arrays fixed length? I don't
--- want to write a custom encoder/decoder.
-newtype JPt = JPt [Int] deriving (Eq, Show, Generic)
-
--- If we deserialize an empty list, we get an empty JPt.
--- This lets us filter them out.
-jPtValid :: JPt -> Bool
-jPtValid (JPt [row, col]) = True
-jPtValid _ = False
-
-instance FromJSON JPt
-
-instance ToJSON JPt
 -- Our board representation. Pretty simple, has a
 -- turn count, arrays for spaces and players.
 --
@@ -52,7 +39,7 @@ instance ToJSON JPt
 data JBoard = JBoard
   { turn :: Maybe Int,
     spaces :: Maybe [[Int]],
-    players :: [[JPt]]
+    players :: [[[Int]]]
   }
   deriving (Show, Generic, Eq)
 
@@ -60,11 +47,13 @@ instance FromJSON JBoard
 
 instance ToJSON JBoard
 
+-- The canonical form of an empty board, since the 
+-- empty nested arrays of varying depth were getting complicated.
 gJBoardEmpty =
   JBoard
     { turn = Nothing,
       spaces = Nothing,
-      players = [[]]
+      players = []
     }
 
 -- All internal functions use IBoard for consistency.
@@ -76,6 +65,15 @@ data IBoard = IBoard
     iplayers :: [[IPt]]
   }
   deriving (Show, Generic, Eq)
+
+gIBoardEmpty =
+  IBoard
+    { iturn = -1,
+      ispaces = replicate  (row gBrdBnd) $
+                  replicate (col gBrdBnd) 0,
+      iplayers = []
+    }
+
 -- Converts from a JSON Board rep to our Internal Board rep
 fromJBoard :: JBoard -> IBoard
 fromJBoard
@@ -85,19 +83,16 @@ fromJBoard
       players = plrs
     } = iBoard
     where
-      vpts = map (filter jPtValid) plrs
       rebuildWalls = map (map (\a -> if a == gJWallHeight then gIWallHeight else a))
+      t = fromMaybe (iturn gIBoardEmpty) trn
+      s = fromMaybe (ispaces gIBoardEmpty) spc
+      p = map (map jPt2iPt) plrs
       iBoard =
         IBoard
-          { iturn = fromMaybe (-1 :: Int) trn,
-            ispaces =
-              rebuildWalls $
-                fromMaybe
-                  ( replicate (row gBrdBnd) $
-                      replicate (col gBrdBnd) 0
-                  )
-                  spc,
-            iplayers = map (map jPt2iPt) vpts
+          { 
+            iturn    = t,
+            ispaces  = s,
+            iplayers = p
           }
 
 -- Converts from our Internal Board rep to a JSON Board rep
@@ -154,11 +149,11 @@ isFullJBoard _ = True
 type AIKernel = IBoard -> IBoard
 
 -- Conversion functions.
-iPt2jPt :: IPt -> JPt
-iPt2jPt bpt = JPt [row bpt, col bpt]
+iPt2jPt :: IPt -> [Int]
+iPt2jPt bpt = [row bpt, col bpt]
 
-jPt2iPt :: JPt -> IPt
-jPt2iPt (JPt (row : col : xs)) = IPt (row -1) (col -1)
+jPt2iPt :: [Int] -> IPt
+jPt2iPt (row : col : xs) = IPt (row -1) (col -1)
 
 -- Tokens for reading from a board in a robust manner.
 -- Turn decisions are often determined in terms of a

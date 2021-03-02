@@ -3,24 +3,24 @@ import SantoriniRep
 -- Some standard boards, for testing.
 
 -- Player 1 Setup
-p1BoardStr = "{\"players\":[[[]]]}"
+p1BoardStr = "[]"
 
 p1JBoard =
   JBoard
     { turn = Nothing,
       spaces = Nothing,
-      players = [[JPt []]]
+      players = []
     }
 p1IBoard = fromJBoard p1JBoard
 
 -- Player 2 Setup
-p2BoardStr = "{\"players\":[[[1,1],[2,2]]]}"
+p2BoardStr = "[[[1,1],[2,2]]]"
 
 p2JBoard =
   JBoard
     { turn = Nothing,
       spaces = Nothing,
-      players = [[JPt [1, 1], JPt [2, 2]]]
+      players = [[[1, 1], [2, 2]]]
     }
 p2IBoard = fromJBoard p1JBoard
 
@@ -39,8 +39,8 @@ provJBoard =
             [0, 0, 0, 1, 4]
           ],
       players =
-        [ [JPt [2, 5], JPt [3, 5]],
-          [JPt [3, 4], JPt [4, 4]]
+        [ [[2, 5], [3, 5]],
+          [[3, 4], [4, 4]]
         ]
     }
 provIBoard = fromJBoard provJBoard
@@ -61,8 +61,8 @@ emptJBoard =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ [JPt [4, 4], JPt [4, 5]],
-          [JPt [5, 4], JPt [5, 5]]
+        [ [[4, 4], [4, 5]],
+          [[5, 4], [5, 5]]
         ]
     }
 emptIBoard = fromJBoard emptJBoard
@@ -83,8 +83,8 @@ cwiseJBoard =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ [JPt [1, 1], JPt [5, 5]],
-          [JPt [1, 5], JPt [5, 1]]
+        [ [[1, 1], [5, 5]],
+          [[1, 5], [5, 1]]
         ]
     }
 cwiseIBoard = fromJBoard cwiseJBoard
@@ -105,8 +105,8 @@ ccwiseJBoard =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ [JPt [5, 1], JPt [1, 5]],
-          [JPt [5, 5], JPt [1, 1]]
+        [ [[5, 1], [1, 5]],
+          [[5, 5], [1, 1]]
         ]
     }
 ccwiseIBoard = fromJBoard ccwiseJBoard
@@ -124,8 +124,8 @@ trapJBoard =
             [4, 4, 4, 4, 4]
           ],
       players =
-        [ [JPt [2, 2], JPt [2, 4]],
-          [JPt [4, 2], JPt [4, 4]]
+        [ [[2, 2], [2, 4]],
+          [[4, 2], [4, 4]]
         ]
     }
 trapIBoard = fromJBoard trapJBoard
@@ -143,8 +143,8 @@ moundJBoard =
             [1, 1, 1, 1, 1]
           ],
       players =
-        [ [JPt [2, 2], JPt [2, 4]],
-          [JPt [4, 2], JPt [4, 4]]
+        [ [[2, 2], [2, 4]],
+          [[4, 2], [4, 4]]
         ]
     }
 moundIBoard = fromJBoard moundJBoard
@@ -162,8 +162,8 @@ btrapJBoard =
             [2, 2, 2, 2, 2]
           ],
       players =
-        [ [JPt [2, 2], JPt [2, 4]],
-          [JPt [4, 2], JPt [4, 4]]
+        [ [[2, 2], [2, 4]],
+          [[4, 2], [4, 4]]
         ]
     }
 btrapIBoard = fromJBoard trapJBoard
@@ -181,8 +181,8 @@ ramp2WinJBoard =
             [2, 2, 2, 2, 2]
           ],
       players =
-        [ [JPt [2, 2], JPt [2, 4]],
-          [JPt [4, 2], JPt [4, 4]]
+        [ [[2, 2], [2, 4]],
+          [[4, 2], [4, 4]]
         ]
     }
 ramp2WinIBoard = fromJBoard ramp2WinJBoard
@@ -200,8 +200,8 @@ ramp2BuildJBoard =
             [2, 2, 2, 2, 2]
           ],
       players =
-        [ [JPt [2, 2], JPt [2, 4]],
-          [JPt [4, 2], JPt [4, 4]]
+        [ [[2, 2], [2, 4]],
+          [[4, 2], [4, 4]]
         ]
     }
 ramp2BuildIBoard = fromJBoard ramp2BuildJBoard
@@ -220,8 +220,8 @@ p1WJBoard =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ [JPt [1, 1], JPt [2, 2]],
-          [JPt [2, 1], JPt [1, 2]]
+        [ [[1, 1], [2, 2]],
+          [[2, 1], [1, 2]]
         ]
     }
 p1WIBoard = fromJBoard p1WJBoard
@@ -240,8 +240,78 @@ p2WJBoard =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ [JPt [2, 1], JPt [1, 2]],
-          [JPt [1, 1], JPt [2, 2]]
+        [ [[2, 1], [1, 2]],
+          [[1, 1], [2, 2]]
         ]
     }
 p2WIBoard = fromJBoard p1WJBoard
+
+-- A flat board with players in all four corners.
+-- Four boards, with a player added to each corner, clockwise.
+cwPlayersJBoard1 =
+  JBoard
+    { turn = Just 1,
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ [[1, 1]] ]
+    }
+cwPlayersIBoard1 = fromJBoard cwPlayersJBoard1
+
+cwPlayersJBoard2 =
+  JBoard
+    { turn = Just 1,
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ [[1, 1], [1, 5]] ]
+    }
+cwPlayersIBoard2 = fromJBoard cwPlayersJBoard2
+
+cwPlayersJBoard3 =
+  JBoard
+    { turn = Just 1,
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ [[1, 1], [1, 5]],
+          [[5, 5]]
+        ]
+    }
+cwPlayersIBoard3 = fromJBoard cwPlayersJBoard3
+
+cwPlayersJBoard4 =
+  JBoard
+    { turn = Just 1,
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ [[1, 1], [1, 5]],
+          [[5, 5], [5, 1]]
+        ]
+    }
+cwPlayersIBoard4 = fromJBoard cwPlayersJBoard4

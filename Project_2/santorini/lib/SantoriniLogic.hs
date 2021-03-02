@@ -150,7 +150,7 @@ placePlayer brd loc = newBrd
     --   Note: Currently, strictly matches arrays of size 1 and 2, so we fail
     --         on other cases. There might be a better way to do this.
     newP = case iplayers brd of
-      [[]] -> [[loc]]
+      [] -> [[loc]]
       [[p11]] -> [loc : [p11]]
       [[p21, p22]] -> [[loc], [p21, p22]]
       [[p11], [p21, p22]] -> [loc : [p11], [p21, p22]]
