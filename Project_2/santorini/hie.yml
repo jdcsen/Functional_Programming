@@ -1,0 +1,13 @@
+cradle:
+  cabal:
+    - path: "./lib"
+      component: "lib:santorini"
+
+    - path: "./app/Main.hs"
+      component: "santorini:exe:santorini"
+
+    - path: "./test"
+      component: "santorini:test:santorini-test"
+
+    - path: "./profiling"
+      component: "santorini:exe:santorini-profiling"

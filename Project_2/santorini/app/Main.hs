@@ -5,8 +5,8 @@ import AIKernels
 import SantoriniLogic
 import qualified System.IO as SIO
 
+--TODO: Dynamically load kernels based on a CLI flag.
 main :: IO ()
 main = do kernelRunner kernel
-  where --TODO: Dynamically load kernels based on a CLI flag.
-        kernel = predKernel [(not . isFullBoard, cornerSetup),
+  where kernel = predKernel [(not . isFullBoard, cornerSetup),
                              (isFullBoard, scorchedEarth)]

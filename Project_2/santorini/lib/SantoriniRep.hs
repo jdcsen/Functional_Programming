@@ -1,27 +1,33 @@
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GADTs #-}
-{-# LANGUAGE DataKinds #-}
 
 module SantoriniRep where
 
-import Data.Aeson
-import Data.Maybe
-import Data.List
-import GHC.Generics
 import Control.Exception
+import Data.Aeson
+import Data.List
+import Data.Maybe
+import GHC.Generics
 
 -- Global board information..
-gBrdBnd      = IPt 4 4 :: IPt
-gJWallHeight = 4       :: Int
-gIWallHeight = 5       :: Int
-gMaxTower    = 3       :: Int
-gMaxTravel   = 1       :: Int
+gBrdBnd = IPt 4 4 :: IPt
 
+gJWallHeight = 4 :: Int
+
+gIWallHeight = 5 :: Int
+
+gMaxTower = 3 :: Int
+
+gMaxTravel = 1 :: Int
 -- Datastructures to ease working with boards:
 
 -- Distinguish our indexing on basis of type
-data IPt = IPt {row :: Int,
-                col :: Int} deriving (Eq, Show)
+data IPt = IPt
+  { row :: Int,
+    col :: Int
+  }
+  deriving (Eq, Show)
 
 -- TODO: Should I make these arrays fixed length? I don't
 -- want to write a custom encoder/decoder.
@@ -34,8 +40,8 @@ jPtValid (JPt [row, col]) = True
 jPtValid _ = False
 
 instance FromJSON JPt
-instance ToJSON   JPt
 
+instance ToJSON JPt
 -- Our board representation. Pretty simple, has a
 -- turn count, arrays for spaces and players.
 --
@@ -43,72 +49,104 @@ instance ToJSON   JPt
 -- aligned to the output requirements, and IBoard, which
 -- we're more free to manipulate. We provide toJBoard and
 -- fromJBoard functions..
-data JBoard = JBoard { turn    :: Maybe Int,
-                       spaces  :: Maybe [[Int]],
-                       players :: [[JPt]]
-                     } deriving (Show, Generic, Eq)
+data JBoard = JBoard
+  { turn :: Maybe Int,
+    spaces :: Maybe [[Int]],
+    players :: [[JPt]]
+  }
+  deriving (Show, Generic, Eq)
 
 instance FromJSON JBoard
-instance ToJSON   JBoard
 
-gJBoardEmpty = JBoard {turn = Nothing,
-                       spaces = Nothing,
-                       players = [[]]}
+instance ToJSON JBoard
+
+gJBoardEmpty =
+  JBoard
+    { turn = Nothing,
+      spaces = Nothing,
+      players = [[]]
+    }
 
 -- All internal functions use IBoard for consistency.
 -- Right now, all we do is make the player points
 -- zero-indexed so we can use them to index into the board.
-data IBoard = IBoard { iturn :: Int,
-                       ispaces :: [[Int]],
-                       iplayers :: [[IPt]]
-                     } deriving (Show, Generic, Eq)
-
-
+data IBoard = IBoard
+  { iturn :: Int,
+    ispaces :: [[Int]],
+    iplayers :: [[IPt]]
+  }
+  deriving (Show, Generic, Eq)
 -- Converts from a JSON Board rep to our Internal Board rep
 fromJBoard :: JBoard -> IBoard
-fromJBoard JBoard{turn   = trn,
-                  spaces  = spc,
-                  players = plrs}  = iBoard
-  where vpts = map (filter jPtValid) plrs
-        rebuildWalls = map (map (\a -> if a == gJWallHeight then gIWallHeight else a))
-        iBoard = IBoard { iturn    = fromMaybe (-1::Int) trn,
-                          ispaces  = rebuildWalls $ fromMaybe (replicate (row gBrdBnd) $
-                                                                replicate (col gBrdBnd) 0
-                                                              ) spc,
-                          iplayers = map (map jPt2iPt) vpts
-                        }
+fromJBoard
+  JBoard
+    { turn = trn,
+      spaces = spc,
+      players = plrs
+    } = iBoard
+    where
+      vpts = map (filter jPtValid) plrs
+      rebuildWalls = map (map (\a -> if a == gJWallHeight then gIWallHeight else a))
+      iBoard =
+        IBoard
+          { iturn = fromMaybe (-1 :: Int) trn,
+            ispaces =
+              rebuildWalls $
+                fromMaybe
+                  ( replicate (row gBrdBnd) $
+                      replicate (col gBrdBnd) 0
+                  )
+                  spc,
+            iplayers = map (map jPt2iPt) vpts
+          }
 
 -- Converts from our Internal Board rep to a JSON Board rep
-toJBoard   :: IBoard -> JBoard
-toJBoard IBoard{iturn    = trn,
-                ispaces  = spc,
-                iplayers = plrs} = jBoard
-  where rebuildWalls = map(map (\a -> if a == gIWallHeight then gJWallHeight else a))
-        jBoard = JBoard { turn    = if trn == -1 then Nothing else Just trn,
-                          spaces  = if trn == -1 then Nothing else Just $ rebuildWalls spc,
-                          players = map (map iPt2jPt) plrs
-                        }
+toJBoard :: IBoard -> JBoard
+toJBoard
+  IBoard
+    { iturn = trn,
+      ispaces = spc,
+      iplayers = plrs
+    } = jBoard
+    where
+      rebuildWalls = map (map (\a -> if a == gIWallHeight then gJWallHeight else a))
+      jBoard =
+        JBoard
+          { turn = if trn == -1 then Nothing else Just trn,
+            spaces = if trn == -1 then Nothing else Just $ rebuildWalls spc,
+            players = map (map iPt2jPt) plrs
+          }
 
 -- In order to properly feed JSON back into other AIs, we need to flip the player
 -- tokens once we're done with them
 --   NOTE: Still need to get single-element replacement working for record syntax.
 --         This is extremely fragile wrt. changes in representation
 flipPlayers :: JBoard -> JBoard
-flipPlayers JBoard{turn    = trn,
-                   spaces  = spc,
-                   players = plrs} = newBrd
-  where newPlrs = case plrs of [a,b] -> [b,a]
-                               [a]   -> [a]
-        newBrd = JBoard{turn   = trn,
-                        spaces = spc,
-                        players = plrs
-                       }
+flipPlayers
+  JBoard
+    { turn = trn,
+      spaces = spc,
+      players = plrs
+    } = newBrd
+    where
+      newPlrs = case plrs of
+        [a, b] -> [b, a]
+        [a] -> [a]
+      newBrd =
+        JBoard
+          { turn = trn,
+            spaces = spc,
+            players = plrs
+          }
 
 -- TODO: Parameterize isFullBoard by board type and move it here.
 isFullJBoard :: JBoard -> Bool
-isFullJBoard JBoard{turn   = Nothing,
-                    spaces  = Nothing,
-                    players = _} = False
+isFullJBoard
+  JBoard
+    { turn = Nothing,
+      spaces = Nothing,
+      players = _
+    } = False
 isFullJBoard _ = True
 
 -- Our AI's are defined in terms of AI Kernels, which just
@@ -120,7 +158,7 @@ iPt2jPt :: IPt -> JPt
 iPt2jPt bpt = JPt [row bpt, col bpt]
 
 jPt2iPt :: JPt -> IPt
-jPt2iPt (JPt (row:col:xs)) = IPt (row-1) (col-1)
+jPt2iPt (JPt (row : col : xs)) = IPt (row -1) (col -1)
 
 -- Tokens for reading from a board in a robust manner.
 -- Turn decisions are often determined in terms of a
@@ -134,11 +172,11 @@ jPt2iPt (JPt (row:col:xs)) = IPt (row-1) (col-1)
 --       I upgraded it and am now using it everywhere.
 data BrdTok where
   -- A given space, parameterized by location and height.
-  Space  :: IPt -> Int -> BrdTok
+  Space :: IPt -> Int -> BrdTok
   -- A player token, parameterized by location and height.
   Player :: IPt -> Int -> BrdTok
   -- A wall. Impassable, not buildable.
-  Wall   :: BrdTok
+  Wall :: BrdTok
   deriving (Eq, Show)
 
 isSpace :: BrdTok -> Bool
@@ -156,8 +194,6 @@ isWall _ = False
 -- TODO **********************************************************
 --
 --  Exception throwing toSpace, toPlayer, and toWall methods.
-
-
 -- NOTE: This replaceNth function comes from the selected answer to this
 -- StackOverflow question. It may be replaced by tools from the 'lens' package
 -- in the future:
@@ -165,6 +201,6 @@ isWall _ = False
 -- Answered by username Philip JF, edited by user adius
 replaceNth :: Int -> a -> [a] -> [a]
 replaceNth _ _ [] = []
-replaceNth n newVal (x:xs)
-  | n == 0 = newVal:xs
-  | otherwise = x:replaceNth (n-1) newVal xs
+replaceNth n newVal (x : xs)
+  | n == 0 = newVal : xs
+  | otherwise = x : replaceNth (n -1) newVal xs
