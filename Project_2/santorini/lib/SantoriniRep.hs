@@ -51,6 +51,10 @@ data JBoard = JBoard { turn    :: Maybe Int,
 instance FromJSON JBoard
 instance ToJSON   JBoard
 
+gJBoardEmpty = JBoard {turn = Nothing,
+                       spaces = Nothing,
+                       players = [[]]}
+
 -- All internal functions use IBoard for consistency.
 -- Right now, all we do is make the player points
 -- zero-indexed so we can use them to index into the board.

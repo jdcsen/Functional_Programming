@@ -13,6 +13,9 @@ import Data.Either
 import qualified System.IO as SIO
 import qualified Data.ByteString.Lazy.Char8 as BL
 
+-- Allows us to distinguish errors and valid string values syntactically
+type SErr = String
+
 -- Processes a string of characters, returning substrings of self-delimiting
 -- JSON, returning leftovers. If no self-delimiting JSON is in the string,
 -- the first element of the return tuple will be empty. If there are any leading
@@ -22,8 +25,8 @@ kernelRunner :: AIKernel -> IO ()
 kernelRunner kernel = forever $ do
         line <- getLine
         let outLine = case parPline line
-                        of (Just str) -> str
-                           Nothing    -> error "Failed to parse line: " ++ line
+                        of (Right str) -> str
+                           (Left err)  -> error "Failed to parse line: " ++ line ++ ", Error: " ++ err
         putStrLn outLine
         -- Flush standard out.
         SIO.hFlush SIO.stdout
@@ -31,35 +34,43 @@ kernelRunner kernel = forever $ do
 
 -- Given a kernel and a String, attempts to deserialize the String into a JBoard,
 -- run the kernel, and return the output, ready for printing.
-kernelPipeline :: AIKernel -> String -> Maybe String
-kernelPipeline kernel str = newStr
-  where newBoard = flipPlayers . toJBoard .
+kernelPipeline :: AIKernel -> String -> Either SErr String
+kernelPipeline kernel str
+    | isRight parsed = Right newStr
+    | otherwise = Left errStr
+  where parsed = fromBuffer str
+        errStr = fromLeft "" parsed
+        valid  = fromRight gJBoardEmpty parsed
+        newStr = toBuffer . flipPlayers . toJBoard .
                    kernel .
-                   fromJBoard <$> fromBuffer str :: Maybe JBoard
-        newStr   = toBuffer <$> newBoard
+                   fromJBoard $ valid :: String
 
+fromBufferStart :: String -> Either SErr JBoard
+fromBufferStart buf
+  | isJust plrs     = Right JBoard {turn    = Nothing,
+                                    spaces  = Nothing,
+                                    players = fromJust plrs}
+  | buf == "[[]]" || 
+    buf == "{[]}"   = Right gJBoardEmpty --NOTE: This is a hack. Fix it.
+  | otherwise  = Left plrsErr
+  where decodeE = eitherDecode . BL.pack $ buf :: Either String [[JPt]]
+        plrs    = either (const Nothing) Just decodeE
+        plrsErr = fromLeft "" decodeE
+
+fromBufferFull :: String -> Either SErr JBoard
+fromBufferFull buf = eitherDecode . BL.pack $ buf :: Either String JBoard
 
 toBuffer :: JBoard -> String
 toBuffer brd
   | isFullJBoard brd = BL.unpack . encode $ brd
   | otherwise        = BL.unpack . encode $ players brd
 
-fromBuffer :: String -> Maybe JBoard
+fromBuffer :: String -> Either SErr JBoard 
 fromBuffer buf
-  | isJust fullDcde = fullDcde
-  | isJust plrs     = Just JBoard {turn    = Nothing,
-                                   spaces  = Nothing,
-                                   players = fromJust plrs}
-  | buf == "[[]]" || --NOTE: This is a hack. Fix it.
-    buf == "{[]}"   = Just JBoard {turn    = Nothing,
-                                   spaces  = Nothing,
-                                   players = [[]]}
+  | isRight full  = fromBufferFull buf
+  | isRight start = fromBufferFull buf
+  | otherwise                     = Left err_msg
+  where full  = fromBufferFull buf
+        start = fromBufferStart buf
+        err_msg = "None of the buffers matched."
 
-  | otherwise        = Nothing
-  where fullEDecode  = eitherDecode . BL.pack $ buf :: Either String JBoard
-        fullDcde     = either (const Nothing) Just fullEDecode
-        fullDedeErr  = fromLeft "" fullEDecode
-
-        p2EDcder = eitherDecode . BL.pack $ buf :: Either String [[JPt]]
-        p2Dcder  = decode . BL.pack :: String -> Maybe [[JPt]]
-        plrs     = p2Dcder buf

@@ -3,6 +3,7 @@ import Test.HUnit
 import SantoriniRep
 import TestBoards
 import SantoriniIO
+import Data.Either
 
 -- Top level test case.
 serDesTests = TestList [TestLabel "Serialization and Deserialization Tests" serDeserTests]
@@ -18,62 +19,60 @@ serDeserTests = TestList [TestLabel "Serialization: Empty" serEmpt,
                           TestLabel "Serialization: Clockwise Players" serCw,
                           TestLabel "Serialization: Counterclockwise Players" serCcw]
 
-serEmpt = TestCase (assertEqual
+serEmpt = TestCase (assertBool
                     "Asserts that deserialization fails on the empty string."
-                    Nothing
-                    (fromBuffer ""))
+                    (isLeft $ fromBuffer ""))
 
-serGarb = TestCase (assertEqual
+serGarb = TestCase (assertBool
                    "Asserts that deserialization fails on a garbage string."
-                   Nothing
-                   (fromBuffer "garbage!"))
+                   (isLeft $ fromBuffer "garbage!"))
 
 -- Starting State: First Player
 serCFp = TestCase (assertEqual
                   "Asserts that we properly deserialize a first-player starting case (CBracket Case)."
-                  (Just JBoard { turn=Nothing,
-                                 spaces=Nothing,
-                                 players = [[]]
-                              })
+                  (Right JBoard { turn=Nothing,
+                                  spaces=Nothing,
+                                  players = [[]]
+                                })
                   (fromBuffer "{[]}"))
 
 serSFp = TestCase (assertEqual
                   "Asserts that we properly deserialize a first-player starting case (SBracket Case)."
-                  (Just JBoard { turn=Nothing,
-                                 spaces=Nothing,
-                                 players = [[]]
-                              })
+                  (Right JBoard { turn=Nothing,
+                                  spaces=Nothing,
+                                  players = [[]]
+                                })
                   (fromBuffer "[[]]"))
 
 -- Starting State: Second Player
 serSp = TestCase (assertEqual
                   "Asserts that we properly deserialize a second-player starting case."
-                  (Just JBoard { turn=Nothing,
-                                 spaces=Nothing,
-                                 players = [[JPt [2,5], JPt[3,5]]]
-                              })
+                  (Right JBoard { turn=Nothing,
+                                  spaces=Nothing,
+                                  players = [[JPt [2,5], JPt[3,5]]]
+                                })
                   (fromBuffer "{[[[2,5],[3,5]]]}"))
 
 -- Provided Board:
 serPb = TestCase (assertEqual
                   "Asserts that we properly deserialize the board provided in the instructions."
-                  (Just provJBoard)
+                  (Right provJBoard)
                   (fromBuffer provBoardStr))
 
 -- Empty Board:
 serEb = TestCase (assertEqual
                   "Asserts that we properly deserialize the board provided in the instructions."
-                  (Just emptJBoard)
+                  (Right emptJBoard)
                   (fromBuffer emptBoardStr))
 
 -- Clockwise player position board.
 serCw = TestCase (assertEqual
                   "Asserts that we properly deserialize the board provided in the instructions."
-                  (Just cwiseJBoard)
+                  (Right cwiseJBoard)
                   (fromBuffer cwiseBoardStr))
 
 -- Counterclockwise player position board.
 serCcw = TestCase (assertEqual
                   "Asserts that we properly deserialize the board provided in the instructions."
-                  (Just ccwiseJBoard)
+                  (Right ccwiseJBoard)
                   (fromBuffer ccwiseBoardStr))
