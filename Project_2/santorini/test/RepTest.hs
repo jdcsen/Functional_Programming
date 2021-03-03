@@ -2,6 +2,10 @@ module RepTest where
 import Test.HUnit
 import SantoriniRep
 
+-- Rename some of the constants for use in test cases
+jwh = gJWallHeight
+iwh = gIWallHeight
+
 -- Top level test case.
 repTests = TestList [TestLabel "fromJBoard Tests" fromJBoardTests,
                      TestLabel "toJBoard Tests" toJBoardTests]
@@ -15,7 +19,7 @@ fromJBoardTests = TestList [TestLabel "Empty to Empty" fromJempt2empt,
 
 -- Verify empty case.
 fromJempt2empt =
-   TestCase 
+  TestCase
     ( assertEqual
         "Assert that we can convert an empty JBoard to an empty IBoard."
         gIBoardEmpty
@@ -24,39 +28,156 @@ fromJempt2empt =
 
 -- Verify single player case
 fromJsp2sp =
-   TestCase 
+  TestCase
     ( assertEqual
         "Assert that we can convert an single player JBoard to a single player IBoard."
-        gIBoardEmpty
-        (fromJBoard gJBoardEmpty)
+        ( IBoard
+            { iturn = 1,
+              ispaces =
+                [ [1, 1, 1, 1, 1],
+                  [1, 2, 1, 2, 1],
+                  [1, 1, 1, 1, 1],
+                  [1, 0, 1, 0, 1],
+                  [1, 1, 1, 1, 1]
+                ],
+              iplayers =
+                [ [IPt 1 1] ]
+            }
+
+        )
+        ( fromJBoard
+            JBoard
+              { turn = Just 1,
+                spaces =
+                  Just
+                    [ [1, 1, 1, 1, 1],
+                      [1, 2, 1, 2, 1],
+                      [1, 1, 1, 1, 1],
+                      [1, 0, 1, 0, 1],
+                      [1, 1, 1, 1, 1]
+                    ],
+                players =
+                  [ [[2, 2]] ]
+              }
+        )
     )
 
 -- Verify full, empty board case
 fromJfe2fe =
-   TestCase 
+  TestCase
     ( assertEqual
         "Assert that we can convert a full JBoard to a full IBoard (Flat ground)."
-        gIBoardEmpty
-        (fromJBoard gJBoardEmpty)
+        ( IBoard
+            { iturn = 1,
+              ispaces =
+                [ [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0]
+                ],
+              iplayers =
+                [ [IPt 1 1, IPt 1 3],
+                  [IPt 3 1, IPt 3 3]
+                ]
+            }
+        )
+        ( fromJBoard
+            JBoard
+              { turn = Just 1,
+                spaces =
+                  Just
+                    [ [0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0]
+                    ],
+                players =
+                  [ [[2,2], [2,4]],
+                    [[4,2], [4,4]]
+                  ]
+              }
+        )
     )
 
 -- Verify full, uneven board case
 fromJfu2fu =
-   TestCase 
-    ( assertEqual
-        "Assert that we can convert a full JBoard to a full IBoard (Uneven ground)."
-        gIBoardEmpty
-        (fromJBoard gJBoardEmpty)
-    )
+  TestCase
+   ( assertEqual
+       "Assert that we can convert a full JBoard to a full IBoard (Uneven ground)."
+       ( IBoard
+           { iturn = 1,
+             ispaces =
+               [ [2, 1, 1, 1, 1],
+                 [1, 0, 1, 0, 1],
+                 [1, 1, 1, 1, 1],
+                 [1, 0, 1, 0, 1],
+                 [1, 1, 1, 1, 2]
+               ],
+             iplayers =
+               [ [IPt 3 1, IPt 3 3],
+                 [IPt 1 1, IPt 1 3]
+               ]
+           }
+       )
+       ( fromJBoard
+           JBoard
+             { turn = Just 1,
+               spaces =
+                 Just
+                   [ [2, 1, 1, 1, 1],
+                     [1, 0, 1, 0, 1],
+                     [1, 1, 1, 1, 1],
+                     [1, 0, 1, 0, 1],
+                     [1, 1, 1, 1, 2]
+                   ],
+               players =
+                 [ [[4,2], [4,4]],
+                   [[2,2], [2,4]]
+                 ]
+             }
+       )
+   )
 
 -- Verify walls are translated properly.
 fromJWalls =
-   TestCase 
-    ( assertEqual
-        "Assert that walls in a JBoard properly translate to walls in the IBoard."
-        gIBoardEmpty
-        (fromJBoard gJBoardEmpty)
-    )
+  TestCase
+   ( assertEqual
+       "Assert that walls in a JBoard properly translate to walls in the IBoard."
+       ( IBoard
+           { iturn = 1,
+             ispaces =
+               [ [iwh, iwh, iwh, iwh, iwh],
+                 [iwh, 0,   iwh, 0,   iwh],
+                 [iwh, iwh, iwh, iwh, iwh],
+                 [iwh, 0,   iwh, 0,   iwh],
+                 [iwh, iwh, iwh, iwh, iwh]
+               ],
+             iplayers =
+               [ [IPt 1 1, IPt 3 3],
+                 [IPt 3 1, IPt 1 3]
+               ]
+           }
+       )
+       ( fromJBoard
+           JBoard
+             { turn = Just 1,
+               spaces =
+                 Just
+                   [ [jwh, jwh, jwh, jwh, jwh],
+                     [jwh, 0,   jwh, 0,   jwh],
+                     [jwh, jwh, jwh, jwh, jwh],
+                     [jwh, 0,   jwh, 0,   jwh],
+                     [jwh, jwh, jwh, jwh, jwh]
+                   ],
+               players =
+                 [ [[2,2], [4,4]],
+                   [[4,2], [2,4]]
+                 ]
+             }
+       )
+   )
 
 -- toJBoard Test Cases.
 toJBoardTests = TestList [TestLabel "Empty to Empty" toJempt2empt,
@@ -66,45 +187,158 @@ toJBoardTests = TestList [TestLabel "Empty to Empty" toJempt2empt,
                             TestLabel "Wall Translation" toJWalls]
 
 toJempt2empt =
-   TestCase 
-    ( assertEqual
-        "Assert that we can convert an empty IBoard to an empty JBoard."
-        gJBoardEmpty
-        (toJBoard gIBoardEmpty)
-    )
+  TestCase
+   ( assertEqual
+       "Assert that we can convert an empty IBoard to an empty JBoard."
+       gJBoardEmpty
+       (toJBoard gIBoardEmpty)
+   )
 
 -- Verify single player case
 toJsp2sp =
-   TestCase 
-    ( assertEqual
-        "Assert that we can convert an single player JBoard to a single player IBoard."
-        gJBoardEmpty
-        (toJBoard gIBoardEmpty)
-    )
+  TestCase
+   ( assertEqual
+       "Assert that we can convert an single player JBoard to a single player IBoard."
+        ( JBoard
+            { turn = Just 1,
+              spaces =
+                Just
+                  [ [1, 1, 1, 1, 1],
+                    [1, 2, 1, 2, 1],
+                    [1, 1, 1, 1, 1],
+                    [1, 0, 1, 0, 1],
+                    [1, 1, 1, 1, 1]
+                  ],
+              players =
+                [ [[2, 2]] ]
+            }
+        )
+        ( toJBoard IBoard
+            { iturn = 1,
+              ispaces =
+                [ [1, 1, 1, 1, 1],
+                  [1, 2, 1, 2, 1],
+                  [1, 1, 1, 1, 1],
+                  [1, 0, 1, 0, 1],
+                  [1, 1, 1, 1, 1]
+                ],
+              iplayers =
+                [ [IPt 1 1] ]
+            }
+
+        )
+   )
 
 -- Verify full, empty board case
 toJfe2fe =
-   TestCase 
-    ( assertEqual
-        "Assert that we can convert a full JBoard to a full IBoard (Flat ground)."
-        gJBoardEmpty
-        (toJBoard gIBoardEmpty)
-    )
+  TestCase
+   ( assertEqual
+       "Assert that we can convert a full JBoard to a full IBoard (Flat ground)."
+        ( JBoard
+            { turn = Just 1,
+              spaces =
+                Just
+                  [ [0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0]
+                  ],
+              players =
+                [ [[2,2], [2,4]],
+                  [[4,2], [4,4]]
+                ]
+            }
+        )
+        ( toJBoard IBoard
+            { iturn = 1,
+              ispaces =
+                [ [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0]
+                ],
+              iplayers =
+                [ [IPt 1 1, IPt 1 3],
+                  [IPt 3 1, IPt 3 3]
+                ]
+            }
+        )
+   )
 
 -- Verify full, uneven board case
 toJfu2fu =
-   TestCase 
-    ( assertEqual
-        "Assert that we can convert a full JBoard to a full IBoard (Uneven ground)."
-        gJBoardEmpty
-        (toJBoard gIBoardEmpty)
-    )
+  TestCase
+   ( assertEqual
+       "Assert that we can convert a full JBoard to a full IBoard (Uneven ground)."
+       ( JBoard
+           { turn = Just 1,
+             spaces =
+               Just
+                 [ [2, 1, 1, 1, 1],
+                   [1, 0, 1, 0, 1],
+                   [1, 1, 1, 1, 1],
+                   [1, 0, 1, 0, 1],
+                   [1, 1, 1, 1, 2]
+                 ],
+             players =
+               [ [[4,2], [4,4]],
+                 [[2,2], [2,4]]
+               ]
+           }
+       )
+       ( toJBoard IBoard
+           { iturn = 1,
+             ispaces =
+               [ [2, 1, 1, 1, 1],
+                 [1, 0, 1, 0, 1],
+                 [1, 1, 1, 1, 1],
+                 [1, 0, 1, 0, 1],
+                 [1, 1, 1, 1, 2]
+               ],
+             iplayers =
+               [ [IPt 3 1, IPt 3 3],
+                 [IPt 1 1, IPt 1 3]
+               ]
+           }
+       )
+   )
 
 -- Verify walls are translated properly.
 toJWalls =
-   TestCase 
-    ( assertEqual
-        "Assert that walls in a JBoard properly translate to walls in the IBoard."
-        gJBoardEmpty
-        (toJBoard gIBoardEmpty)
-    )
+  TestCase
+   ( assertEqual
+       "Assert that walls in a JBoard properly translate to walls in the IBoard."
+       ( JBoard
+            { turn = Just 1,
+              spaces =
+                Just
+                  [ [jwh, jwh, jwh, jwh, jwh],
+                    [jwh, 0,   jwh, 0,   jwh],
+                    [jwh, jwh, jwh, jwh, jwh],
+                    [jwh, 0,   jwh, 0,   jwh],
+                    [jwh, jwh, jwh, jwh, jwh]
+                  ],
+              players =
+                [ [[2, 2], [4, 4]],
+                  [[4, 2], [2, 4]]
+                ]
+            }
+       )
+       ( toJBoard IBoard
+           { iturn = 1,
+             ispaces =
+               [ [iwh, iwh, iwh, iwh, iwh],
+                 [iwh, 0,   iwh, 0,   iwh],
+                 [iwh, iwh, iwh, iwh, iwh],
+                 [iwh, 0,   iwh, 0,   iwh],
+                 [iwh, iwh, iwh, iwh, iwh]
+               ],
+             iplayers =
+               [ [IPt 1 1, IPt 3 3],
+                 [IPt 3 1, IPt 1 3]
+               ]
+           }
+       )
+   )

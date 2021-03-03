@@ -54,8 +54,6 @@ kernelPipeline kernel str
 
 fromBufferStart :: String -> Either SErr JBoard
 fromBufferStart buf
-  | buf == "[[]]" || buf == "{[]}" =
-    Right gJBoardEmpty --NOTE: This is a hack. Fix it.
   | isRight plrsE =
     Right
       JBoard
@@ -67,7 +65,7 @@ fromBufferStart buf
   where
     plrsE = eitherDecode . BL.pack $ buf :: Either String [[[Int]]]
     plrsErr = fromLeft "" plrsE
-    plrs = fromRight [[]] plrsE
+    plrs = fromRight [] plrsE
 
 fromBufferFull :: String -> Either SErr JBoard
 fromBufferFull buf = eitherDecode . BL.pack $ buf :: Either String JBoard

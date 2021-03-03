@@ -85,7 +85,7 @@ fromJBoard
     where
       rebuildWalls = map (map (\a -> if a == gJWallHeight then gIWallHeight else a))
       t = fromMaybe (iturn gIBoardEmpty) trn
-      s = fromMaybe (ispaces gIBoardEmpty) spc
+      s = rebuildWalls $ fromMaybe (ispaces gIBoardEmpty) spc
       p = map (map jPt2iPt) plrs
       iBoard =
         IBoard
@@ -150,7 +150,7 @@ type AIKernel = IBoard -> IBoard
 
 -- Conversion functions.
 iPt2jPt :: IPt -> [Int]
-iPt2jPt bpt = [row bpt, col bpt]
+iPt2jPt bpt = [row bpt + 1, col bpt + 1]
 
 jPt2iPt :: [Int] -> IPt
 jPt2iPt (row : col : xs) = IPt (row -1) (col -1)
