@@ -285,7 +285,7 @@ mPFlat =
                 ]
             }
         )
-        (movePlayer cwPlayersIBoard4 (IPt 4 0) (IPt 3 1))
+        (movePlayer cwPlayersIBoard4 (IPt 4 0, IPt 3 1))
     )
 
 mPUneven =
@@ -307,7 +307,7 @@ mPUneven =
                 ]
             }
         )
-        (movePlayer cwPlayersIBoard4 (IPt 4 0) (IPt 3 1))
+        (movePlayer cwPlayersIBoard4 (IPt 4 0, IPt 3 1))
     )
 
 mPAnywhere =
@@ -329,7 +329,7 @@ mPAnywhere =
                 ]
             }
         )
-        (movePlayer cwPlayersIBoard4 (IPt 4 0) (IPt 3 1))
+        (movePlayer cwPlayersIBoard4 (IPt 4 0, IPt 3 1))
     )
 
 mPAnyAlt =
@@ -351,7 +351,7 @@ mPAnyAlt =
                 ]
             }
         )
-        (movePlayer cwPlayersIBoard4 (IPt 4 0) (IPt 3 1))
+        (movePlayer cwPlayersIBoard4 (IPt 4 0, IPt 3 1))
     )
 
 -- buildLvl Tests

@@ -63,10 +63,10 @@ scorchedEarth brd = new_brd
       (hmove : ms) -> hmove
       _            -> throw $ UndefinedElement "Scorched Earth: No target move."
 
-    target = case move of (Space pt h) -> pt
+    target = getPos move
 
     -- Execute the move.
-    moved_brd = movePlayer brd source target
+    moved_brd = movePlayer brd (source, target)
 
     -- Build on the source location.
     new_brd = buildLvl moved_brd source

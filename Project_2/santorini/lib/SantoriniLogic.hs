@@ -95,9 +95,11 @@ getPos (Wall   pt)   = pt
 
 -- Moves a player from a source location to a target location.
 -- If no player is at the source location, throws UndefinedElement
-movePlayer :: IBoard -> IPt -> IPt -> IBoard
-movePlayer brd src tgt = newBrd
+movePlayer :: IBoard -> (IPt, IPt) -> IBoard
+movePlayer brd tup = newBrd
   where
+    src = fst tup
+    tgt = snd tup
     players = head $ iplayers brd
     -- Ensure we have a player to move.
     vsrc =
