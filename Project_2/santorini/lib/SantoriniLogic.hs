@@ -117,7 +117,7 @@ buildLvl brd loc = newBrd
     -- Ensure we can build at this location.
     -- NOTE: This does boundary checking for us, because out of bounds indexes are walls.
     validHeight = case getTok brd loc of
-      (Space loc ht) -> validHeight
+      (Space loc ht) -> ht
       _ -> throw $ UndefinedElement "Tried to build on an invalid space."
 
     -- NOTE: We check for walls and players above, so this is safe.
