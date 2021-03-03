@@ -3,6 +3,7 @@ module Main (main) where
 import LogicTest (logicTests)
 import SerDesTest (serDesTests)
 import RepTest (repTests)
+import KernelTest (kernelTests)
 import Test.HUnit
 
 main :: IO Counts
@@ -11,3 +12,4 @@ main = do
   runTestTT serDesTests
   runTestTT logicTests
   runTestTT repTests
+--  runTestTT kernelTests

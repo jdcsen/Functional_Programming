@@ -114,7 +114,8 @@ test-suite santorini-test
   other-modules:       TestBoards,
                        SerDesTest,
                        LogicTest,
-                       RepTest
+                       RepTest,
+                       KernelTest
 
   -- Test dependencies.
   build-depends:       base ^>=4.13.0.0,

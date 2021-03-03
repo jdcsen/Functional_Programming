@@ -93,12 +93,12 @@ movePlayer brd src tgt = newBrd
   where
     players = head $ iplayers brd
     -- Ensure we have a player to move.
-    src =
+    vsrc =
       if src `elem` players
         then src
         else throw $ UndefinedElement "The source player does not exist."
     -- Replace the players.
-    newPlayers = (tgt : delete src players) : delete players (iplayers brd)
+    newPlayers = (tgt : delete vsrc players) : delete players (iplayers brd)
     -- Rebuild the board.
     --   Note: functions for single element replacement? Does record syntax
     --         give us anything like that?
@@ -115,14 +115,15 @@ buildLvl :: IBoard -> IPt -> IBoard
 buildLvl brd loc = newBrd
   where
     -- Ensure we can build at this location.
-    ht = case getTok brd loc of
-      (Space loc ht) -> ht
+    vht = case getTok brd loc of
+      (Space loc ht) -> vht
       _ -> throw $ UndefinedElement "Tried to build on an invalid space."
+
     -- NOTE: We check for walls and players above, so this is safe.
     nHt =
-      if ht == gMaxTower
+      if vht == gMaxTower
         then gIWallHeight
-        else ht + 1
+        else vht + 1
 
     -- Update the spaces array.
     -- NOTE: This is messy. Clean it up.
