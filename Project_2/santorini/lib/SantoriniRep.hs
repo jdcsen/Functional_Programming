@@ -68,9 +68,9 @@ data IBoard = IBoard
 
 gIBoardEmpty =
   IBoard
-    { iturn = -1,
-      ispaces = replicate  (row gBrdBnd) $
-                  replicate (col gBrdBnd) 0,
+    { iturn = -1, -- Note: +1's are due to zero based indexing.
+      ispaces = replicate  (row gBrdBnd + 1) $
+                  replicate (col gBrdBnd + 1) 0,
       iplayers = []
     }
 

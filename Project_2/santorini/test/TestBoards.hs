@@ -5,12 +5,7 @@ import SantoriniRep
 -- Player 1 Setup
 p1BoardStr = "[]"
 
-p1JBoard =
-  JBoard
-    { turn = Nothing,
-      spaces = Nothing,
-      players = []
-    }
+p1JBoard = gJBoardEmpty
 p1IBoard = fromJBoard p1JBoard
 
 -- Player 2 Setup
@@ -250,7 +245,7 @@ p2WIBoard = fromJBoard p1WJBoard
 -- Four boards, with a player added to each corner, clockwise.
 cwPlayersJBoard1 =
   JBoard
-    { turn = Just 1,
+    { turn = Just (-1),
       spaces =
         Just
           [ [0, 0, 0, 0, 0],
@@ -266,7 +261,7 @@ cwPlayersIBoard1 = fromJBoard cwPlayersJBoard1
 
 cwPlayersJBoard2 =
   JBoard
-    { turn = Just 1,
+    { turn = Just (-1),
       spaces =
         Just
           [ [0, 0, 0, 0, 0],
@@ -276,13 +271,13 @@ cwPlayersJBoard2 =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ [[1, 1], [1, 5]] ]
+        [ [[1, 5], [1, 1]] ]
     }
 cwPlayersIBoard2 = fromJBoard cwPlayersJBoard2
 
 cwPlayersJBoard3 =
   JBoard
-    { turn = Just 1,
+    { turn = Just (-1),
       spaces =
         Just
           [ [0, 0, 0, 0, 0],
@@ -292,15 +287,15 @@ cwPlayersJBoard3 =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ [[1, 1], [1, 5]],
-          [[5, 5]]
+        [ [[5, 5]],
+          [[1, 5], [1, 1]]
         ]
     }
 cwPlayersIBoard3 = fromJBoard cwPlayersJBoard3
 
 cwPlayersJBoard4 =
   JBoard
-    { turn = Just 1,
+    { turn = Just (-1),
       spaces =
         Just
           [ [0, 0, 0, 0, 0],
@@ -310,8 +305,8 @@ cwPlayersJBoard4 =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ [[1, 1], [1, 5]],
-          [[5, 5], [5, 1]]
+        [ [[5, 1], [5, 5]],
+          [[1, 5], [1, 1]]
         ]
     }
 cwPlayersIBoard4 = fromJBoard cwPlayersJBoard4

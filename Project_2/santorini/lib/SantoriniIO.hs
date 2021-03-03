@@ -54,6 +54,7 @@ kernelPipeline kernel str
 
 fromBufferStart :: String -> Either SErr JBoard
 fromBufferStart buf
+  | buf == "" = Right gJBoardEmpty
   | isRight plrsE =
     Right
       JBoard

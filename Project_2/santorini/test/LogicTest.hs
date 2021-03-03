@@ -258,7 +258,7 @@ placePlayerTL =
     ( assertEqual
         "Assert that we can place a player in the top left corner."
         cwPlayersIBoard1
-        (placePlayer emptIBoard (IPt 0 0))
+        (placePlayer p1IBoard (IPt 0 0))
     )
 
 placePlayerTR = 
@@ -282,5 +282,5 @@ placePlayerBR =
     ( assertEqual
         "Assert that we can place a player in the bottom right corner."
         cwPlayersIBoard4
-        (placePlayer cwPlayersIBoard3 (IPt 0 4))
+        (placePlayer cwPlayersIBoard3 (IPt 4 0))
     )
