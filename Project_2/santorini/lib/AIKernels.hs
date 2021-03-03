@@ -15,7 +15,7 @@ predKernel :: [(IBoard -> Bool, AIKernel)] -> IBoard -> IBoard
 predKernel [] brd = brd
 predKernel preds brd = kern brd
   where
-    kern = case dropWhile (`fst` brd) preds of
+    kern = case dropWhile (\a -> not (fst a brd)) preds of
       [] -> id
       (x : xs) -> snd x
 
@@ -34,7 +34,7 @@ cornerSetup brd = newBrd
     -- TODO: isSpace
     freeSpaces = dropWhile (not . isSpace . getTok brd) startingPts
     chosenSpaces = case freeSpaces of
-      (s1 : s2 : ss) -> (s1, s2)
+      (s1 : s2 : ss) -> [s1, s2]
       _ -> error "Couldn't find a free space in cornerSetup"
     -- Place a player on the spaces.
     newBrd = foldl placePlayer brd chosenSpaces
