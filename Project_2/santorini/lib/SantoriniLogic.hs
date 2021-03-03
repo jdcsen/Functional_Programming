@@ -115,20 +115,30 @@ buildLvl :: IBoard -> IPt -> IBoard
 buildLvl brd loc = newBrd
   where
     -- Ensure we can build at this location.
-    vht = case getTok brd loc of
-      (Space loc ht) -> vht
+    -- NOTE: This does boundary checking for us, because out of bounds indexes are walls.
+    validHeight = case getTok brd loc of
+      (Space loc ht) -> validHeight
       _ -> throw $ UndefinedElement "Tried to build on an invalid space."
 
     -- NOTE: We check for walls and players above, so this is safe.
-    nHt =
-      if vht == gMaxTower
+    newHeight =
+      if validHeight == gMaxTower
         then gIWallHeight
-        else vht + 1
+        else validHeight + 1
 
     -- Update the spaces array.
-    -- NOTE: This is messy. Clean it up.
-    newRow = replaceNth (col loc) nHt $ ispaces brd !! row loc
-    newSpaces = replaceNth (row loc) newRow $ ispaces brd
+    oldSpaces = ispaces brd
+    oldRow = oldSpaces !! row loc
+    -- Split at the column. This gives us a head list that can remain unchanged,
+    -- and a tail list that has our value at the head.
+    (headL, tailL) = splitAt (col loc) oldRow
+    newTailL = drop 1 tailL
+    newRow = headL ++ [newHeight] ++ newTailL
+    -- Do the same for the entire spaces array.
+    (spHeadL, spTailL) = splitAt (row loc) oldSpaces
+    newSpTailL = drop 1 spTailL
+    newSpaces = spHeadL ++ [newRow] ++ newSpTailL
+
     -- Rebuild the board.
     newBrd =
       IBoard

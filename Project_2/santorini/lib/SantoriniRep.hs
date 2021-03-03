@@ -47,7 +47,7 @@ instance FromJSON JBoard
 
 instance ToJSON JBoard
 
--- The canonical form of an empty board, since the 
+-- The canonical form of an empty board, since the
 -- empty nested arrays of varying depth were getting complicated.
 gJBoardEmpty =
   JBoard
@@ -89,7 +89,7 @@ fromJBoard
       p = map (map jPt2iPt) plrs
       iBoard =
         IBoard
-          { 
+          {
             iturn    = t,
             ispaces  = s,
             iplayers = p
@@ -189,13 +189,3 @@ isWall _ = False
 -- TODO **********************************************************
 --
 --  Exception throwing toSpace, toPlayer, and toWall methods.
--- NOTE: This replaceNth function comes from the selected answer to this
--- StackOverflow question. It may be replaced by tools from the 'lens' package
--- in the future:
--- https://stackoverflow.com/questions/5852722/replace-individual-list-elements-in-haskell
--- Answered by username Philip JF, edited by user adius
-replaceNth :: Int -> a -> [a] -> [a]
-replaceNth _ _ [] = []
-replaceNth n newVal (x : xs)
-  | n == 0 = newVal : xs
-  | otherwise = x : replaceNth (n -1) newVal xs

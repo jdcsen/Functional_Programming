@@ -9,6 +9,8 @@ logicTests = TestList [TestLabel "isFullBoard Tests" fbTests,
                        TestLabel "Proximity Function Tests" proxTests,
                        TestLabel "getBuildable Tests" buildableTests,
                        TestLabel "getMoveable Tests" moveableTests,
+                       TestLabel "movePlayer Tests" movePlayerTests,
+                       TestLabel "buildLvl Tests" buildLvlTests,
                        TestLabel "placePlayer Tests" placePlayerTests]
 
 -- Full Board tests
@@ -246,39 +248,267 @@ mUpDown = TestCase (assertEqual
                     (getMoveable ramp2WinIBoard (IPt 0 0)))
 -- Board Mutation Tests
 
--- Place Player Tests
-placePlayerTests = TestList [TestLabel "Players can be placed in the top left." placePlayerTL,
-                             TestLabel "Players can be placed in the top right." placePlayerTR,
-                             TestLabel "Players can be placed in the bottom right." placePlayerBR,
-                             TestLabel "Players can be placed in the bottom left." placePlayerBL
-                            ]
+-- movePlayer Tests
+movePlayerTests =
+  TestList
+    [ TestLabel "Players can be moved from flat ground." mPFlat,
+      TestLabel "Players can be moved from uneven ground." mPUneven,
+      TestLabel "Players can be moved to any location." mPAnywhere,
+      TestLabel "Players can be moved to any altitude." mPAnyAlt
+    ]
 
-placePlayerTL = 
-  TestCase 
+mPFlat =
+  TestCase
+    ( assertEqual
+        "Assert that we can move a player on flat ground."
+        ( IBoard
+            { iturn = -1,
+              ispaces =
+                [ [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0]
+                ],
+              iplayers =
+                [ [IPt 3 1, IPt 4 4],
+                  [IPt 0 4, IPt 0 0]
+                ]
+            }
+        )
+        (movePlayer cwPlayersIBoard4 (IPt 4 0) (IPt 3 1))
+    )
+
+mPUneven =
+  TestCase
+    ( assertEqual
+        "Assert that we can move a player on uneven ground."
+        ( IBoard
+            { iturn = -1,
+              ispaces =
+                [ [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0]
+                ],
+              iplayers =
+                [ [IPt 3 1, IPt 4 4],
+                  [IPt 0 4, IPt 0 0]
+                ]
+            }
+        )
+        (movePlayer cwPlayersIBoard4 (IPt 4 0) (IPt 3 1))
+    )
+
+mPAnywhere =
+  TestCase
+    ( assertEqual
+        "Assert that we can move a player anywhere on the board."
+        ( IBoard
+            { iturn = -1,
+              ispaces =
+                [ [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0]
+                ],
+              iplayers =
+                [ [IPt 3 1, IPt 4 4],
+                  [IPt 0 4, IPt 0 0]
+                ]
+            }
+        )
+        (movePlayer cwPlayersIBoard4 (IPt 4 0) (IPt 3 1))
+    )
+
+mPAnyAlt =
+  TestCase
+    ( assertEqual
+        "Assert that we can move a player to any non-wall altitude."
+        ( IBoard
+            { iturn = -1,
+              ispaces =
+                [ [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0]
+                ],
+              iplayers =
+                [ [IPt 3 1, IPt 4 4],
+                  [IPt 0 4, IPt 0 0]
+                ]
+            }
+        )
+        (movePlayer cwPlayersIBoard4 (IPt 4 0) (IPt 3 1))
+    )
+
+-- buildLvl Tests
+buildLvlTests =
+  TestList
+    [ TestLabel "Tiles can be built to Level 1." bLLvl1,
+      TestLabel "Tiles can be built to Level 2." bLLvl2,
+      TestLabel "Tiles can be built to Level 3." bLLvl3,
+      TestLabel "Tiles can be built into walls." bLWall,
+      TestLabel "We can build everywhere on the board." bLEverywhere
+    ]
+
+bLLvl1 =
+  TestCase
+    ( assertEqual
+        "Assert that we can build to level 1."
+        ( IBoard
+            { iturn = -1,
+              ispaces =
+                [ [1, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0]
+                ],
+              iplayers = []
+            }
+        )
+        (buildLvl gIBoardEmpty (IPt 0 0))
+    )
+
+bLLvl2 =
+  TestCase
+    ( assertEqual
+        "Assert that we can build to level 2."
+        ( IBoard
+            { iturn = -1,
+              ispaces =
+                [ [2, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0]
+                ],
+              iplayers = []
+            }
+        )
+        ( foldl
+            buildLvl
+            gIBoardEmpty
+            (replicate 2 (IPt 0 0))
+        )
+    )
+
+bLLvl3 =
+  TestCase
+    ( assertEqual
+        "Assert that we can build to level 3."
+        ( IBoard
+            { iturn = -1,
+              ispaces =
+                [ [3, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0]
+                ],
+              iplayers = []
+            }
+        )
+        ( foldl
+            buildLvl
+            gIBoardEmpty
+            (replicate 3 (IPt 0 0))
+        )
+    )
+
+
+bLWall =
+  TestCase
+    ( assertEqual
+        "Assert that we can build into walls."
+        ( IBoard
+            { iturn = -1,
+              ispaces =
+                [ [gIWallHeight, 0, 0, 0, 0],
+                  [0,            0, 0, 0, 0],
+                  [0,            0, 0, 0, 0],
+                  [0,            0, 0, 0, 0],
+                  [0,            0, 0, 0, 0]
+                ],
+              iplayers =
+                []
+            }
+        )
+        ( foldl
+            buildLvl
+            gIBoardEmpty
+            (replicate 4 (IPt 0 0))
+        )
+    )
+
+bLEverywhere =
+  TestCase
+    ( assertEqual
+        "Assert that we can build everywhere on an empty board."
+        ( IBoard
+            { iturn = -1,
+              ispaces =
+                [ [1, 1, 1, 1, 1],
+                  [1, 1, 1, 1, 1],
+                  [1, 1, 1, 1, 1],
+                  [1, 1, 1, 1, 1],
+                  [1, 1, 1, 1, 1]
+                ],
+              iplayers =
+                []
+            }
+        )
+        ( foldl
+            buildLvl
+            gIBoardEmpty
+            [ IPt
+                row
+                col
+              | row <- [0..(row gBrdBnd)],
+                col <- [0..(col gBrdBnd)]
+            ]
+        )
+    )
+
+-- Place Player Tests
+placePlayerTests =
+  TestList
+    [ TestLabel "Players can be placed in the top left." placePlayerTL,
+      TestLabel "Players can be placed in the top right." placePlayerTR,
+      TestLabel "Players can be placed in the bottom right." placePlayerBR,
+      TestLabel "Players can be placed in the bottom left." placePlayerBL
+    ]
+
+placePlayerTL =
+  TestCase
     ( assertEqual
         "Assert that we can place a player in the top left corner."
         cwPlayersIBoard1
         (placePlayer p1IBoard (IPt 0 0))
     )
 
-placePlayerTR = 
-  TestCase 
+placePlayerTR =
+  TestCase
     ( assertEqual
         "Assert that we can place a player in the top right corner."
         cwPlayersIBoard2
         (placePlayer cwPlayersIBoard1 (IPt 0 4))
     )
 
-placePlayerBL = 
-  TestCase 
+placePlayerBL =
+  TestCase
     ( assertEqual
         "Assert that we can place a player in the bottom left corner."
         cwPlayersIBoard3
         (placePlayer cwPlayersIBoard2 (IPt 4 4))
     )
 
-placePlayerBR = 
-  TestCase 
+placePlayerBR =
+  TestCase
     ( assertEqual
         "Assert that we can place a player in the bottom right corner."
         cwPlayersIBoard4
