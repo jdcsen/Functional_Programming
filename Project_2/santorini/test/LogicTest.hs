@@ -55,48 +55,57 @@ proxWall = TestList [TestLabel "Top Left Corner" proxWallTL,
                      TestLabel "Bottom Right Corner" proxWallBR]
 
 
-proxWallTL = TestCase (assertEqual
-                       "Assert that we get walls when we're in the top left corner."
-                       [
-                        Wall , Wall              , Wall             ,
-                        Wall , Player (IPt 0 0) 0, Space (IPt 0 1) 0,
-                        Wall , Space  (IPt 1 0) 0, Space (IPt 1 1) 0
-                       ]
-                       (getProx cwiseIBoard (IPt 0 0)))
+proxWallTL =
+  TestCase
+    ( assertEqual
+        "Assert that we get walls when we're in the top left corner."
+        [
+         Wall (IPt (-1) (-1)), Wall   (IPt (-1) 0)  , Wall  (IPt (-1) 1)  ,
+         Wall (IPt   0  (-1)), Player (IPt 0    0) 0, Space (IPt 0    1) 0,
+         Wall (IPt   1  (-1)), Space  (IPt 1    0) 0, Space (IPt 1    1) 0
+        ]
+        (getProx cwiseIBoard (IPt 0 0))
+    )
 
-proxWallTR = TestCase (assertEqual
-                       "Assert that we get walls when we're in the top right corner."
-                       [
-                        Wall             , Wall              , Wall,
-                        Space (IPt 0 3) 0, Player (IPt 0 4) 0, Wall,
-                        Space (IPt 1 3) 0, Space  (IPt 1 4) 0, Wall
-                       ]
-                       (getProx cwiseIBoard (IPt 0 4)))
+proxWallTR =
+  TestCase
+    ( assertEqual
+        "Assert that we get walls when we're in the top right corner."
+        [
+         Wall  (IPt (-1) 3)  , Wall   (IPt (-1) 4)  , Wall (IPt (-1) 5),
+         Space (IPt 0    3) 0, Player (IPt 0    4) 0, Wall (IPt 0    5),
+         Space (IPt 1    3) 0, Space  (IPt 1    4) 0, Wall (IPt 1    5)
+        ]
+        (getProx cwiseIBoard (IPt 0 4))
+    )
 
-proxWallBL = TestCase (assertEqual
-                       "Assert that we get walls when we're in the bottom left corner."
-                       [
-                        Space (IPt 3 3) 0, Space  (IPt 3 4) 0, Wall,
-                        Space (IPt 4 3) 0, Player (IPt 4 4) 0, Wall,
-                        Wall             , Wall              , Wall
-                       ]
-                       (getProx cwiseIBoard (IPt 4 4)))
+proxWallBL =
+  TestCase
+    ( assertEqual
+        "Assert that we get walls when we're in the bottom left corner."
+        [
+         Space (IPt 3 3) 0, Space  (IPt 3 4) 0, Wall (IPt 3 5),
+         Space (IPt 4 3) 0, Player (IPt 4 4) 0, Wall (IPt 4 5),
+         Wall  (IPt 5 3)  , Wall   (IPt 5 4)  , Wall (IPt 5 5)
+        ]
+        (getProx cwiseIBoard (IPt 4 4))
+    )
 
 proxWallBR = TestCase (assertEqual
                        "Assert that we get walls when we're in the bottom right corner."
                        [
-                        Wall , Space  (IPt 3 0) 0, Space (IPt 3 1) 0,
-                        Wall , Player (IPt 4 0) 0, Space (IPt 4 1) 0,
-                        Wall , Wall              , Wall
+                        Wall (IPt 3 (-1)), Space  (IPt 3 0) 0, Space (IPt 3 1) 0,
+                        Wall (IPt 4 (-1)), Player (IPt 4 0) 0, Space (IPt 4 1) 0,
+                        Wall (IPt 5 (-1)), Wall   (IPt 5 0)  , Wall  (IPt 5 1)
                        ]
                        (getProx cwiseIBoard (IPt 4 0)))
 
 proxTrap = TestCase (assertEqual
                      "Assert that we get walls when we're near capped towers."
                      [
-                      Wall , Wall              , Wall,
-                      Wall , Player (IPt 1 1) 0, Wall,
-                      Wall , Wall              , Wall
+                      Wall (IPt 0 0), Wall   (IPt 0 1)  , Wall (IPt 0 2),
+                      Wall (IPt 1 0), Player (IPt 1 1) 0, Wall (IPt 1 2),
+                      Wall (IPt 2 0), Wall   (IPt 2 1)  , Wall (IPt 2 2)
                      ]
                      (getProx trapIBoard (IPt 1 1)))
 

@@ -12,8 +12,8 @@ serDesTests = TestList [TestLabel "Serialization and Deserialization Tests" serD
 -- Serialization and deserialization tests.
 serDeserTests =
   TestList
-    [ TestLabel "Serialization: Empty" serEmpt,
-      TestLabel "Serialization: Garbage" serGarb,
+    [ TestLabel "Serialization: Garbage" serGarb,
+      TestLabel "Serialization: First Player (Empty)" serFpE,
       TestLabel "Serialization: First Player" serFp,
       TestLabel "Serialization: Second Player" serSp,
       TestLabel "Serialization: Provided Board" serPb,
@@ -21,13 +21,6 @@ serDeserTests =
       TestLabel "Serialization: Clockwise Players" serCw,
       TestLabel "Serialization: Counterclockwise Players" serCcw
     ]
-
-serEmpt =
-  TestCase
-    ( assertBool
-        "Asserts that deserialization fails on the empty string."
-        (isLeft $ fromBuffer "")
-    )
 
 serGarb =
   TestCase
@@ -37,17 +30,19 @@ serGarb =
     )
 
 -- Starting State: First Player
+serFpE =
+  TestCase
+    ( assertEqual
+        "Asserts that we properly deserialize a first-player starting case (Empty Case)."
+        ( Right gJBoardEmpty )
+        (fromBuffer "")
+    )
+
 serFp =
   TestCase
     ( assertEqual
         "Asserts that we properly deserialize a first-player starting case (SBracket Case)."
-        ( Right
-            JBoard
-              { turn = Nothing,
-                spaces = Nothing,
-                players = []
-              }
-        )
+        ( Right gJBoardEmpty )
         (fromBuffer "[]")
     )
 

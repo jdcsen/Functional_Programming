@@ -21,8 +21,8 @@ isFullBoard _ = True
 -- have to respect the boundaries of the board Array, anything out of range is a Wall
 getTok :: IBoard -> IPt -> BrdTok
 getTok brd pt
-  | out_of_range = Wall
-  | height >= gIWallHeight = Wall
+  | out_of_range = Wall pt
+  | height >= gIWallHeight = Wall pt
   | has_player = Player pt height
   | otherwise = Space pt height
   where
@@ -82,9 +82,16 @@ getMoveable brd pt = moveable
 -- us to easily fit walls into our getMoveable code, because a board height of
 -- 5 can be moved neither to nor from, given there's never a height of 4.
 getHeight :: BrdTok -> Int
-getHeight (Space pt height) = height
-getHeight (Player pt height) = height
-getHeight Wall = gIWallHeight
+getHeight (Space  _ height) = height
+getHeight (Player _ height) = height
+getHeight (Wall   _       ) = gIWallHeight
+
+-- Given a token, returns the position of that token.
+getPos :: BrdTok -> IPt
+getPos (Space  pt _) = pt
+getPos (Player pt _) = pt
+getPos (Wall   pt)   = pt
+
 
 -- Moves a player from a source location to a target location.
 -- If no player is at the source location, throws UndefinedElement

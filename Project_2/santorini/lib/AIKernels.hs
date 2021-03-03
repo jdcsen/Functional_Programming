@@ -1,4 +1,5 @@
 module AIKernels where
+import Control.Exception
 import SantoriniLogic
 import SantoriniRep
 
@@ -54,10 +55,14 @@ scorchedEarth brd = new_brd
     -- If we don't have one, you lost. Currently crashes.
     source = case movableP of
       [p1, p2] -> p1
-      [p1] -> p1
-    
-    move = head $ getMoveable brd source
-    
+      [p1]     -> p1
+      _        -> throw $ UndefinedElement "Scorched Earth: No movable player."
+
+    moveTargets = getMoveable brd source
+    move = case moveTargets of
+      (hmove : ms) -> hmove
+      _            -> throw $ UndefinedElement "Scorched Earth: No target move."
+
     target = case move of (Space pt h) -> pt
 
     -- Execute the move.

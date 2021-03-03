@@ -167,11 +167,11 @@ jPt2iPt (row : col : xs) = IPt (row -1) (col -1)
 --       I upgraded it and am now using it everywhere.
 data BrdTok where
   -- A given space, parameterized by location and height.
-  Space :: IPt -> Int -> BrdTok
+  Space  :: IPt -> Int -> BrdTok
   -- A player token, parameterized by location and height.
   Player :: IPt -> Int -> BrdTok
   -- A wall. Impassable, not buildable.
-  Wall :: BrdTok
+  Wall   :: IPt -> BrdTok
   deriving (Eq, Show)
 
 isSpace :: BrdTok -> Bool
@@ -183,7 +183,7 @@ isPlayer (Player _ _) = True
 isPlayer _ = False
 
 isWall :: BrdTok -> Bool
-isWall Wall = True
+isWall (Wall _) = True
 isWall _ = False
 
 -- TODO **********************************************************
