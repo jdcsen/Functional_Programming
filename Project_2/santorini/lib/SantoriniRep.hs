@@ -29,6 +29,58 @@ data IPt = IPt
   }
   deriving (Eq, Show)
 
+-- Card types
+data CardE =
+  Apollo     |
+  Artemis    |
+  Atlas      |
+  Demeter    |
+  Hephastus  |
+  Minotaur   |
+  Pan        |
+  Prometheus deriving (Enum, Show, Generic, Eq)
+
+-- Associate each enum with a string so we can search both ways, instead of
+-- having two conversion tables.
+gCardStPairs =
+  [ ("Apollo",     Apollo),
+    ("Artemis",    Artemis),
+    ("Atlas",      Atlas),
+    ("Demeter",    Demeter),
+    ("Hephastus,", Hephastus),
+    ("Minotaur",   Minotaur),
+    ("Pan",        Pan),
+    ("Prometheus", Prometheus)
+  ]
+
+-- Convert a card to a string. Fails on error.
+cardToStr :: CardE -> String
+cardToStr card = fromJust $ fst <$> find (\a -> snd a == card) gCardStPairs
+
+-- Convert a string to a card. Fails on error.
+strToCard :: String -> CardE
+strToCard card = fromJust $ snd <$> find (\a -> fst a == card) gCardStPairs
+
+
+-- Player structs, added as a result of the addition to cards.
+-- Have J and I versions.
+
+-- JPlayer matches the format of the input exactly
+data JPlayer = JPlayer
+  { card   :: String,
+    tokens :: Maybe [[Int]]
+  } deriving (Show, Generic, Eq)
+
+instance FromJSON JPlayer
+
+instance ToJSON JPlayer
+
+-- The IPlayer is identical to a JPlayer, but validated and 0 indexed.
+data IPlayer = IPlayer
+  { icard   :: CardE,
+    itokens :: [IPt]
+  } deriving (Show, Generic, Eq)
+
 -- Our board representation. Pretty simple, has a
 -- turn count, arrays for spaces and players.
 --
@@ -39,7 +91,7 @@ data IPt = IPt
 data JBoard = JBoard
   { turn :: Maybe Int,
     spaces :: Maybe [[Int]],
-    players :: [[[Int]]]
+    players :: [JPlayer]
   }
   deriving (Show, Generic, Eq)
 
@@ -62,7 +114,7 @@ gJBoardEmpty =
 data IBoard = IBoard
   { iturn :: Int,
     ispaces :: [[Int]],
-    iplayers :: [[IPt]]
+    iplayers :: [IPlayer]
   }
   deriving (Show, Generic, Eq)
 
@@ -86,7 +138,7 @@ fromJBoard
       rebuildWalls = map (map (\a -> if a == gJWallHeight then gIWallHeight else a))
       t = fromMaybe (iturn gIBoardEmpty) trn
       s = rebuildWalls $ fromMaybe (ispaces gIBoardEmpty) spc
-      p = map (map jPt2iPt) plrs
+      p = map fromJPlayer plrs
       iBoard =
         IBoard
           {
@@ -94,6 +146,35 @@ fromJBoard
             ispaces  = s,
             iplayers = p
           }
+
+-- Converts from a JPlayer to an IPlayer
+fromJPlayer :: JPlayer -> IPlayer
+fromJPlayer
+  JPlayer
+    { card = crd,
+      tokens = tkns
+    } = iPlayer
+  where
+    iPlayer =
+      IPlayer
+        { icard   = strToCard crd, --Default to Artemis
+          itokens = maybe [] (map jPt2iPt) tkns
+        }
+
+
+-- Converts from an IPlayer to a JPlayer
+toJPlayer :: IPlayer -> JPlayer
+toJPlayer
+  IPlayer
+    { icard = crd,
+      itokens = tkns
+    } = jPlayer
+  where
+    jPlayer =
+      JPlayer
+        { card   = cardToStr crd, --Default to Artemis
+          tokens = Just $ map iPt2jPt tkns
+        }
 
 -- Converts from our Internal Board rep to a JSON Board rep
 toJBoard :: IBoard -> JBoard
@@ -109,7 +190,7 @@ toJBoard
         JBoard
           { turn = if trn == -1 then Nothing else Just trn,
             spaces = if trn == -1 then Nothing else Just $ rebuildWalls spc,
-            players = map (map iPt2jPt) plrs
+            players = map toJPlayer plrs
           }
 
 -- In order to properly feed JSON back into other AIs, we need to flip the player
@@ -152,6 +233,15 @@ incrementTurn
             players = plrs
           }
 
+-- Error checking function to get our current player.
+getOurPlayer :: IBoard -> IPlayer
+getOurPlayer brd = players
+  where
+    players = case iplayers brd of
+      (pa: pas) -> pa
+      _         -> throw $ UndefinedElement "getOurPlayers: No players."
+
+
 -- TODO: Parameterize isFullBoard by board type and move it here.
 isFullJBoard :: JBoard -> Bool
 isFullJBoard
@@ -172,6 +262,8 @@ iPt2jPt bpt = [row bpt + 1, col bpt + 1]
 
 jPt2iPt :: [Int] -> IPt
 jPt2iPt (row : col : xs) = IPt (row -1) (col -1)
+
+
 
 -- Tokens for reading from a board in a robust manner.
 -- Turn decisions are often determined in terms of a

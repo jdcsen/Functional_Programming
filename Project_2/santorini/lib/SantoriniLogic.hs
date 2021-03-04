@@ -26,11 +26,12 @@ isStaticWon
       ispaces = _,
       iplayers = _
     } = False
+
 isStaticWon brd = isWon
-    where plrs = case iplayers brd of
-            [a,b] -> a ++ b
+    where plrTkns = case iplayers brd of
+            [a,b] -> itokens a ++ itokens b
             _ -> throw $ UndefinedElement "Tried to check the win state of a board with missing players."
-          locs = map (getHeight . getTok brd) plrs
+          locs = map (getHeight . getTok brd) plrTkns
           isWon = gMaxTower `elem`  locs
 
 -- Given a board and a point, returns the Board Token at that point. Does not
@@ -50,7 +51,7 @@ getTok brd pt
         (\a -> a pt > a gBrdBnd || a pt < 0)
         [row, col]
     ptelem = elem pt :: [IPt] -> Bool
-    has_player = any ptelem $ iplayers brd
+    has_player = any (ptelem . itokens) $ iplayers brd
     height =
       if not out_of_range
         then (ispaces brd !! row pt) !! col pt
@@ -112,18 +113,27 @@ getPos (Wall   pt)   = pt
 -- Moves a player from a source location to a target location.
 -- If no player is at the source location, throws UndefinedElement
 movePlayer :: IBoard -> (IPt, IPt) -> IBoard
-movePlayer brd tup = newBrd
+movePlayer brd (src, tgt) = newBrd
   where
-    src = fst tup
-    tgt = snd tup
-    players = head $ iplayers brd
+    oldPlayer = getOurPlayer brd
+    oldToks = concatMap itokens $ iplayers brd
     -- Ensure we have a player to move.
     vsrc =
-      if src `elem` players
+      if src `elem` oldToks
         then src
         else throw $ UndefinedElement "The source player does not exist."
-    -- Replace the players.
-    newPlayers = (tgt : delete vsrc players) : delete players (iplayers brd)
+
+    -- Replace the positions
+    newToks = tgt : delete vsrc oldToks
+    newPlayer =
+      IPlayer
+        { icard = icard oldPlayer,
+          itokens = newToks
+        }
+
+    -- Replace the player.
+    newPlayers = newPlayer : delete oldPlayer (iplayers brd)
+
     -- Rebuild the board.
     --   Note: functions for single element replacement? Does record syntax
     --         give us anything like that?
@@ -182,18 +192,29 @@ placePlayer brd loc = newBrd
       (Space loc ht) -> loc
       _ -> throw $ UndefinedElement "Tried to place a player on an invalid space."
 
-    -- Build the new player array.
-    --   Note: Currently, strictly matches arrays of size 1 and 2, so we fail
-    --         on other cases. There might be a better way to do this.
-    newP = case iplayers brd of
-      [] -> [[vloc]] :: [[IPt]]
-      [[p11]] -> [[vloc, p11]] :: [[IPt]]
-      [[p21, p22]] -> [[vloc], [p21, p22]] :: [[IPt]]
-      [[p11], [p21, p22]] -> [[vloc, p11], [p21, p22]] :: [[IPt]]
+    -- Grab the player.
+    oldP = case iplayers brd of
+      [] -> throw $ UndefinedElement "Tried to place a player with no player data."
+      [p1] -> p1
+      [p1, p2] -> p1
+
+    -- Append location.
+    newToks = loc : itokens oldP
+
+    -- Rebuild the player
+    newP =
+      IPlayer
+        { icard   = icard oldP,
+          itokens = newToks
+        }
+
+    -- Rebuild the player array.
+    newPlayers = newP : delete oldP (iplayers brd)
+
     -- Rebuild the board.
     newBrd =
       IBoard
         { iturn = iturn brd,
           ispaces = ispaces brd,
-          iplayers = newP
+          iplayers = newPlayers
         }

@@ -64,7 +64,7 @@ fromBufferStart buf
         }
   | otherwise = Left plrsErr
   where
-    plrsE = eitherDecode . BL.pack $ buf :: Either String [[[Int]]]
+    plrsE = eitherDecode . BL.pack $ buf :: Either String [JPlayer]
     plrsErr = fromLeft "" plrsE
     plrs = fromRight [] plrsE
 

@@ -48,16 +48,11 @@ cornerSetup brd = newBrd
 scorchedEarth :: IBoard -> IBoard
 scorchedEarth brd = new_brd
   where
-    -- Find players.
-    players = case iplayers brd of
-      (p : ps) -> p
-      _        -> throw $ UndefinedElement "Scorched Earth: No players."
-
-    pred = not . null . getMoveable brd :: IPt -> Bool
-
     -- Select the first movable player.
     -- If we don't have one, you lost. Currently crashes.
-    source = case filter pred players of
+    player = getOurPlayer brd
+    pred = not . null . getMoveable brd :: IPt -> Bool
+    source = case filter pred (itokens player) of
       (p1 : ps) -> p1 :: IPt
       _         -> throw $ UndefinedElement "Scorched Earth: No movable player."
 
