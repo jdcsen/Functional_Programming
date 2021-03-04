@@ -1,0 +1,4 @@
+#/bin/sh
+
+# TODO: Fix absolute paths.
+../utilities/santorini-linux/bin/run ../bin/santorini ../utilities/santorini-linux/bin/play-search

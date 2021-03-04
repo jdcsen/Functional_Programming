@@ -33,7 +33,7 @@ cornerSetup brd = newBrd
     br = IPt (row gBrdBnd) (col gBrdBnd)
     startingPts = [tl, tr, bl, br]
     -- TODO: isSpace
-    freeSpaces = dropWhile (not . isSpace . getTok brd) startingPts
+    freeSpaces = filter (isSpace . getTok brd) startingPts
     chosenSpaces = case freeSpaces of
       (s1 : s2 : ss) -> [s1, s2]
       _ -> error "Couldn't find a free space in cornerSetup"
@@ -70,5 +70,7 @@ scorchedEarth brd = new_brd
     -- Execute the move.
     moved_brd = movePlayer brd (source, target) :: IBoard
 
-    -- Build on the source location.
-    new_brd = buildLvl moved_brd source :: IBoard
+    -- Build on the source location, if we haven't won.
+    new_brd = if isStaticWon moved_brd
+              then moved_brd
+              else buildLvl moved_brd source

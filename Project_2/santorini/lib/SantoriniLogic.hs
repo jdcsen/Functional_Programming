@@ -17,6 +17,22 @@ isFullBoard
     } = False
 isFullBoard _ = True
 
+-- Determines whether or not the board has been statically won
+isStaticWon :: IBoard -> Bool
+-- Starting boards are never won.
+isStaticWon
+  IBoard
+    { iturn = -1,
+      ispaces = _,
+      iplayers = _
+    } = False
+isStaticWon brd = isWon
+    where plrs = case iplayers brd of
+            [a,b] -> a ++ b
+            _ -> throw $ UndefinedElement "Tried to check the win state of a board with missing players."
+          locs = map (getHeight . getTok brd) plrs
+          isWon = gMaxTower `elem`  locs
+
 -- Given a board and a point, returns the Board Token at that point. Does not
 -- have to respect the boundaries of the board Array, anything out of range is a Wall
 getTok :: IBoard -> IPt -> BrdTok
