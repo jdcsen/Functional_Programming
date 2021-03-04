@@ -40,33 +40,37 @@ cornerSetup brd = newBrd
     -- Place a player on the spaces.
     newBrd = foldl placePlayer brd chosenSpaces
 
+-- TODO: Kernel agnostic error checking wrapper.
+
 -- A pure gametime kernel that just moves the first player to the first available
 -- space, and then builds a tile on the space it moved from. When it loses a player,
 -- it just starts moving the other one.
 scorchedEarth :: IBoard -> IBoard
 scorchedEarth brd = new_brd
   where
-    -- Find movable players.
-    players = head $ iplayers brd
-    pred = not . null . getMoveable brd
-    movableP = filter pred players
+    -- Find players.
+    players = case iplayers brd of
+      (p : ps) -> p
+      _        -> throw $ UndefinedElement "Scorched Earth: No players."
+
+    pred = not . null . getMoveable brd :: IPt -> Bool
+    movableP = filter pred players :: [IPt]
 
     -- Select the first movable player.
     -- If we don't have one, you lost. Currently crashes.
     source = case movableP of
-      [p1, p2] -> p1
-      [p1]     -> p1
-      _        -> throw $ UndefinedElement "Scorched Earth: No movable player."
+      (p1 : ps) -> p1 :: IPt
+      _         -> throw $ UndefinedElement "Scorched Earth: No movable player."
 
-    moveTargets = getMoveable brd source
-    move = case moveTargets of
-      (hmove : ms) -> hmove
+    moveToks = getMoveable brd source :: [BrdTok]
+    moveTok = case moveToks of
+      (move : ms) -> move :: BrdTok
       _            -> throw $ UndefinedElement "Scorched Earth: No target move."
 
-    target = getPos move
+    target = getPos moveTok :: IPt
 
     -- Execute the move.
-    moved_brd = movePlayer brd (source, target)
+    moved_brd = movePlayer brd (source, target) :: IBoard
 
     -- Build on the source location.
-    new_brd = buildLvl moved_brd source
+    new_brd = buildLvl moved_brd source :: IBoard

@@ -12,4 +12,4 @@ main = do
   runTestTT serDesTests
   runTestTT logicTests
   runTestTT repTests
---  runTestTT kernelTests
+  runTestTT kernelTests
