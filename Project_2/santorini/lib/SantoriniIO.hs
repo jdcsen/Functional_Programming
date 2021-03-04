@@ -46,7 +46,7 @@ kernelPipeline kernel str
     valid = fromRight gJBoardEmpty parsed
 
     newStr =
-      toBuffer . flipPlayers . toJBoard
+      toBuffer . incrementTurn . flipPlayers . toJBoard
         . kernel
         . fromJBoard
         $ valid ::

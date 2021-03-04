@@ -54,16 +54,14 @@ scorchedEarth brd = new_brd
       _        -> throw $ UndefinedElement "Scorched Earth: No players."
 
     pred = not . null . getMoveable brd :: IPt -> Bool
-    movableP = filter pred players :: [IPt]
 
     -- Select the first movable player.
     -- If we don't have one, you lost. Currently crashes.
-    source = case movableP of
+    source = case filter pred players of
       (p1 : ps) -> p1 :: IPt
       _         -> throw $ UndefinedElement "Scorched Earth: No movable player."
 
-    moveToks = getMoveable brd source :: [BrdTok]
-    moveTok = case moveToks of
+    moveTok = case getMoveable brd source of
       (move : ms) -> move :: BrdTok
       _            -> throw $ UndefinedElement "Scorched Earth: No target move."
 

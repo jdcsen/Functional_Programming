@@ -131,6 +131,24 @@ flipPlayers
         JBoard
           { turn = trn,
             spaces = spc,
+            players = newPlrs
+          }
+
+-- Increment the turn number
+incrementTurn :: JBoard -> JBoard
+incrementTurn
+  JBoard
+    { turn = trn,
+      spaces = spc,
+      players = plrs
+    } = newBrd
+    where
+      -- TODO: I _KNOW_ there's a better way to do this.
+      newTrn = (\a->Just (a+1)) =<< trn
+      newBrd =
+        JBoard
+          { turn = newTrn,
+            spaces = spc,
             players = plrs
           }
 
