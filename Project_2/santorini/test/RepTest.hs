@@ -41,7 +41,7 @@ fromJsp2sp =
                   [1, 1, 1, 1, 1]
                 ],
               iplayers =
-                [ [IPt 1 1] ]
+                [ IPlayer { icard = Apollo, itokens = [IPt 1 1] }]
             }
 
         )
@@ -57,7 +57,7 @@ fromJsp2sp =
                       [1, 1, 1, 1, 1]
                     ],
                 players =
-                  [ [[2, 2]] ]
+                  [ JPlayer { card = "Apollo", tokens = Just [[2, 2]] }]
               }
         )
     )
@@ -77,8 +77,8 @@ fromJfe2fe =
                   [0, 0, 0, 0, 0]
                 ],
               iplayers =
-                [ [IPt 1 1, IPt 1 3],
-                  [IPt 3 1, IPt 3 3]
+                [ IPlayer { icard = Apollo, itokens = [IPt 1 1, IPt 1 3]},
+                  IPlayer { icard = Apollo, itokens = [IPt 3 1, IPt 3 3]}
                 ]
             }
         )
@@ -94,8 +94,8 @@ fromJfe2fe =
                       [0, 0, 0, 0, 0]
                     ],
                 players =
-                  [ [[2,2], [2,4]],
-                    [[4,2], [4,4]]
+                  [ JPlayer { card = "Apollo", tokens = Just [[2,2], [2,4]]},
+                    JPlayer { card = "Apollo", tokens = Just [[4,2], [4,4]]}
                   ]
               }
         )
@@ -116,8 +116,8 @@ fromJfu2fu =
                  [1, 1, 1, 1, 2]
                ],
              iplayers =
-               [ [IPt 3 1, IPt 3 3],
-                 [IPt 1 1, IPt 1 3]
+               [ IPlayer { icard = Apollo, itokens = [IPt 3 1, IPt 3 3]},
+                 IPlayer { icard = Apollo, itokens = [IPt 1 1, IPt 1 3]}
                ]
            }
        )
@@ -133,8 +133,8 @@ fromJfu2fu =
                      [1, 1, 1, 1, 2]
                    ],
                players =
-                 [ [[4,2], [4,4]],
-                   [[2,2], [2,4]]
+                 [ JPlayer { card = "Apollo", tokens = Just [[4,2], [4,4]]},
+                   JPlayer { card = "Apollo", tokens = Just [[2,2], [2,4]]}
                  ]
              }
        )
@@ -155,8 +155,8 @@ fromJWalls =
                  [iwh, iwh, iwh, iwh, iwh]
                ],
              iplayers =
-               [ [IPt 1 1, IPt 3 3],
-                 [IPt 3 1, IPt 1 3]
+               [ IPlayer { icard = Apollo, itokens = [IPt 1 1, IPt 3 3]},
+                 IPlayer { icard = Apollo, itokens = [IPt 3 1, IPt 1 3]}
                ]
            }
        )
@@ -172,8 +172,8 @@ fromJWalls =
                      [jwh, jwh, jwh, jwh, jwh]
                    ],
                players =
-                 [ [[2,2], [4,4]],
-                   [[4,2], [2,4]]
+                 [ JPlayer { card = "Apollo", tokens = Just [[2,2], [4,4]]},
+                   JPlayer { card = "Apollo", tokens = Just [[4,2], [2,4]]}
                  ]
              }
        )
@@ -210,7 +210,7 @@ toJsp2sp =
                     [1, 1, 1, 1, 1]
                   ],
               players =
-                [ [[2, 2]] ]
+                [ JPlayer { card = "Apollo", tokens = Just [[2, 2]] } ]
             }
         )
         ( toJBoard IBoard
@@ -223,7 +223,7 @@ toJsp2sp =
                   [1, 1, 1, 1, 1]
                 ],
               iplayers =
-                [ [IPt 1 1] ]
+                [ IPlayer { icard = Apollo, itokens = [IPt 1 1] } ]
             }
 
         )
@@ -245,8 +245,8 @@ toJfe2fe =
                     [0, 0, 0, 0, 0]
                   ],
               players =
-                [ [[2,2], [2,4]],
-                  [[4,2], [4,4]]
+                [ JPlayer { card = "Apollo", tokens = Just [[2,2], [2,4]]},
+                  JPlayer { card = "Apollo", tokens = Just [[4,2], [4,4]]}
                 ]
             }
         )
@@ -260,8 +260,8 @@ toJfe2fe =
                   [0, 0, 0, 0, 0]
                 ],
               iplayers =
-                [ [IPt 1 1, IPt 1 3],
-                  [IPt 3 1, IPt 3 3]
+                [ IPlayer { icard = Apollo, itokens = [IPt 1 1, IPt 1 3]},
+                  IPlayer { icard = Apollo, itokens = [IPt 3 1, IPt 3 3]}
                 ]
             }
         )
@@ -283,8 +283,8 @@ toJfu2fu =
                    [1, 1, 1, 1, 2]
                  ],
              players =
-               [ [[4,2], [4,4]],
-                 [[2,2], [2,4]]
+               [ JPlayer { card = "Apollo", tokens = Just [[4,2], [4,4]]},
+                 JPlayer { card = "Apollo", tokens = Just [[2,2], [2,4]]}
                ]
            }
        )
@@ -298,8 +298,8 @@ toJfu2fu =
                  [1, 1, 1, 1, 2]
                ],
              iplayers =
-               [ [IPt 3 1, IPt 3 3],
-                 [IPt 1 1, IPt 1 3]
+               [ IPlayer { icard = Apollo, itokens = [IPt 3 1, IPt 3 3]},
+                 IPlayer { icard = Apollo, itokens = [IPt 1 1, IPt 1 3]}
                ]
            }
        )
@@ -321,8 +321,8 @@ toJWalls =
                     [jwh, jwh, jwh, jwh, jwh]
                   ],
               players =
-                [ [[2, 2], [4, 4]],
-                  [[4, 2], [2, 4]]
+                [ JPlayer { card = "Apollo", tokens = Just [[2, 2], [4, 4]]},
+                  JPlayer { card = "Apollo", tokens = Just [[4, 2], [2, 4]]}
                 ]
             }
        )
@@ -336,8 +336,8 @@ toJWalls =
                  [iwh, iwh, iwh, iwh, iwh]
                ],
              iplayers =
-               [ [IPt 1 1, IPt 3 3],
-                 [IPt 3 1, IPt 1 3]
+               [ IPlayer { icard = Apollo, itokens = [IPt 1 1, IPt 3 3]},
+                 IPlayer { icard = Apollo, itokens = [IPt 3 1, IPt 1 3]}
                ]
            }
        )

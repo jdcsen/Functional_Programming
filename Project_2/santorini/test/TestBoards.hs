@@ -15,7 +15,7 @@ p2JBoard =
   JBoard
     { turn = Nothing,
       spaces = Nothing,
-      players = [[[1, 1], [2, 2]]]
+      players = [JPlayer { card = "Apollo", tokens = Just [[1, 1], [2, 2]]}]
     }
 p2IBoard = fromJBoard p1JBoard
 
@@ -34,8 +34,8 @@ provJBoard =
             [0, 0, 0, 1, 4]
           ],
       players =
-        [ [[2, 5], [3, 5]],
-          [[3, 4], [4, 4]]
+        [ JPlayer { card = "Apollo", tokens = Just [[2, 5], [3, 5]]},
+          JPlayer { card = "Apollo", tokens = Just [[3, 4], [4, 4]]}
         ]
     }
 provIBoard = fromJBoard provJBoard
@@ -56,8 +56,8 @@ emptJBoard =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ [[4, 4], [4, 5]],
-          [[5, 4], [5, 5]]
+        [ JPlayer { card = "Apollo", tokens = Just [[4, 4], [4, 5]]},
+          JPlayer { card = "Apollo", tokens = Just [[5, 4], [5, 5]]}
         ]
     }
 emptIBoard = fromJBoard emptJBoard
@@ -78,8 +78,8 @@ cwiseJBoard =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ [[1, 1], [5, 5]],
-          [[1, 5], [5, 1]]
+        [ JPlayer { card = "Apollo", tokens = Just [[1, 1], [5, 5]]},
+          JPlayer { card = "Apollo", tokens = Just [[1, 5], [5, 1]]}
         ]
     }
 cwiseIBoard = fromJBoard cwiseJBoard
@@ -100,8 +100,8 @@ ccwiseJBoard =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ [[5, 1], [1, 5]],
-          [[5, 5], [1, 1]]
+        [ JPlayer { card = "Apollo", tokens = Just [[5, 1], [1, 5]]},
+          JPlayer { card = "Apollo", tokens = Just [[5, 5], [1, 1]]}
         ]
     }
 ccwiseIBoard = fromJBoard ccwiseJBoard
@@ -119,8 +119,8 @@ trapJBoard =
             [4, 4, 4, 4, 4]
           ],
       players =
-        [ [[2, 2], [2, 4]],
-          [[4, 2], [4, 4]]
+        [ JPlayer { card = "Apollo", tokens = Just [[2, 2], [2, 4]]},
+          JPlayer { card = "Apollo", tokens = Just [[4, 2], [4, 4]]}
         ]
     }
 trapIBoard = fromJBoard trapJBoard
@@ -138,8 +138,8 @@ moundJBoard =
             [1, 1, 1, 1, 1]
           ],
       players =
-        [ [[2, 2], [2, 4]],
-          [[4, 2], [4, 4]]
+        [ JPlayer { card = "Apollo", tokens = Just [[2, 2], [2, 4]]},
+          JPlayer { card = "Apollo", tokens = Just [[4, 2], [4, 4]]}
         ]
     }
 moundIBoard = fromJBoard moundJBoard
@@ -157,8 +157,8 @@ btrapJBoard =
             [2, 2, 2, 2, 2]
           ],
       players =
-        [ [[2, 2], [2, 4]],
-          [[4, 2], [4, 4]]
+        [ JPlayer { card = "Apollo", tokens = Just [[2, 2], [2, 4]]},
+          JPlayer { card = "Apollo", tokens = Just [[4, 2], [4, 4]]}
         ]
     }
 btrapIBoard = fromJBoard trapJBoard
@@ -176,8 +176,8 @@ ramp2WinJBoard =
             [2, 2, 2, 2, 2]
           ],
       players =
-        [ [[2, 2], [2, 4]],
-          [[4, 2], [4, 4]]
+        [ JPlayer { card = "Apollo", tokens = Just [[2, 2], [2, 4]]},
+          JPlayer { card = "Apollo", tokens = Just [[4, 2], [4, 4]]}
         ]
     }
 ramp2WinIBoard = fromJBoard ramp2WinJBoard
@@ -195,8 +195,8 @@ ramp2BuildJBoard =
             [2, 2, 2, 2, 2]
           ],
       players =
-        [ [[2, 2], [2, 4]],
-          [[4, 2], [4, 4]]
+        [ JPlayer { card = "Apollo", tokens = Just [[2, 2], [2, 4]]},
+          JPlayer { card = "Apollo", tokens = Just [[4, 2], [4, 4]]}
         ]
     }
 ramp2BuildIBoard = fromJBoard ramp2BuildJBoard
@@ -215,8 +215,8 @@ p1WJBoard =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ [[1, 1], [2, 2]],
-          [[2, 1], [1, 2]]
+        [ JPlayer { card = "Apollo", tokens = Just [[1, 1], [2, 2]]},
+          JPlayer { card = "Apollo", tokens = Just [[2, 1], [1, 2]]}
         ]
     }
 p1WIBoard = fromJBoard p1WJBoard
@@ -235,8 +235,8 @@ p2WJBoard =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ [[2, 1], [1, 2]],
-          [[1, 1], [2, 2]]
+        [ JPlayer { card = "Apollo", tokens = Just [[2, 1], [1, 2]]},
+          JPlayer { card = "Apollo", tokens = Just [[1, 1], [2, 2]]}
         ]
     }
 p2WIBoard = fromJBoard p1WJBoard
@@ -255,7 +255,7 @@ cwPlayersJBoard1 =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ [[1, 1]] ]
+        [ JPlayer { card = "Apollo", tokens = Just [[1, 1]] }]
     }
 cwPlayersIBoard1 = fromJBoard cwPlayersJBoard1
 
@@ -271,7 +271,7 @@ cwPlayersJBoard2 =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ [[1, 5], [1, 1]] ]
+        [ JPlayer { card = "Apollo", tokens = Just [[1, 5], [1, 1]]} ]
     }
 cwPlayersIBoard2 = fromJBoard cwPlayersJBoard2
 
@@ -287,8 +287,8 @@ cwPlayersJBoard3 =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ [[5, 5]],
-          [[1, 5], [1, 1]]
+        [ JPlayer { card = "Apollo", tokens = Just [[5, 5]]},
+          JPlayer { card = "Apollo", tokens = Just [[1, 5], [1, 1]]}
         ]
     }
 cwPlayersIBoard3 = fromJBoard cwPlayersJBoard3
@@ -305,8 +305,8 @@ cwPlayersJBoard4 =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ [[5, 1], [5, 5]],
-          [[1, 5], [1, 1]]
+        [ JPlayer { card = "Apollo", tokens = Just [[5, 1], [5, 5]]},
+          JPlayer { card = "Apollo", tokens = Just [[1, 5], [1, 1]]}
         ]
     }
 cwPlayersIBoard4 = fromJBoard cwPlayersJBoard4

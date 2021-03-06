@@ -55,7 +55,7 @@ serSp =
             JBoard
               { turn = Nothing,
                 spaces = Nothing,
-                players = [[[2, 5], [3, 5]]]
+                players = [JPlayer { card = "Apollo", tokens = Just [[2, 5], [3, 5]]}]
               }
         )
         (fromBuffer "[[[2,5],[3,5]]]")

@@ -36,8 +36,8 @@ seM1B =
             [1, 0, 0, 0, 0]
           ],
         iplayers =
-          [ [IPt 3 0, IPt 4 4],
-            [IPt 0 4, IPt 0 0]
+          [ IPlayer { icard = Apollo, itokens = [IPt 3 0, IPt 4 4]},
+            IPlayer { icard = Apollo, itokens = [IPt 0 4, IPt 0 0]}
           ]
       }
   )
@@ -53,8 +53,8 @@ seM2B =
             [1, 0, 0, 0, 0]
           ],
         iplayers =
-          [ [IPt 2 0, IPt 4 4],
-            [IPt 0 4, IPt 0 0]
+          [ IPlayer { icard = Apollo, itokens = [IPt 2 0, IPt 4 4]},
+            IPlayer { icard = Apollo, itokens = [IPt 0 4, IPt 0 0]}
           ]
       }
   )
@@ -70,8 +70,8 @@ seM3B =
             [1, 0, 0, 0, 0]
           ],
         iplayers =
-          [ [IPt 1 0, IPt 4 4],
-            [IPt 0 4, IPt 0 0]
+          [ IPlayer { icard = Apollo, itokens = [IPt 1 0, IPt 4 4]},
+            IPlayer { icard = Apollo, itokens = [IPt 0 4, IPt 0 0]}
           ]
       }
   )
@@ -87,8 +87,8 @@ seM4B =
             [1, 0, 0, 0, 0]
           ],
         iplayers =
-          [ [IPt 0 1, IPt 4 4],
-            [IPt 0 4, IPt 0 0]
+          [ IPlayer { icard = Apollo, itokens = [IPt 0 1, IPt 4 4]},
+            IPlayer { icard = Apollo, itokens = [IPt 0 4, IPt 0 0]}
           ]
       }
   )
@@ -104,8 +104,8 @@ seM5B =
             [1, 0, 0, 0, 0]
           ],
         iplayers =
-          [ [IPt 0 2, IPt 4 4],
-            [IPt 0 4, IPt 0 0]
+          [ IPlayer { icard = Apollo, itokens = [IPt 0 2, IPt 4 4]},
+            IPlayer { icard = Apollo, itokens = [IPt 0 4, IPt 0 0]}
           ]
       }
   )

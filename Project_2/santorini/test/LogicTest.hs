@@ -280,8 +280,8 @@ mPFlat =
                   [0, 0, 0, 0, 0]
                 ],
               iplayers =
-                [ [IPt 3 1, IPt 4 4],
-                  [IPt 0 4, IPt 0 0]
+                [ IPlayer { icard = Apollo, itokens = [IPt 3 1, IPt 4 4]},
+                  IPlayer { icard = Apollo, itokens = [IPt 0 4, IPt 0 0]}
                 ]
             }
         )
@@ -302,8 +302,8 @@ mPUneven =
                   [0, 0, 0, 0, 0]
                 ],
               iplayers =
-                [ [IPt 3 1, IPt 4 4],
-                  [IPt 0 4, IPt 0 0]
+                [ IPlayer { icard = Apollo, itokens = [IPt 3 1, IPt 4 4]},
+                  IPlayer { icard = Apollo, itokens = [IPt 0 4, IPt 0 0]}
                 ]
             }
         )
@@ -324,8 +324,8 @@ mPAnywhere =
                   [0, 0, 0, 0, 0]
                 ],
               iplayers =
-                [ [IPt 3 1, IPt 4 4],
-                  [IPt 0 4, IPt 0 0]
+                [ IPlayer { icard = Apollo, itokens = [IPt 3 1, IPt 4 4]},
+                  IPlayer { icard = Apollo, itokens = [IPt 0 4, IPt 0 0]}
                 ]
             }
         )
@@ -346,8 +346,8 @@ mPAnyAlt =
                   [0, 0, 0, 0, 0]
                 ],
               iplayers =
-                [ [IPt 3 1, IPt 4 4],
-                  [IPt 0 4, IPt 0 0]
+                [ IPlayer { icard = Apollo, itokens = [IPt 3 1, IPt 4 4]},
+                  IPlayer { icard = Apollo, itokens = [IPt 0 4, IPt 0 0]}
                 ]
             }
         )
