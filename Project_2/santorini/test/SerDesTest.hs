@@ -13,7 +13,6 @@ serDesTests = TestList [TestLabel "Serialization and Deserialization Tests" serD
 serDeserTests =
   TestList
     [ TestLabel "Serialization: Garbage" serGarb,
-      TestLabel "Serialization: First Player (Empty)" serFpE,
       TestLabel "Serialization: First Player" serFp,
       TestLabel "Serialization: Second Player" serSp,
       TestLabel "Serialization: Provided Board" serPb,
@@ -29,21 +28,12 @@ serGarb =
         (isLeft $ fromBuffer "garbage!")
     )
 
--- Starting State: First Player
-serFpE =
-  TestCase
-    ( assertEqual
-        "Asserts that we properly deserialize a first-player starting case (Empty Case)."
-        ( Right gJBoardEmpty )
-        (fromBuffer "")
-    )
-
 serFp =
   TestCase
     ( assertEqual
         "Asserts that we properly deserialize a first-player starting case (SBracket Case)."
-        ( Right gJBoardEmpty )
-        (fromBuffer "[]")
+        ( Right p1JBoard )
+        (fromBuffer p1BoardStr)
     )
 
 -- Starting State: Second Player
@@ -51,14 +41,8 @@ serSp =
   TestCase
     ( assertEqual
         "Asserts that we properly deserialize a second-player starting case."
-        ( Right
-            JBoard
-              { turn = Nothing,
-                spaces = Nothing,
-                players = [JPlayer { card = "Apollo", tokens = Just [[2, 5], [3, 5]]}]
-              }
-        )
-        (fromBuffer "[[[2,5],[3,5]]]")
+        ( Right p2JBoard )
+        (fromBuffer p2BoardStr)
     )
 
 -- Provided Board:
@@ -74,7 +58,7 @@ serPb =
 serEb =
   TestCase
     ( assertEqual
-        "Asserts that we properly deserialize the board provided in the instructions."
+        "Asserts that we properly deserialize the Empty Board."
         (Right emptJBoard)
         (fromBuffer emptBoardStr)
     )
@@ -83,7 +67,7 @@ serEb =
 serCw =
   TestCase
     ( assertEqual
-        "Asserts that we properly deserialize the board provided in the instructions."
+        "Asserts that we properly deserialize The Clockwise board."
         (Right cwiseJBoard)
         (fromBuffer cwiseBoardStr)
     )
@@ -92,7 +76,7 @@ serCw =
 serCcw =
   TestCase
     ( assertEqual
-        "Asserts that we properly deserialize the board provided in the instructions."
+        "Asserts that we properly deserialize the counter-clockwise JBoard."
         (Right ccwiseJBoard)
         (fromBuffer ccwiseBoardStr)
     )

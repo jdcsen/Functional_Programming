@@ -3,28 +3,48 @@ import SantoriniRep
 -- Some standard boards, for testing.
 
 -- Player 1 Setup
-p1BoardStr = "[]"
+p1BoardStr =
+  "[{\"card\":\"Artemis\"}, \
+   \{\"card\":\"Prometheus\"}]"
 
-p1JBoard = gJBoardEmpty
+p1JBoard =
+  JBoard
+    { turn = Nothing,
+      spaces = Nothing,
+      players = [ JPlayer {card = "Artemis", tokens = Nothing},
+                  JPlayer {card = "Prometheus", tokens = Nothing}
+                ]
+    }
 p1IBoard = fromJBoard p1JBoard
 
 -- Player 2 Setup
-p2BoardStr = "[[[1,1],[2,2]]]"
+p2BoardStr = "[{\"card\":\"Prometheus\"}, \
+              \{\"card\":\"Artemis\",\"tokens\":[[2,3],[4,4]]}]"
 
 p2JBoard =
   JBoard
     { turn = Nothing,
       spaces = Nothing,
-      players = [JPlayer { card = "Apollo", tokens = Just [[1, 1], [2, 2]]}]
+      players = [ JPlayer { card = "Prometheus", tokens = Nothing},
+                  JPlayer { card = "Artemis", tokens = Just [[2, 3], [4, 4]]}
+                ]
     }
 p2IBoard = fromJBoard p1JBoard
 
 -- One of the provided boards.
-provBoardStr = "{\"players\":[[[2,5],[3,5]],[[3,4],[4,4]]], \"spaces\":[[0,0,0,0,2],[1,1,2,0,0],[1,0,0,3,0],[0,0,3,0,0],[0,0,0,1,4]], \"turn\":19}"
+provBoardStr =
+    "{\"players\":[{\"card\":\"Artemis\",\"tokens\":[[2,3],[4,4]]},\
+                  \{\"card\":\"Prometheus\",\"tokens\":[[2,5],[3,5]]}],\
+    \ \"spaces\":[[0,0,0,0,2],\
+                 \[1,1,2,0,0],\
+                 \[1,0,0,3,0],\
+                 \[0,0,3,0,0],\
+                 \[0,0,0,1,4]],\
+    \ \"turn\":18}"
 
 provJBoard =
   JBoard
-    { turn = Just 19,
+    { turn = Just 18,
       spaces =
         Just
           [ [0, 0, 0, 0, 2],
@@ -34,15 +54,23 @@ provJBoard =
             [0, 0, 0, 1, 4]
           ],
       players =
-        [ JPlayer { card = "Apollo", tokens = Just [[2, 5], [3, 5]]},
-          JPlayer { card = "Apollo", tokens = Just [[3, 4], [4, 4]]}
+        [ JPlayer { card = "Artemis", tokens = Just [[2, 3], [4, 4]]},
+          JPlayer { card = "Prometheus", tokens = Just [[2, 5], [3, 5]]}
         ]
     }
 provIBoard = fromJBoard provJBoard
 
 -- An empty board, with the four players clustered in the
 -- bottom left-hand corner.
-emptBoardStr = "{\"players\":[[[4,4],[4,5]],[[5,4],[5,5]]], \"spaces\":[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]], \"turn\":1}"
+emptBoardStr =
+  "{\"players\":[{\"card\":\"Apollo\",\"tokens\":[[4,4],[4,5]]},\
+                \{\"card\":\"Artemis\",\"tokens\":[[5,4],[5,5]]}],\
+   \ \"spaces\":[[0,0,0,0,0],\
+                \[0,0,0,0,0],\
+                \[0,0,0,0,0],\
+                \[0,0,0,0,0],\
+                \[0,0,0,0,0]],\
+   \ \"turn\":1}"
 
 emptJBoard =
   JBoard
@@ -57,14 +85,22 @@ emptJBoard =
           ],
       players =
         [ JPlayer { card = "Apollo", tokens = Just [[4, 4], [4, 5]]},
-          JPlayer { card = "Apollo", tokens = Just [[5, 4], [5, 5]]}
+          JPlayer { card = "Artemis", tokens = Just [[5, 4], [5, 5]]}
         ]
     }
 emptIBoard = fromJBoard emptJBoard
 
 -- An empty board, where the player positions are all in the corners, listed
 -- alternatingly by player and clockwise.
-cwiseBoardStr = "{\"players\":[[[1,1],[5,5]],[[1,5],[5,1]]], \"spaces\":[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]], \"turn\":1}"
+cwiseBoardStr =
+  "{\"players\":[{\"card\":\"Apollo\",\"tokens\":[[1,1],[5,5]]},\
+                \{\"card\":\"Artemis\",\"tokens\":[[1,5],[5,1]]}],\
+   \ \"spaces\":[[0,0,0,0,0],\
+                \[0,0,0,0,0],\
+                \[0,0,0,0,0],\
+                \[0,0,0,0,0],\
+                \[0,0,0,0,0]],\
+   \ \"turn\":1}"
 
 cwiseJBoard =
   JBoard
@@ -79,14 +115,22 @@ cwiseJBoard =
           ],
       players =
         [ JPlayer { card = "Apollo", tokens = Just [[1, 1], [5, 5]]},
-          JPlayer { card = "Apollo", tokens = Just [[1, 5], [5, 1]]}
+          JPlayer { card = "Artemis", tokens = Just [[1, 5], [5, 1]]}
         ]
     }
 cwiseIBoard = fromJBoard cwiseJBoard
 
 -- An empty board, where the player positions are all in the corners, listed
 -- alternatingly by player and counter-clockwise.
-ccwiseBoardStr = "{\"players\":[[[5,1],[1,5]],[[5,5],[1,1]]], \"spaces\":[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]], \"turn\":1}"
+ccwiseBoardStr =
+  "{\"players\":[{\"card\":\"Apollo\",\"tokens\":[[5,1],[1,5]]},\
+                \{\"card\":\"Artemis\",\"tokens\":[[5,5],[1,1]]}],\
+   \ \"spaces\":[[0,0,0,0,0],\
+                \[0,0,0,0,0],\
+                \[0,0,0,0,0],\
+                \[0,0,0,0,0],\
+                \[0,0,0,0,0]],\
+   \ \"turn\":1}"
 
 ccwiseJBoard =
   JBoard
@@ -101,7 +145,7 @@ ccwiseJBoard =
           ],
       players =
         [ JPlayer { card = "Apollo", tokens = Just [[5, 1], [1, 5]]},
-          JPlayer { card = "Apollo", tokens = Just [[5, 5], [1, 1]]}
+          JPlayer { card = "Artemis", tokens = Just [[5, 5], [1, 1]]}
         ]
     }
 ccwiseIBoard = fromJBoard ccwiseJBoard
@@ -120,7 +164,7 @@ trapJBoard =
           ],
       players =
         [ JPlayer { card = "Apollo", tokens = Just [[2, 2], [2, 4]]},
-          JPlayer { card = "Apollo", tokens = Just [[4, 2], [4, 4]]}
+          JPlayer { card = "Artemis", tokens = Just [[4, 2], [4, 4]]}
         ]
     }
 trapIBoard = fromJBoard trapJBoard
@@ -139,7 +183,7 @@ moundJBoard =
           ],
       players =
         [ JPlayer { card = "Apollo", tokens = Just [[2, 2], [2, 4]]},
-          JPlayer { card = "Apollo", tokens = Just [[4, 2], [4, 4]]}
+          JPlayer { card = "Artemis", tokens = Just [[4, 2], [4, 4]]}
         ]
     }
 moundIBoard = fromJBoard moundJBoard
@@ -158,7 +202,7 @@ btrapJBoard =
           ],
       players =
         [ JPlayer { card = "Apollo", tokens = Just [[2, 2], [2, 4]]},
-          JPlayer { card = "Apollo", tokens = Just [[4, 2], [4, 4]]}
+          JPlayer { card = "Artemis", tokens = Just [[4, 2], [4, 4]]}
         ]
     }
 btrapIBoard = fromJBoard trapJBoard
@@ -177,7 +221,7 @@ ramp2WinJBoard =
           ],
       players =
         [ JPlayer { card = "Apollo", tokens = Just [[2, 2], [2, 4]]},
-          JPlayer { card = "Apollo", tokens = Just [[4, 2], [4, 4]]}
+          JPlayer { card = "Artemis", tokens = Just [[4, 2], [4, 4]]}
         ]
     }
 ramp2WinIBoard = fromJBoard ramp2WinJBoard
@@ -196,7 +240,7 @@ ramp2BuildJBoard =
           ],
       players =
         [ JPlayer { card = "Apollo", tokens = Just [[2, 2], [2, 4]]},
-          JPlayer { card = "Apollo", tokens = Just [[4, 2], [4, 4]]}
+          JPlayer { card = "Artemis", tokens = Just [[4, 2], [4, 4]]}
         ]
     }
 ramp2BuildIBoard = fromJBoard ramp2BuildJBoard
@@ -216,7 +260,7 @@ p1WJBoard =
           ],
       players =
         [ JPlayer { card = "Apollo", tokens = Just [[1, 1], [2, 2]]},
-          JPlayer { card = "Apollo", tokens = Just [[2, 1], [1, 2]]}
+          JPlayer { card = "Artemis", tokens = Just [[2, 1], [1, 2]]}
         ]
     }
 p1WIBoard = fromJBoard p1WJBoard
@@ -236,7 +280,7 @@ p2WJBoard =
           ],
       players =
         [ JPlayer { card = "Apollo", tokens = Just [[2, 1], [1, 2]]},
-          JPlayer { card = "Apollo", tokens = Just [[1, 1], [2, 2]]}
+          JPlayer { card = "Artemis", tokens = Just [[1, 1], [2, 2]]}
         ]
     }
 p2WIBoard = fromJBoard p1WJBoard
@@ -255,7 +299,9 @@ cwPlayersJBoard1 =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ JPlayer { card = "Apollo", tokens = Just [[1, 1]] }]
+        [ JPlayer { card = "Artemis", tokens = Just [[1, 1]] },
+          JPlayer { card = "Prometheus", tokens = Nothing }
+        ]
     }
 cwPlayersIBoard1 = fromJBoard cwPlayersJBoard1
 
@@ -271,9 +317,30 @@ cwPlayersJBoard2 =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ JPlayer { card = "Apollo", tokens = Just [[1, 5], [1, 1]]} ]
+        [ JPlayer { card = "Artemis", tokens = Just [[1, 5], [1, 1]]},
+          JPlayer { card = "Prometheus", tokens = Nothing }
+        ]
     }
 cwPlayersIBoard2 = fromJBoard cwPlayersJBoard2
+
+-- CWBoard: Flip players so Prometheus is placing.
+cwPlayersJBoard2Flip =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ JPlayer { card = "Prometheus", tokens = Nothing },
+          JPlayer { card = "Artemis", tokens = Just [[1, 5], [1, 1]]}
+        ]
+    }
+cwPlayersIBoard2Flip = fromJBoard cwPlayersJBoard2Flip
 
 cwPlayersJBoard3 =
   JBoard
@@ -287,8 +354,8 @@ cwPlayersJBoard3 =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ JPlayer { card = "Apollo", tokens = Just [[5, 5]]},
-          JPlayer { card = "Apollo", tokens = Just [[1, 5], [1, 1]]}
+        [ JPlayer { card = "Prometheus", tokens = Just [[5, 5]]},
+          JPlayer { card = "Artemis", tokens = Just [[1, 5], [1, 1]]}
         ]
     }
 cwPlayersIBoard3 = fromJBoard cwPlayersJBoard3
@@ -305,8 +372,8 @@ cwPlayersJBoard4 =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ JPlayer { card = "Apollo", tokens = Just [[5, 1], [5, 5]]},
-          JPlayer { card = "Apollo", tokens = Just [[1, 5], [1, 1]]}
+        [ JPlayer { card = "Prometheus", tokens = Just [[5, 1], [5, 5]]},
+          JPlayer { card = "Artemis", tokens = Just [[1, 5], [1, 1]]}
         ]
     }
 cwPlayersIBoard4 = fromJBoard cwPlayersJBoard4

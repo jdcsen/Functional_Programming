@@ -116,7 +116,7 @@ movePlayer :: IBoard -> (IPt, IPt) -> IBoard
 movePlayer brd (src, tgt) = newBrd
   where
     oldPlayer = getOurPlayer brd
-    oldToks = concatMap itokens $ iplayers brd
+    oldToks = itokens oldPlayer
     -- Ensure we have a player to move.
     vsrc =
       if src `elem` oldToks
