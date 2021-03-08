@@ -1,4 +1,4 @@
 #!/bin/sh
 
 # TODO: Fix absolute paths.
-../utilities/santorini-linux/bin/run ../utilities/santorini-linux/bin/play-random ../bin/santorini 
+../utilities/santorini-cards-linux/bin/run --cards Apollo Pan ../utilities/santorini-cards-linux/bin/play-random ../bin/santorini

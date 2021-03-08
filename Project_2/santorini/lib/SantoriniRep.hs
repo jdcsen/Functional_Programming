@@ -73,7 +73,9 @@ data JPlayer = JPlayer
 
 instance FromJSON JPlayer
 
-instance ToJSON JPlayer
+instance ToJSON JPlayer where
+  toJSON = genericToJSON defaultOptions
+    { omitNothingFields = True }
 
 -- The IPlayer is identical to a JPlayer, but validated and 0 indexed.
 data IPlayer = IPlayer
@@ -155,10 +157,11 @@ fromJPlayer
       tokens = tkns
     } = iPlayer
   where
+    mappedToks = maybe [] (map jPt2iPt) tkns
     iPlayer =
       IPlayer
         { icard   = strToCard crd, --Default to Artemis
-          itokens = maybe [] (map jPt2iPt) tkns
+          itokens = mappedToks
         }
 
 
@@ -170,10 +173,13 @@ toJPlayer
       itokens = tkns
     } = jPlayer
   where
+    mappedToks = map iPt2jPt tkns
+    newToks = case mappedToks of [] -> Nothing
+                                 _  -> Just mappedToks
     jPlayer =
       JPlayer
         { card   = cardToStr crd, --Default to Artemis
-          tokens = Just $ map iPt2jPt tkns
+          tokens = newToks
         }
 
 -- Converts from our Internal Board rep to a JSON Board rep
