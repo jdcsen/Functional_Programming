@@ -218,3 +218,24 @@ placePlayer brd loc = newBrd
           ispaces = ispaces brd,
           iplayers = newPlayers
         }
+
+-- Swaps two player locations.
+-- If there aren't players at both locations, throws UndefinedElement
+swapPlayer :: IBoard -> (IPt, IPt) -> IBoard
+swapPlayer brd (p1, p2) = brd
+
+-- Moves a player, pushing the second player directly backwards.
+-- NOTE: Because of the mechanics of this transformation, this operation has
+--       slightly tighter constraints than all of our other board mutation methods.
+--       Players are required to be directly adjacent in order to push other players.
+--       This is required because a movement that was the result of a push is
+--       not a move, but rather a "force". Both movements must be applied atomically,
+--       so we don't encounter a false "win" state mid-mutation. The adjacency
+--       requirement is required to determine the direction of the force.
+--
+--       If the players are not adjacent, throws UndefinedElement.
+--
+--       If either the move or the force move is fundamentally invalid (i.e: a
+--       movement to another player or a wall), throws UndefinedElement
+pushPlayer :: IBoard -> (IPt, IPt) -> IBoard
+pushPlayer brd (p1, p2) = brd

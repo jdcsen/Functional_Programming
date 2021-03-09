@@ -373,7 +373,369 @@ cwPlayersJBoard4 =
           ],
       players =
         [ JPlayer { card = "Prometheus", tokens = Just [[5, 1], [5, 5]]},
-          JPlayer { card = "Artemis", tokens = Just [[1, 5], [1, 1]]}
+          JPlayer { card = "Artemis",    tokens = Just [[1, 5], [1, 1]]}
         ]
     }
 cwPlayersIBoard4 = fromJBoard cwPlayersJBoard4
+
+preSwapJBoard =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [3, 0, 0, 0, 2]
+          ],
+      players =
+        [ JPlayer { card = "Prometheus", tokens = Just [[5, 1], [5, 5]]},
+          JPlayer { card = "Artemis",    tokens = Just [[1, 5], [1, 1]]}
+        ]
+    }
+preSwapIBoard = fromJBoard preSwapJBoard
+
+player11SwapJBoard =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [3, 0, 0, 0, 2]
+          ],
+      players =
+        [ JPlayer { card = "Prometheus", tokens = Just [[1, 5], [5, 5]]},
+          JPlayer { card = "Artemis",    tokens = Just [[5, 1], [1, 1]]}
+        ]
+    }
+
+player11SwapIBoard = fromJBoard player11SwapJBoard
+
+player22SwapJBoard =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [3, 0, 0, 0, 2]
+          ],
+      players =
+        [ JPlayer { card = "Prometheus", tokens = Just [[5, 1], [1, 1]]},
+          JPlayer { card = "Artemis",    tokens = Just [[1, 5], [5, 5]]}
+        ]
+    }
+
+player22SwapIBoard = fromJBoard player22SwapJBoard
+
+player12SwapJBoard =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [3, 0, 0, 0, 2]
+          ],
+      players =
+        [ JPlayer { card = "Prometheus", tokens = Just [[1, 1], [5, 5]]},
+          JPlayer { card = "Artemis",    tokens = Just [[1, 5], [5, 1]]}
+        ]
+    }
+player12SwapIBoard = fromJBoard player12SwapJBoard
+
+player21SwapJBoard =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [3, 0, 0, 0, 2]
+          ],
+      players =
+        [ JPlayer { card = "Prometheus", tokens = Just [[5, 1], [1, 5]]},
+          JPlayer { card = "Artemis",    tokens = Just [[5, 5], [1, 1]]}
+        ]
+    }
+player21SwapIBoard = fromJBoard player21SwapJBoard
+
+prePushJBoardFlat =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ JPlayer { card = "Minotaur", tokens = Just [[2, 2], [3, 3]]},
+          JPlayer { card = "Artemis",  tokens = Just [[3, 2], [2, 3]]}
+        ]
+    }
+prePushIBoardFlat = fromJBoard prePushJBoardFlat
+
+pushUpJBoardFlat =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ JPlayer { card = "Minotaur", tokens = Just [[2, 2], [2, 3]]},
+          JPlayer { card = "Artemis",  tokens = Just [[3, 2], [1, 3]]}
+        ]
+    }
+pushUpIBoardFlat = fromJBoard pushUpJBoardFlat
+
+pushRightJBoardFlat =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ JPlayer { card = "Minotaur", tokens = Just [[2, 3], [3, 3]]},
+          JPlayer { card = "Artemis",  tokens = Just [[3, 2], [2, 4]]}
+        ]
+    }
+pushRightIBoardFlat = fromJBoard pushRightJBoardFlat
+
+pushLeftJBoardFlat =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ JPlayer { card = "Minotaur", tokens = Just [[2, 2], [3, 2]]},
+          JPlayer { card = "Artemis",  tokens = Just [[3, 1], [2, 3]]}
+        ]
+    }
+pushLeftIBoardFlat = fromJBoard pushLeftJBoardFlat
+
+pushDownJBoardFlat =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ JPlayer { card = "Minotaur", tokens = Just [[3, 2], [3, 3]]},
+          JPlayer { card = "Artemis",  tokens = Just [[4, 2], [2, 3]]}
+        ]
+    }
+pushDownIBoardFlat = fromJBoard pushDownJBoardFlat
+
+prePushJBoardRamp =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 3, 0, 0],
+            [0, 3, 2, 1, 0],
+            [3, 2, 1, 0, 0],
+            [0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ JPlayer { card = "Minotaur", tokens = Just [[2, 2], [3, 3]]},
+          JPlayer { card = "Artemis",  tokens = Just [[3, 2], [2, 3]]}
+        ]
+    }
+prePushIBoardRamp = fromJBoard prePushJBoardRamp
+
+pushUpJBoardRamp =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 3, 0, 0],
+            [0, 3, 2, 1, 0],
+            [3, 2, 1, 0, 0],
+            [0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ JPlayer { card = "Minotaur", tokens = Just [[2, 2], [2, 3]]},
+          JPlayer { card = "Artemis",  tokens = Just [[3, 2], [1, 3]]}
+        ]
+    }
+pushUpIBoardRamp = fromJBoard pushUpJBoardRamp
+
+pushRightJBoardRamp =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 3, 0, 0],
+            [0, 3, 2, 1, 0],
+            [3, 2, 1, 0, 0],
+            [0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ JPlayer { card = "Minotaur", tokens = Just [[2, 3], [3, 3]]},
+          JPlayer { card = "Artemis",  tokens = Just [[3, 2], [2, 4]]}
+        ]
+    }
+pushRightIBoardRamp = fromJBoard pushRightJBoardRamp
+
+pushLeftJBoardRamp =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 3, 0, 0],
+            [0, 3, 2, 1, 0],
+            [3, 2, 1, 0, 0],
+            [0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ JPlayer { card = "Minotaur", tokens = Just [[2, 2], [3, 2]]},
+          JPlayer { card = "Artemis",  tokens = Just [[3, 1], [2, 3]]}
+        ]
+    }
+pushLeftIBoardRamp = fromJBoard pushLeftJBoardRamp
+
+pushDownJBoardRamp =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 3, 0, 0],
+            [0, 3, 2, 1, 0],
+            [3, 2, 1, 0, 0],
+            [0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ JPlayer { card = "Minotaur", tokens = Just [[3, 2], [3, 3]]},
+          JPlayer { card = "Artemis",  tokens = Just [[4, 2], [2, 3]]}
+        ]
+    }
+pushDownIBoardRamp = fromJBoard pushDownJBoardRamp
+
+prePushJBoardCliff =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 0],
+            [0, 2, 3, 1, 0],
+            [3, 1, 2, 0, 0],
+            [0, 3, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ JPlayer { card = "Minotaur", tokens = Just [[2, 2], [3, 3]]},
+          JPlayer { card = "Artemis",  tokens = Just [[3, 2], [2, 3]]}
+        ]
+    }
+prePushIBoardCliff = fromJBoard prePushJBoardCliff
+
+pushUpJBoardCliff =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 0],
+            [0, 2, 3, 1, 0],
+            [3, 1, 2, 0, 0],
+            [0, 3, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ JPlayer { card = "Minotaur", tokens = Just [[2, 2], [2, 3]]},
+          JPlayer { card = "Artemis",  tokens = Just [[3, 2], [1, 3]]}
+        ]
+    }
+pushUpIBoardCliff = fromJBoard pushUpJBoardCliff
+
+pushRightJBoardCliff =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 0],
+            [0, 2, 3, 1, 0],
+            [3, 1, 2, 0, 0],
+            [0, 3, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ JPlayer { card = "Minotaur", tokens = Just [[2, 3], [3, 3]]},
+          JPlayer { card = "Artemis",  tokens = Just [[3, 2], [2, 4]]}
+        ]
+    }
+pushRightIBoardCliff = fromJBoard pushRightJBoardCliff
+
+pushLeftJBoardCliff =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 0],
+            [0, 2, 3, 1, 0],
+            [3, 1, 2, 0, 0],
+            [0, 3, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ JPlayer { card = "Minotaur", tokens = Just [[2, 2], [3, 2]]},
+          JPlayer { card = "Artemis",  tokens = Just [[3, 1], [2, 3]]}
+        ]
+    }
+pushLeftIBoardCliff = fromJBoard pushLeftJBoardCliff
+
+pushDownJBoardCliff =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 0],
+            [0, 2, 3, 1, 0],
+            [3, 1, 2, 0, 0],
+            [0, 3, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ JPlayer { card = "Minotaur", tokens = Just [[3, 2], [3, 3]]},
+          JPlayer { card = "Artemis",  tokens = Just [[4, 2], [2, 3]]}
+        ]
+    }
+pushDownIBoardCliff = fromJBoard pushDownJBoardCliff
