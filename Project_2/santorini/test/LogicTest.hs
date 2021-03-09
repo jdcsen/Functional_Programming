@@ -648,7 +648,9 @@ pushPlayerTests =
       TestLabel "We can push a player up off a cliff." pushUpCliff,
       TestLabel "We can push a player right off a cliff." pushRightCliff,
       TestLabel "We can push a player left up a cliff." pushLeftCliff,
-      TestLabel "We can push a player down up a cliff." pushDownCliff
+      TestLabel "We can push a player down up a cliff." pushDownCliff,
+      TestLabel "We can push a player left and up." pushLUDiag,
+      TestLabel "We can push a player right and up." pushRUDiag
     ]
 
 pushUpFlat =
@@ -745,4 +747,20 @@ pushDownCliff =
         "Assert that we can push a player down, up a cliff."
         pushDownIBoardCliff
         (pushPlayer prePushIBoardCliff (IPt 2 2, IPt 3 2))
+    )
+
+pushLUDiag =
+  TestCase
+    ( assertEqual
+        "Assert that we can push a player left and up."
+        pushLUIBoardDiag
+        (pushPlayer prePushIBoardDiag (IPt 3 3, IPt 2 2))
+    )
+
+pushRUDiag =
+  TestCase
+    ( assertEqual
+        "Assert that we can push a player right and up."
+        pushRUIBoardDiag
+        (pushPlayer prePushIBoardDiag (IPt 3 3, IPt 4 2))
     )

@@ -739,3 +739,57 @@ pushDownJBoardCliff =
         ]
     }
 pushDownIBoardCliff = fromJBoard pushDownJBoardCliff
+
+prePushJBoardDiag =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ JPlayer { card = "Minotaur", tokens = Just [[1, 3], [3, 3]]},
+          JPlayer { card = "Artemis",  tokens = Just [[2, 2], [4, 2]]}
+        ]
+    }
+prePushIBoardDiag = fromJBoard prePushJBoardDiag
+
+pushLUJBoardDiag =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ JPlayer { card = "Minotaur", tokens = Just [[1, 3], [2, 2]]},
+          JPlayer { card = "Artemis",  tokens = Just [[1, 1], [4, 2]]}
+        ]
+    }
+pushLUIBoardDiag = fromJBoard pushLUJBoardDiag
+
+pushRUJBoardDiag =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ JPlayer { card = "Minotaur", tokens = Just [[1, 3], [4, 2]]},
+          JPlayer { card = "Artemis",  tokens = Just [[2, 2], [5, 1]]}
+        ]
+    }
+pushRUIBoardDiag = fromJBoard pushRUJBoardDiag
