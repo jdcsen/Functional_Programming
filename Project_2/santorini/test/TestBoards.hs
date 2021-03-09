@@ -427,8 +427,8 @@ player22SwapJBoard =
             [3, 0, 0, 0, 2]
           ],
       players =
-        [ JPlayer { card = "Prometheus", tokens = Just [[5, 1], [1, 1]]},
-          JPlayer { card = "Artemis",    tokens = Just [[1, 5], [5, 5]]}
+        [ JPlayer { card = "Prometheus", tokens = Just [[1, 1], [5, 1]]},
+          JPlayer { card = "Artemis",    tokens = Just [[5, 5], [1, 5]]}
         ]
     }
 
@@ -447,7 +447,7 @@ player12SwapJBoard =
           ],
       players =
         [ JPlayer { card = "Prometheus", tokens = Just [[1, 1], [5, 5]]},
-          JPlayer { card = "Artemis",    tokens = Just [[1, 5], [5, 1]]}
+          JPlayer { card = "Artemis",    tokens = Just [[5, 1], [1, 5]]}
         ]
     }
 player12SwapIBoard = fromJBoard player12SwapJBoard
@@ -464,7 +464,7 @@ player21SwapJBoard =
             [3, 0, 0, 0, 2]
           ],
       players =
-        [ JPlayer { card = "Prometheus", tokens = Just [[5, 1], [1, 5]]},
+        [ JPlayer { card = "Prometheus", tokens = Just [[1, 5], [5, 1]]},
           JPlayer { card = "Artemis",    tokens = Just [[5, 5], [1, 1]]}
         ]
     }

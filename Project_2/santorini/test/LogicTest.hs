@@ -614,7 +614,7 @@ swapPlayer22 =
   TestCase
     ( assertEqual
         "Assert that we can swap P1-2 with P2-2."
-        player11SwapIBoard
+        player22SwapIBoard
         (swapPlayer preSwapIBoard (IPt 4 4, IPt 0 0))
     )
 
@@ -622,7 +622,7 @@ swapPlayer12 =
   TestCase
     ( assertEqual
         "Assert that we can swap P1-1 with P2-2."
-        player11SwapIBoard
+        player12SwapIBoard
         (swapPlayer preSwapIBoard (IPt 4 0, IPt 0 0))
     )
 
@@ -630,7 +630,7 @@ swapPlayer21 =
   TestCase
     ( assertEqual
         "Assert that we can swap P1-2 with P2-1."
-        player11SwapIBoard
+        player21SwapIBoard
         (swapPlayer preSwapIBoard (IPt 4 4, IPt 0 4))
     )
 

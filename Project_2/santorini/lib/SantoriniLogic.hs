@@ -221,8 +221,49 @@ placePlayer brd loc = newBrd
 
 -- Swaps two player locations.
 -- If there aren't players at both locations, throws UndefinedElement
+--
+-- Swapped players must be on different teams. This requirement is posed purely
+-- for ease of implementation, but there are no known cases where we need to swap
+-- players on the same team, so YNGNI
 swapPlayer :: IBoard -> (IPt, IPt) -> IBoard
-swapPlayer brd (p1, p2) = brd
+swapPlayer brd (l1, l2) = newBrd
+  where
+    -- Grab the players.
+    p1 = case filter (\a -> l1 `elem` itokens a) $ iplayers brd of
+           [player] -> player
+           _ -> throw $ UndefinedElement "Swap Player: First location is not a player."
+
+    p2 = case filter (\a -> l2 `elem` itokens a) $ iplayers brd of
+           [player] -> if p1 == player
+                          then throw $ UndefinedElement "Swap Player: Both players are on the same team."
+                          else player
+           _ -> throw $ UndefinedElement "Swap Player: Second location is not a player."
+
+    -- Swap the players.
+    newP1 =
+      IPlayer
+        { icard = icard p1,
+          itokens = l2 : delete l1 (itokens p1)
+        }
+
+    newP2 =
+      IPlayer
+        { icard = icard p2,
+          itokens = l1 : delete l2 (itokens p2)
+        }
+
+    -- Rebuild the players, preserving order.
+    newPlayers = if p1 == head (iplayers brd)
+                    then newP1 : delete p1 (newP2 : delete p2 (iplayers brd))
+                    else newP2 : delete p2 (newP1 : delete p1 (iplayers brd))
+
+    -- Rebuild the board.
+    newBrd =
+      IBoard
+        { iturn = iturn brd,
+          ispaces = ispaces brd,
+          iplayers = newPlayers
+        }
 
 -- Moves a player, pushing the second player directly backwards.
 -- NOTE: Because of the mechanics of this transformation, this operation has
@@ -238,4 +279,4 @@ swapPlayer brd (p1, p2) = brd
 --       If either the move or the force move is fundamentally invalid (i.e: a
 --       movement to another player or a wall), throws UndefinedElement
 pushPlayer :: IBoard -> (IPt, IPt) -> IBoard
-pushPlayer brd (p1, p2) = brd
+pushPlayer brd (l1, l2) = brd
