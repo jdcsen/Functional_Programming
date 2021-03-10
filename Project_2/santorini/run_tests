@@ -1,2 +1,2 @@
-cabal new-test && dos2unix -V ./logs/santorini-0.1.0.0-santorini-test.log
+cabal new-test && dos2unix -V ./logs/santorini-0.1.0.0-santorini-test.log && cat ./logs/santorini-0.1.0.0-santorini-test.log
 

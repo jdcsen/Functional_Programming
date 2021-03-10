@@ -658,7 +658,7 @@ pushUpFlat =
     ( assertEqual
         "Assert that we can push a player up on flat ground."
         pushUpIBoardFlat
-        (pushPlayer prePushIBoardFlat (IPt 3 3, IPt 2 3))
+        (pushPlayer prePushIBoardFlat (IPt 2 2, IPt 1 2))
     )
 
 pushRightFlat =
@@ -666,7 +666,7 @@ pushRightFlat =
     ( assertEqual
         "Assert that we can push a player right on flat ground."
         pushRightIBoardFlat
-        (pushPlayer prePushIBoardFlat (IPt 2 2, IPt 2 3))
+        (pushPlayer prePushIBoardFlat (IPt 1 1, IPt 1 2))
     )
 
 pushLeftFlat =
@@ -674,7 +674,7 @@ pushLeftFlat =
     ( assertEqual
         "Assert that we can push a player left on flat ground."
         pushLeftIBoardFlat
-        (pushPlayer prePushIBoardFlat (IPt 3 3, IPt 3 2))
+        (pushPlayer prePushIBoardFlat (IPt 2 2, IPt 2 1))
     )
 
 pushDownFlat =
@@ -682,7 +682,7 @@ pushDownFlat =
     ( assertEqual
         "Assert that we can push a player down on flat ground."
         pushDownIBoardFlat
-        (pushPlayer prePushIBoardFlat (IPt 2 2, IPt 3 2))
+        (pushPlayer prePushIBoardFlat (IPt 1 1, IPt 2 1))
     )
 
 pushUpRamp =
@@ -690,7 +690,7 @@ pushUpRamp =
     ( assertEqual
         "Assert that we can push a player up on ramped ground."
         pushUpIBoardRamp
-        (pushPlayer prePushIBoardRamp (IPt 3 3, IPt 2 3))
+        (pushPlayer prePushIBoardRamp (IPt 2 2, IPt 1 2))
     )
 
 pushRightRamp =
@@ -698,7 +698,7 @@ pushRightRamp =
     ( assertEqual
         "Assert that we can push a player right on ramped ground."
         pushRightIBoardRamp
-        (pushPlayer prePushIBoardRamp (IPt 2 2, IPt 2 3))
+        (pushPlayer prePushIBoardRamp (IPt 1 1, IPt 1 2))
     )
 
 pushLeftRamp =
@@ -706,7 +706,7 @@ pushLeftRamp =
     ( assertEqual
         "Assert that we can push a player left on ramped ground."
         pushLeftIBoardRamp
-        (pushPlayer prePushIBoardRamp (IPt 3 3, IPt 3 2))
+        (pushPlayer prePushIBoardRamp (IPt 2 2, IPt 2 1))
     )
 
 pushDownRamp =
@@ -714,7 +714,7 @@ pushDownRamp =
     ( assertEqual
         "Assert that we can push a player down on ramped ground."
         pushDownIBoardRamp
-        (pushPlayer prePushIBoardRamp (IPt 2 2, IPt 3 2))
+        (pushPlayer prePushIBoardRamp (IPt 1 1, IPt 2 1))
     )
 
 pushUpCliff =
@@ -722,7 +722,7 @@ pushUpCliff =
     ( assertEqual
         "Assert that we can push a player up, off a cliff.."
         pushUpIBoardCliff
-        (pushPlayer prePushIBoardCliff (IPt 3 3, IPt 2 3))
+        (pushPlayer prePushIBoardCliff (IPt 2 2, IPt 1 2))
     )
 
 pushRightCliff =
@@ -730,7 +730,7 @@ pushRightCliff =
     ( assertEqual
         "Assert that we can push a player right, off a cliff."
         pushRightIBoardCliff
-        (pushPlayer prePushIBoardCliff (IPt 2 2, IPt 2 3))
+        (pushPlayer prePushIBoardCliff (IPt 1 1, IPt 1 2))
     )
 
 pushLeftCliff =
@@ -738,7 +738,7 @@ pushLeftCliff =
     ( assertEqual
         "Assert that we can push a player left, up a cliff."
         pushLeftIBoardCliff
-        (pushPlayer prePushIBoardCliff (IPt 3 3, IPt 3 2))
+        (pushPlayer prePushIBoardCliff (IPt 2 2, IPt 2 1))
     )
 
 pushDownCliff =
@@ -746,7 +746,7 @@ pushDownCliff =
     ( assertEqual
         "Assert that we can push a player down, up a cliff."
         pushDownIBoardCliff
-        (pushPlayer prePushIBoardCliff (IPt 2 2, IPt 3 2))
+        (pushPlayer prePushIBoardCliff (IPt 1 1, IPt 2 1))
     )
 
 pushLUDiag =
@@ -754,7 +754,7 @@ pushLUDiag =
     ( assertEqual
         "Assert that we can push a player left and up."
         pushLUIBoardDiag
-        (pushPlayer prePushIBoardDiag (IPt 3 3, IPt 2 2))
+        (pushPlayer prePushIBoardDiag (IPt 2 2, IPt 1 1))
     )
 
 pushRUDiag =
@@ -762,5 +762,5 @@ pushRUDiag =
     ( assertEqual
         "Assert that we can push a player right and up."
         pushRUIBoardDiag
-        (pushPlayer prePushIBoardDiag (IPt 3 3, IPt 4 2))
+        (pushPlayer prePushIBoardDiag (IPt 2 2, IPt 3 1))
     )

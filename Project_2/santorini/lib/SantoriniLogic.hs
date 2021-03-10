@@ -109,6 +109,15 @@ getPos (Space  pt _) = pt
 getPos (Player pt _) = pt
 getPos (Wall   pt)   = pt
 
+-- Gets the IPlayer that owns the specified player location, with an error message
+-- if the location is not a player.
+getPlayer :: IBoard -> IPt -> String -> IPlayer
+getPlayer brd loc errMsg = player
+  where
+    player = case filter (\a -> loc `elem` itokens a) $ iplayers brd of
+              [player] -> player
+              _ -> throw $ UndefinedElement errMsg
+
 
 -- Moves a player from a source location to a target location.
 -- If no player is at the source location, throws UndefinedElement
@@ -229,15 +238,12 @@ swapPlayer :: IBoard -> (IPt, IPt) -> IBoard
 swapPlayer brd (l1, l2) = newBrd
   where
     -- Grab the players.
-    p1 = case filter (\a -> l1 `elem` itokens a) $ iplayers brd of
-           [player] -> player
-           _ -> throw $ UndefinedElement "Swap Player: First location is not a player."
+    p1 = getPlayer brd l1 "Swap Player: First location is not a player."
 
-    p2 = case filter (\a -> l2 `elem` itokens a) $ iplayers brd of
-           [player] -> if p1 == player
-                          then throw $ UndefinedElement "Swap Player: Both players are on the same team."
-                          else player
-           _ -> throw $ UndefinedElement "Swap Player: Second location is not a player."
+    potPlayer = getPlayer brd l2 "Swap Player: Second location is not a player."
+    p2 = if p1 == potPlayer
+         then throw $ UndefinedElement "Swap Player: Both players are on the same team."
+         else potPlayer
 
     -- Swap the players.
     newP1 =
@@ -279,4 +285,61 @@ swapPlayer brd (l1, l2) = newBrd
 --       If either the move or the force move is fundamentally invalid (i.e: a
 --       movement to another player or a wall), throws UndefinedElement
 pushPlayer :: IBoard -> (IPt, IPt) -> IBoard
-pushPlayer brd (l1, l2) = brd
+pushPlayer brd (l1, l2) = newBrd
+  where
+    -- Ensure the two pieces are adjacent by pulling player tokens from the
+    -- proximity function.
+    proxPred searchLoc = (searchLoc ==) . getLoc
+
+    -- Note: Currently, our sense of proximity is symmetric. If one of these fails,
+    -- the next will never run. If the first succeeds, the second will succeed.
+    t1 = case filter (proxPred l1) (getProx brd l2) of
+           [player] -> player
+           _ -> throw $ UndefinedElement "Push Player: Locations are not proximal (t1->t2)."
+
+    t2 = case filter (proxPred l2) (getProx brd l1) of
+           [player] -> if t1 == player
+                       then throw $ UndefinedElement "Push Player: Both players are at the same location."
+                       else player
+           _ -> throw $ UndefinedElement "Push Player: Locations are not proximal (t2->t1)."
+
+    -- Grab the players.
+    p1 = getPlayer brd (getLoc t1) "Push Player: First location is not a player."
+
+    potPlayer = getPlayer brd (getLoc t2) "Push Player: Second location is not a player."
+    p2 = if p1 == potPlayer
+         then throw $ UndefinedElement "Push Player: Both players are on the same team."
+         else potPlayer
+
+    -- First, force the second player out of the way.
+    (rowDelta, colDelta) = (row l2 - row l1, col l2 - col l1)
+    newl2 = IPt (row l2 + rowDelta) (col l2 + colDelta)
+
+    -- Rebuild the players.
+    newP1 =
+      IPlayer
+        { icard = icard p1,
+          itokens = l2 : delete l1 (itokens p1)
+        }
+
+    newP2 =
+      IPlayer
+        { icard = icard p2,
+          itokens = newl2 : delete l2 (itokens p2)
+        }
+
+    -- TODO: I do this twice. replacePlayer function?
+    -- Rebuild the players, preserving order.
+    newPlayers = if p1 == head (iplayers brd)
+                    then newP1 : delete p1 (newP2 : delete p2 (iplayers brd))
+                    else newP2 : delete p2 (newP1 : delete p1 (iplayers brd))
+
+    -- Rebuild the board.
+    newBrd =
+      IBoard
+        { iturn = iturn brd,
+          ispaces = ispaces brd,
+          iplayers = newPlayers
+        }
+
+

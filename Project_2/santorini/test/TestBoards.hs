@@ -500,8 +500,8 @@ pushUpJBoardFlat =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ JPlayer { card = "Minotaur", tokens = Just [[2, 2], [2, 3]]},
-          JPlayer { card = "Artemis",  tokens = Just [[3, 2], [1, 3]]}
+        [ JPlayer { card = "Minotaur", tokens = Just [[2, 3], [2, 2]]},
+          JPlayer { card = "Artemis",  tokens = Just [[1, 3], [3, 2]]}
         ]
     }
 pushUpIBoardFlat = fromJBoard pushUpJBoardFlat
@@ -519,7 +519,7 @@ pushRightJBoardFlat =
           ],
       players =
         [ JPlayer { card = "Minotaur", tokens = Just [[2, 3], [3, 3]]},
-          JPlayer { card = "Artemis",  tokens = Just [[3, 2], [2, 4]]}
+          JPlayer { card = "Artemis",  tokens = Just [[2, 4], [3, 2]]}
         ]
     }
 pushRightIBoardFlat = fromJBoard pushRightJBoardFlat
@@ -536,7 +536,7 @@ pushLeftJBoardFlat =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ JPlayer { card = "Minotaur", tokens = Just [[2, 2], [3, 2]]},
+        [ JPlayer { card = "Minotaur", tokens = Just [[3, 2], [2, 2]]},
           JPlayer { card = "Artemis",  tokens = Just [[3, 1], [2, 3]]}
         ]
     }
@@ -590,8 +590,8 @@ pushUpJBoardRamp =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ JPlayer { card = "Minotaur", tokens = Just [[2, 2], [2, 3]]},
-          JPlayer { card = "Artemis",  tokens = Just [[3, 2], [1, 3]]}
+        [ JPlayer { card = "Minotaur", tokens = Just [[2, 3], [2, 2]]},
+          JPlayer { card = "Artemis",  tokens = Just [[1, 3], [3, 2]]}
         ]
     }
 pushUpIBoardRamp = fromJBoard pushUpJBoardRamp
@@ -609,7 +609,7 @@ pushRightJBoardRamp =
           ],
       players =
         [ JPlayer { card = "Minotaur", tokens = Just [[2, 3], [3, 3]]},
-          JPlayer { card = "Artemis",  tokens = Just [[3, 2], [2, 4]]}
+          JPlayer { card = "Artemis",  tokens = Just [[2, 4], [3, 2]]}
         ]
     }
 pushRightIBoardRamp = fromJBoard pushRightJBoardRamp
@@ -626,7 +626,7 @@ pushLeftJBoardRamp =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ JPlayer { card = "Minotaur", tokens = Just [[2, 2], [3, 2]]},
+        [ JPlayer { card = "Minotaur", tokens = Just [[3, 2], [2, 2]]},
           JPlayer { card = "Artemis",  tokens = Just [[3, 1], [2, 3]]}
         ]
     }
@@ -680,8 +680,8 @@ pushUpJBoardCliff =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ JPlayer { card = "Minotaur", tokens = Just [[2, 2], [2, 3]]},
-          JPlayer { card = "Artemis",  tokens = Just [[3, 2], [1, 3]]}
+        [ JPlayer { card = "Minotaur", tokens = Just [[2, 3], [2, 2]]},
+          JPlayer { card = "Artemis",  tokens = Just [[1, 3], [3, 2]]}
         ]
     }
 pushUpIBoardCliff = fromJBoard pushUpJBoardCliff
@@ -699,7 +699,7 @@ pushRightJBoardCliff =
           ],
       players =
         [ JPlayer { card = "Minotaur", tokens = Just [[2, 3], [3, 3]]},
-          JPlayer { card = "Artemis",  tokens = Just [[3, 2], [2, 4]]}
+          JPlayer { card = "Artemis",  tokens = Just [[2, 4], [3, 2]]}
         ]
     }
 pushRightIBoardCliff = fromJBoard pushRightJBoardCliff
@@ -716,7 +716,7 @@ pushLeftJBoardCliff =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ JPlayer { card = "Minotaur", tokens = Just [[2, 2], [3, 2]]},
+        [ JPlayer { card = "Minotaur", tokens = Just [[3, 2], [2, 2]]},
           JPlayer { card = "Artemis",  tokens = Just [[3, 1], [2, 3]]}
         ]
     }
@@ -770,7 +770,7 @@ pushLUJBoardDiag =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ JPlayer { card = "Minotaur", tokens = Just [[1, 3], [2, 2]]},
+        [ JPlayer { card = "Minotaur", tokens = Just [[2, 2], [1, 3]]},
           JPlayer { card = "Artemis",  tokens = Just [[1, 1], [4, 2]]}
         ]
     }
@@ -788,8 +788,8 @@ pushRUJBoardDiag =
             [0, 0, 0, 0, 0]
           ],
       players =
-        [ JPlayer { card = "Minotaur", tokens = Just [[1, 3], [4, 2]]},
-          JPlayer { card = "Artemis",  tokens = Just [[2, 2], [5, 1]]}
+        [ JPlayer { card = "Minotaur", tokens = Just [[4, 2], [1, 3]]},
+          JPlayer { card = "Artemis",  tokens = Just [[5, 1], [2, 2]]}
         ]
     }
 pushRUIBoardDiag = fromJBoard pushRUJBoardDiag

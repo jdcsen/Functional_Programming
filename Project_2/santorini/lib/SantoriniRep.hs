@@ -302,6 +302,11 @@ isWall :: BrdTok -> Bool
 isWall (Wall _) = True
 isWall _ = False
 
+getLoc :: BrdTok -> IPt
+getLoc (Space loc _)  = loc
+getLoc (Player loc _) = loc
+getLoc (Wall loc)     = loc
+
 -- TODO **********************************************************
 --
 --  Exception throwing toSpace, toPlayer, and toWall methods.
