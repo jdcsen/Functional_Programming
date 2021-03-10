@@ -101,14 +101,12 @@ placeTurnTest =
   TestCase
     ( assertEqual
         "Asserts that multiple place actions can be executed in sequence."
-        cwPlayersIBoard4
+        cwPlayersIBoard2
         (mutate
           p1IBoard
           ( Turn
             [ Place $ IPt 0 0,
-              Place $ IPt 0 4,
-              Place $ IPt 4 4,
-              Place $ IPt 4 0
+              Place $ IPt 0 4
             ]
           )
         )
@@ -128,7 +126,9 @@ buildTurnTest =
                   [0,            0, 0, 0, 0]
                 ],
               iplayers =
-                []
+                [ IPlayer {icard = Artemis,    itokens = []},
+                  IPlayer {icard = Prometheus, itokens = []}
+                ]
             }
         )
         (mutate
@@ -194,15 +194,15 @@ swapTurnTest =
         ( IBoard
             { iturn = -1,
               ispaces =
-                [ [0, 0, 0, 0, 0],
+                [ [0, 0, 0, 0, 1],
                   [0, 0, 0, 0, 0],
                   [0, 0, 0, 0, 0],
                   [0, 0, 0, 0, 0],
-                  [0, 0, 0, 0, 0]
+                  [3, 0, 0, 0, 2]
                 ],
               iplayers =
-                [ IPlayer { icard = Prometheus, itokens = [IPt 4 0, IPt 0 0]},
-                  IPlayer { icard = Artemis,    itokens = [IPt 0 4, IPt 4 4]}
+                [ IPlayer { icard = Prometheus, itokens = [IPt 0 4, IPt 0 0]},
+                  IPlayer { icard = Artemis,    itokens = [IPt 4 0, IPt 4 4]}
                 ]
             }
         )
@@ -210,7 +210,7 @@ swapTurnTest =
           preSwapIBoard
           ( Turn
             [ Swap (IPt 0 0) (IPt 4 4),
-              Swap (IPt 0 4) (IPt 4 0)
+              Swap (IPt 4 0) (IPt 0 4)
             ]
           )
         )
@@ -238,8 +238,8 @@ pushTurnTest =
         (mutate
           prePushIBoardFlat
           ( Turn
-            [ Push (IPt 0 0) (IPt 1 1),
-              Push (IPt 2 2) (IPt 3 3)
+            [ Push (IPt 2 2) (IPt 1 2),
+              Push (IPt 1 1) (IPt 2 1)
             ]
           )
         )
