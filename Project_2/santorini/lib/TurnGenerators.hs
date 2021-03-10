@@ -6,7 +6,7 @@ import SantoriniLogic
 import Turns
 
 class TGen a where
-  genMoves :: IBoard -> a -> [Turn]
+  genMoves :: a -> IBoard -> [Turn]
 
 -- The base turn generator.
 -- Generates all legal standard turns from a given board state
@@ -18,11 +18,11 @@ baseGen brd = []
 -- Make our Card Enum an instance of TGen, so we can generate
 -- turns from it.
 instance TGen CardE where
-  genMoves brd Apollo     = baseGen brd
-  genMoves brd Artemis    = baseGen brd
-  genMoves brd Atlas      = baseGen brd
-  genMoves brd Demeter    = baseGen brd
-  genMoves brd Hephastus  = baseGen brd
-  genMoves brd Minotaur   = baseGen brd
-  genMoves brd Pan        = baseGen brd
-  genMoves brd Prometheus = baseGen brd
+  genMoves Apollo     brd = baseGen brd
+  genMoves Artemis    brd = baseGen brd
+  genMoves Atlas      brd = baseGen brd
+  genMoves Demeter    brd = baseGen brd
+  genMoves Hephastus  brd = baseGen brd
+  genMoves Minotaur   brd = baseGen brd
+  genMoves Pan        brd = baseGen brd
+  genMoves Prometheus brd = baseGen brd
