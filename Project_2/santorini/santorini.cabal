@@ -54,8 +54,9 @@ library
   exposed-modules:     SantoriniRep,
                        SantoriniIO,
                        SantoriniLogic,
-                       AIKernels
-                       Turns
+                       AIKernels,
+                       Turns,
+                       TurnGenerators
 
   -- Modules included in this library but not exported.
   -- other-modules:

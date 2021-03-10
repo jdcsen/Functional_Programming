@@ -20,6 +20,7 @@ gIWallHeight = 5 :: Int
 gMaxTower = 3 :: Int
 
 gMaxTravel = 1 :: Int
+
 -- Datastructures to ease working with boards:
 
 -- Distinguish our indexing on basis of type
