@@ -55,6 +55,7 @@ library
                        SantoriniIO,
                        SantoriniLogic,
                        AIKernels
+                       Turns
 
   -- Modules included in this library but not exported.
   -- other-modules:
@@ -112,7 +113,8 @@ test-suite santorini-test
                        SerDesTest,
                        LogicTest,
                        RepTest,
-                       KernelTest
+                       KernelTest,
+                       TurnTest
 
   -- Test dependencies.
   build-depends:       base ^>=4.13.0.0,

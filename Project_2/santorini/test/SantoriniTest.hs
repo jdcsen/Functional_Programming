@@ -4,6 +4,7 @@ import LogicTest (logicTests)
 import SerDesTest (serDesTests)
 import RepTest (repTests)
 import KernelTest (kernelTests)
+import TurnTest (turnTests)
 import Test.HUnit
 
 main :: IO Counts
@@ -13,3 +14,4 @@ main = do
   runTestTT logicTests
   runTestTT repTests
   --runTestTT kernelTests --Note: currently hangs.
+  runTestTT turnTests
