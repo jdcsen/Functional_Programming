@@ -13,7 +13,19 @@ data Action where
   Build :: IPt        -> Action
   Move  :: IPt -> IPt -> Action
   Swap  :: IPt -> IPt -> Action
-  Push  :: IPt -> IPt -> Action
+  Push  :: IPt -> IPt -> Action deriving (Eq)
+
+-- To simply order actions, assign each a priority.
+toPriority :: Action -> Int
+toPriority (Place _)   = 0
+toPriority (Build _)   = 10
+toPriority (Push _ _)  = 30
+toPriority (Swap _ _)  = 40
+toPriority (Move _ _)  = 50
+
+-- Order actions by priority
+instance Ord Action where
+  compare a b = compare (toPriority a) (toPriority b)
 
 -- Now that we have data structures that can be applied to boards, organize them
 -- into a neat class.
@@ -32,7 +44,12 @@ instance Mutator Action where
 --
 -- For example, a standard turn consists of two actions: Move, and Build
 -- (unless we reached a win state with the move).
-newtype Turn = Turn [Action]
+newtype Turn = Turn [Action] deriving (Eq)
+
+-- Order turns by the sum of the priority
+instance Ord Turn where
+  compare (Turn a) (Turn b) =
+    compare (sum (map toPriority a)) (sum (map toPriority b))
 
 instance Mutator Turn where
   mutate brd (Turn turnList) = foldl mutate brd turnList
