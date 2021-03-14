@@ -342,4 +342,6 @@ pushPlayer brd (l1, l2) = newBrd
           iplayers = newPlayers
         }
 
-
+-- A function to convert IPlayers to Board Token Players
+playerToBrdTok :: IBoard -> IPlayer -> [BrdTok]
+playerToBrdTok brd plr = map (getTok brd) (itokens plr)

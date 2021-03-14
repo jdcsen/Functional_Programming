@@ -16,8 +16,8 @@ instance Semigroup WinState where
   (<>) Loss    l = Loss
   (<>) Neither l = l
 
-class WinDetector a where
-  isWon :: a -> IBoard -> Action -> WinState
+class WinDetector dtr where
+  isWon :: dtr -> IBoard -> Action -> WinState
 
 -- The base win detector. For all cards, a Move which results
 -- in the token reaching level 3 from a lower level is considered a win.
@@ -50,3 +50,21 @@ instance WinDetector CardE where
 -- detector. Turn Generators could generate all legal moves,
 -- and trim losing/winning ones until they don't have any
 -- extra moves.
+
+-- Given a Board and a list of actions, splits the list of actions into winning,
+-- losing, and neither moves.
+splitActions :: IBoard -> [Action] -> ([Action], [Action], [Action])
+splitActions brd actions = (winning, losing, neither)
+  where
+    winning =
+      filter
+        (\a -> baseIsWon (mutate brd a) a == Win)
+        actions
+    losing =
+      filter
+        (\a -> baseIsWon (mutate brd a) a == Loss)
+        actions
+    neither =
+      filter
+        (\a -> baseIsWon (mutate brd a) a == Neither)
+        actions

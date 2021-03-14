@@ -248,7 +248,6 @@ getOurPlayer brd = players
       (pa: pas) -> pa
       _         -> throw $ UndefinedElement "getOurPlayers: No players."
 
-
 -- TODO: Parameterize isFullBoard by board type and move it here.
 isFullJBoard :: JBoard -> Bool
 isFullJBoard
