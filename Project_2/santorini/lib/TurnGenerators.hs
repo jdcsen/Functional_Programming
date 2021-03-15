@@ -1,5 +1,5 @@
 {-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE ViewPatterns #-}
 
 module TurnGenerators where
 
@@ -187,6 +187,17 @@ baseGen brd = baseMoves
     allTurns = concatMap (genAgentTurns actionTypes) agents :: [(Turn, (Agent, IBoard))]
     baseMoves = S.fromList $ map fst allTurns
 
+-- Generates moves from a list of ActionE actions, applying the specified
+-- filtering, as well as trimming for Win/Loss states.
+actionEGen :: (WinDetector a) => a -> IBoard -> [ActionE] -> ([Action] -> Bool) -> TurnSet
+actionEGen wd brd actions pred = moveSet
+  where
+      agents = zip (itokens $ getOurPlayer brd) (repeat brd) :: [(Agent, IBoard)]
+      allTurns = concatMap (genAgentTurns actions) agents :: [(Turn, (Agent, IBoard))]
+      filtMoves = filter (pred . getActions) $ map fst allTurns
+      trimmedMoves = map (trimTurn wd brd) filtMoves
+      moveSet = S.fromList trimmedMoves
+
 -- Make our Card Enum an instance of TGen, so we can generate
 -- turns from it.
 instance TGen CardE where
@@ -199,10 +210,9 @@ instance TGen CardE where
     where
       -- Generate all moves, for both Agents.
       actionTypes = [SwapE, BuildE]
-      agents = zip (itokens $ getOurPlayer brd) (repeat brd) :: [(Agent, IBoard)]
-      allTurns = concatMap (genAgentTurns actionTypes) agents :: [(Turn, (Agent, IBoard))]
+      filt = const True
       -- No filtering required.
-      apolloMoves = S.fromList $ map fst allTurns
+      apolloMoves = actionEGen Apollo brd actionTypes filt
 
   -- Artemis — The moved token can optionally move a second time (i.e., the same
   -- token), as long as the first move doesn't win, and as long as the second
@@ -210,10 +220,8 @@ instance TGen CardE where
   genMoves Artemis    brd = baseGen brd `S.union` artemisMoves
     where
       actionTypes = [MoveE, MoveE, BuildE]
-      agents = zip (itokens $ getOurPlayer brd) (repeat brd) :: [(Agent, IBoard)]
-      allTurns = concatMap (genAgentTurns actionTypes) agents :: [(Turn, (Agent, IBoard))]
-      -- TODO: Filter
-      artemisMoves = S.fromList $ map fst allTurns
+      filt = \ case (reverse -> _ : Move b _ : Move a _ : xs ) -> a /= b
+      artemisMoves = actionEGen Artemis brd actionTypes filt
 
   -- Atlas — The build phase can build a space currently at level 0, 1, 2 to
   -- make it level 4, instead of building to exactly one more than the space’s
@@ -221,10 +229,9 @@ instance TGen CardE where
   genMoves Atlas      brd = baseGen brd `S.union` atlasMoves
     where
       actionTypes = [MoveE, CapE]
-      agents = zip (itokens $ getOurPlayer brd) (repeat brd) :: [(Agent, IBoard)]
-      allTurns = concatMap (genAgentTurns actionTypes) agents :: [(Turn, (Agent, IBoard))]
       -- Note: No filtering required.
-      atlasMoves = S.fromList $ map fst allTurns
+      filt = const True
+      atlasMoves = actionEGen Atlas brd actionTypes filt
 
   -- Demeter — The moved token can optionally build a second time, but not on
   -- the same space as the first build within a turn.
@@ -233,8 +240,8 @@ instance TGen CardE where
       actionTypes = [MoveE, BuildE, BuildE]
       agents = zip (itokens $ getOurPlayer brd) (repeat brd) :: [(Agent, IBoard)]
       allTurns = concatMap (genAgentTurns actionTypes) agents :: [(Turn, (Agent, IBoard))]
-      -- TODO: Filter
-      demeterMoves = S.fromList $ map fst allTurns
+      filt = \ case (reverse -> Build b : Build a : xs ) -> a /= b
+      demeterMoves = actionEGen Demeter brd actionTypes filt
 
   -- Hephaestus — The moved token can optionally build a second time, but only
   -- on the same space as the first build within a turn, and only if the second
@@ -242,10 +249,10 @@ instance TGen CardE where
   genMoves Hephastus  brd = baseGen brd `S.union` hepastusMoves
     where
       actionTypes = [MoveE, BuildE, BuildE]
-      agents = zip (itokens $ getOurPlayer brd) (repeat brd) :: [(Agent, IBoard)]
-      allTurns = concatMap (genAgentTurns actionTypes) agents :: [(Turn, (Agent, IBoard))]
-      -- TODO: Filter
-      hepastusMoves = S.fromList $ map fst allTurns
+      locHeightFilt = \ a b -> a == b && not (isWall (getTok brd b))
+      filt =
+        \ case (reverse -> Build b : Build a : xs ) -> locHeightFilt a b
+      hepastusMoves = actionEGen Hephastus brd actionTypes filt
 
   -- Minotaur — A token’s move can optionally enter the space of an opponent’s
   -- token, but only if the token can be pushed back to an unoccupied space, and
@@ -257,10 +264,9 @@ instance TGen CardE where
   genMoves Minotaur   brd = baseGen brd `S.union` minotaurMoves
     where
       actionTypes = [PushE, BuildE]
-      agents = zip (itokens $ getOurPlayer brd) (repeat brd) :: [(Agent, IBoard)]
-      allTurns = concatMap (genAgentTurns actionTypes) agents :: [(Turn, (Agent, IBoard))]
       -- Note: No filtering required. Individual move validity handled elsewhere.
-      minotaurMoves = S.fromList $ map fst allTurns
+      filt = const True
+      minotaurMoves = actionEGen Minotaur brd actionTypes filt
 
   -- Pan — A token can win either by moving up to level 3 or by moving down two
   -- or more levels. (Moving down three levels is possible if a token was pushed
@@ -276,7 +282,8 @@ instance TGen CardE where
   genMoves Prometheus brd = baseGen brd `S.union` prometheusMoves
     where
       actionTypes = [BuildE, MoveE, BuildE]
-      agents = zip (itokens $ getOurPlayer brd) (repeat brd) :: [(Agent, IBoard)]
-      allTurns = concatMap (genAgentTurns actionTypes) agents :: [(Turn, (Agent, IBoard))]
       -- TODO: Filter
-      prometheusMoves = S.fromList $ map fst allTurns
+      heightFilt = \ a b -> getHeight (getTok brd a) >= getHeight (getTok brd b)
+      filt =
+        \ case (reverse -> _ : Move a b : xs ) -> heightFilt a b
+      prometheusMoves = actionEGen Prometheus brd actionTypes filt
