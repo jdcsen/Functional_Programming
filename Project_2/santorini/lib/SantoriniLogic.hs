@@ -57,6 +57,19 @@ getTok brd pt
         then (ispaces brd !! row pt) !! col pt
         else gIWallHeight
 
+-- Returns all Tokens in a given board.
+getAllTok :: IBoard -> [BrdTok]
+getAllTok brd = tokens
+  where
+    points =
+      [ IPt
+          row_v
+          col_v
+        | row_v <- [0..(row gBrdBnd)],
+          col_v <- [0..(col gBrdBnd)]
+      ]
+    tokens = map (getTok brd) points
+
 -- Given a position, returns the proximity of that position.
 -- Move decisions are made in terms of proximity. Cells are ordered clockwise
 -- starting from the top left.
@@ -271,6 +284,14 @@ swapPlayer brd (l1, l2) = newBrd
           iplayers = newPlayers
         }
 
+-- Given two proximal positions, returns the location the token at the second
+-- position would end up if pushed.
+pushLoc :: (IPt, IPt) -> IPt
+pushLoc (l1, l2) = newl2
+  where
+    (rowDelta, colDelta) = (row l2 - row l1, col l2 - col l1)
+    newl2 = IPt (row l2 + rowDelta) (col l2 + colDelta)
+
 -- Moves a player, pushing the second player directly backwards.
 -- NOTE: Because of the mechanics of this transformation, this operation has
 --       slightly tighter constraints than all of our other board mutation methods.
@@ -312,8 +333,7 @@ pushPlayer brd (l1, l2) = newBrd
          else potPlayer
 
     -- First, force the second player out of the way.
-    (rowDelta, colDelta) = (row l2 - row l1, col l2 - col l1)
-    newl2 = IPt (row l2 + rowDelta) (col l2 + colDelta)
+    newl2 = pushLoc (l1, l2)
 
     -- Rebuild the players.
     newP1 =

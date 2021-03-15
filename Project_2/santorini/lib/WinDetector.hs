@@ -44,12 +44,15 @@ instance WinDetector CardE where
   isWon Prometheus brd action =
     baseIsWon brd action
 
-
--- TODO: Combine semigroup win states with base win detector
--- functionality in order to implement a Turn-level Win/Loss
--- detector. Turn Generators could generate all legal moves,
--- and trim losing/winning ones until they don't have any
--- extra moves.
+-- Given a turn, trims the turn until we have either a single Win, a single Loss,
+-- or all Neither
+trimTurn :: (WinDetector a) => a -> IBoard -> Turn -> Turn
+trimTurn wd brd (Turn actions) = trimmedTurn
+  where
+    sortedActions = span (\a -> isWon wd brd a == Neither) actions
+    trimmedTurn = case sortedActions of
+                    (nMoves, []) -> Turn nMoves
+                    (nMoves, wlMoves) -> Turn (nMoves ++ [head wlMoves])
 
 -- Given a Board and a list of actions, splits the list of actions into winning,
 -- losing, and neither moves.
@@ -58,13 +61,13 @@ splitActions brd actions = (winning, losing, neither)
   where
     winning =
       filter
-        (\a -> baseIsWon (mutate brd a) a == Win)
+        (\a -> baseIsWon (mut brd a) a == Win)
         actions
     losing =
       filter
-        (\a -> baseIsWon (mutate brd a) a == Loss)
+        (\a -> baseIsWon (mut brd a) a == Loss)
         actions
     neither =
       filter
-        (\a -> baseIsWon (mutate brd a) a == Neither)
+        (\a -> baseIsWon (mut brd a) a == Neither)
         actions

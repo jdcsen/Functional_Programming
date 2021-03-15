@@ -29,7 +29,7 @@ placeTest =
     ( assertEqual
         "Assert that the place action can place a player"
         cwPlayersIBoard1
-        (mutate p1IBoard (Place (IPt 0 0)))
+        (mut p1IBoard (Place (IPt 0 0)))
     )
 
 buildTest =
@@ -48,7 +48,7 @@ buildTest =
               iplayers = []
             }
         )
-        (mutate gIBoardEmpty (Build (IPt 0 0)))
+        (mut gIBoardEmpty (Build (IPt 0 0)))
     )
 
 moveTest =
@@ -70,7 +70,7 @@ moveTest =
                 ]
             }
         )
-        (mutate cwPlayersIBoard4 (Move (IPt 4 0) (IPt 3 1)))
+        (mut cwPlayersIBoard4 (Move (IPt 4 0) (IPt 3 1)))
     )
 
 swapTest =
@@ -78,7 +78,7 @@ swapTest =
     ( assertEqual
         "Assert that the swap action swaps players."
         player11SwapIBoard
-        (mutate preSwapIBoard (Swap (IPt 4 0) (IPt 0 4)))
+        (mut preSwapIBoard (Swap (IPt 4 0) (IPt 0 4)))
     )
 
 pushTest =
@@ -86,7 +86,7 @@ pushTest =
     ( assertEqual
         "Assert that the push action pushes players."
         pushUpIBoardFlat
-        (mutate prePushIBoardFlat (Push (IPt 2 2) (IPt 1 2)))
+        (mut prePushIBoardFlat (Push (IPt 2 2) (IPt 1 2)))
     )
 
 comboActionTests =
@@ -103,7 +103,7 @@ placeTurnTest =
     ( assertEqual
         "Asserts that multiple place actions can be executed in sequence."
         cwPlayersIBoard2
-        (mutate
+        (mut
           p1IBoard
           ( Turn
             [ Place $ IPt 0 0,
@@ -132,7 +132,7 @@ buildTurnTest =
                 ]
             }
         )
-        (mutate
+        (mut
           p1IBoard
           ( Turn
             [ Build $ IPt 0 0,
@@ -163,7 +163,7 @@ moveTurnTest =
                 ]
             }
         )
-        (mutate
+        (mut
           ( IBoard
               { iturn = -1,
                 ispaces =
@@ -207,7 +207,7 @@ swapTurnTest =
                 ]
             }
         )
-        (mutate
+        (mut
           preSwapIBoard
           ( Turn
             [ Swap (IPt 0 0) (IPt 4 4),
@@ -236,7 +236,7 @@ pushTurnTest =
                 ]
             }
         )
-        (mutate
+        (mut
           prePushIBoardFlat
           ( Turn
             [ Push (IPt 2 2) (IPt 1 2),
