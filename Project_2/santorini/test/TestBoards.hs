@@ -793,3 +793,93 @@ pushRUJBoardDiag =
         ]
     }
 pushRUIBoardDiag = fromJBoard pushRUJBoardDiag
+
+singleMoveJBoard =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [           0,            0, gJWallHeight, gJWallHeight, 0],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [0,            gJWallHeight, gJWallHeight, gJWallHeight, 0]
+          ],
+      players =
+        [ JPlayer { card = "Pan",      tokens = Just [[1, 1], [1, 5]]},
+          JPlayer { card = "Artemis",  tokens = Just [[5, 1], [5, 5]]}
+        ]
+    }
+singleMoveIBoard = fromJBoard singleMoveJBoard
+
+singlePlaceJBoard =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [           0, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight]
+          ],
+      players =
+        [ JPlayer { card = "Pan",      tokens = Nothing},
+          JPlayer { card = "Artemis",  tokens = Nothing}
+        ]
+    }
+singlePlaceIBoard = fromJBoard singlePlaceJBoard
+
+doublePlaceJBoard =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [           0, gJWallHeight, gJWallHeight, gJWallHeight,            0],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight]
+          ],
+      players =
+        [ JPlayer { card = "Pan",      tokens = Nothing},
+          JPlayer { card = "Artemis",  tokens = Nothing}
+        ]
+    }
+doublePlaceIBoard = fromJBoard doublePlaceJBoard
+
+singleSwapJBoard =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [           0,            0, gJWallHeight, gJWallHeight, 0],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [0,            gJWallHeight, gJWallHeight, gJWallHeight, 0]
+          ],
+      players =
+        [ JPlayer { card = "Pan",      tokens = Just [[1, 1], [1, 5]]},
+          JPlayer { card = "Artemis",  tokens = Just [[1, 2], [5, 5]]}
+        ]
+    }
+singleSwapIBoard = fromJBoard singleSwapJBoard
+
+singlePushJBoard =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [           0,            0,            0, gJWallHeight, 0],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [0,            gJWallHeight, gJWallHeight, gJWallHeight, 0]
+          ],
+      players =
+        [ JPlayer { card = "Pan",      tokens = Just [[1, 1], [1, 5]]},
+          JPlayer { card = "Artemis",  tokens = Just [[1, 2], [5, 5]]}
+        ]
+    }
+singlePushIBoard = fromJBoard singlePushJBoard

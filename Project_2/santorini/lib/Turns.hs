@@ -27,7 +27,7 @@ data Action where
   Cap   :: IPt        -> Action
   Move  :: IPt -> IPt -> Action
   Swap  :: IPt -> IPt -> Action
-  Push  :: IPt -> IPt -> Action deriving (Eq)
+  Push  :: IPt -> IPt -> Action deriving (Eq, Show)
 
 -- An Agent is a single token from a player. Currently, the rules allow moves of
 -- a single agent per turn.
@@ -64,7 +64,7 @@ instance Mutator Action where
   -- build any remaining height.
   mut brd (Cap loc)    = capped
     where
-      remHeight = gMaxTower - getHeight (getTok brd loc)
+      remHeight = (gMaxTower - getHeight (getTok brd loc)) + 1
       capped = foldl buildLvl brd $ replicate remHeight loc
   -- Mutate Agents
   mutAgent lAgent (Move _ finalLoc) = finalLoc
@@ -85,7 +85,7 @@ instance Mutator Action where
 -- instance of Semigroup. Associative turns seem so clean, and would allow us
 -- to pass stuff like action position white and blacklists to more easily build
 -- rule-compliant turns, instead of the current generate-filter approach..
-newtype Turn = Turn [Action] deriving (Eq)
+newtype Turn = Turn [Action] deriving (Eq, Show)
 
 -- Order turns by the sum of the priority
 instance Ord Turn where

@@ -5,6 +5,7 @@ import SerDesTest (serDesTests)
 import RepTest (repTests)
 import KernelTest (kernelTests)
 import TurnTest (turnTests)
+import TurnGenTest (turnGenTests)
 import Test.HUnit
 
 main :: IO Counts
@@ -15,3 +16,4 @@ main = do
   runTestTT repTests
   --runTestTT kernelTests --Note: currently hangs.
   runTestTT turnTests
+  runTestTT turnGenTests

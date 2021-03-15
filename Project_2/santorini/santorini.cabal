@@ -117,9 +117,11 @@ test-suite santorini-test
                        LogicTest,
                        RepTest,
                        KernelTest,
-                       TurnTest
+                       TurnTest,
+                       TurnGenTest
 
   -- Test dependencies.
   build-depends:       base ^>=4.13.0.0,
                        santorini,
-                       HUnit
+                       HUnit,
+                       containers

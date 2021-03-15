@@ -21,7 +21,8 @@ singleActionTests =
       TestLabel "Build Test" buildTest,
       TestLabel "Move Test" moveTest,
       TestLabel "Swap Test" swapTest,
-      TestLabel "Push Test" pushTest
+      TestLabel "Push Test" pushTest,
+      TestLabel "Cap Test" capTest
     ]
 
 placeTest =
@@ -89,6 +90,24 @@ pushTest =
         (mut prePushIBoardFlat (Push (IPt 2 2) (IPt 1 2)))
     )
 
+capTest =
+  TestCase
+    ( assertEqual
+        "Assert that the cap action can build a capped tower"
+        ( IBoard
+            { iturn = -1,
+              ispaces =
+                [ [gIWallHeight, 0, 0, 0, 0],
+                  [0,            0, 0, 0, 0],
+                  [0,            0, 0, 0, 0],
+                  [0,            0, 0, 0, 0],
+                  [0,            0, 0, 0, 0]
+                ],
+              iplayers = []
+            }
+        )
+        (mut gIBoardEmpty (Cap (IPt 0 0)))
+    )
 comboActionTests =
   TestList
     [ TestLabel "Turn Place Test" placeTurnTest,

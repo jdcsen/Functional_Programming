@@ -11,5 +11,5 @@ main = do kernelRunner SIO.stdin SIO.stdout kernel
   where kernel =
           predKernel
             [ (not . isFullBoard, cornerSetup),
-              (isFullBoard, scorchedEarth)
+              (isFullBoard, hmoveCard)
             ]

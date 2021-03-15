@@ -2,7 +2,11 @@ module AIKernels where
 import Control.Exception
 import SantoriniLogic
 import SantoriniRep
+import Turns
+import TurnGenerators
 
+import qualified Data.Set as S
+import Data.Maybe
 -- Note: The identityKernel is now just another term for id. It didn't need its
 --       own function alias.
 
@@ -69,3 +73,15 @@ scorchedEarth brd = new_brd
     new_brd = if isStaticWon moved_brd
               then moved_brd
               else buildLvl moved_brd source
+
+
+-- A kernel that selects the highest value move from the card-specific turn
+-- generator.
+hmoveCard :: IBoard -> IBoard
+hmoveCard brd = newBrd
+  where
+    -- Generate moves
+    card = icard $ getOurPlayer brd
+    moves = genMoves card brd
+    move = fromMaybe (error "No available moves") $ S.lookupMax moves
+    newBrd = mut brd move
