@@ -247,7 +247,7 @@ baseGenTests =
 trapTest =
   TestCase
     ( assertEqual
-        "Assert that, if our players are trapped, we get no moves. "
+        "Assert that, if our players are trapped, we get no moves."
         S.empty
         (baseGen trapIBoard)
     )

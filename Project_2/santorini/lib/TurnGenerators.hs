@@ -38,12 +38,13 @@ buildMove (Player ploc pht) (Space sloc sht)
 
 buildMove _ _ = Nothing
 
--- Use move logic to build swaps.
 buildSwap  :: BrdTok -> BrdTok -> Maybe Action
-buildSwap a b =
-  case buildMove a b of
-    (Just (Move ploc sloc)) -> Just $ Swap ploc sloc
-    _ -> Nothing
+buildSwap (Player p1Loc p1Ht) (Player p2Loc p2Ht)
+  | p1Loc == p2Loc        = Nothing -- Special case: Can't swap with ourselves.
+  | abs(p1Ht - p2Ht) <= 1 = Just $ Swap p1Loc p2Loc
+  | otherwise             = Nothing
+
+buildSwap _ _ = Nothing
 
 buildPush  :: IBoard -> BrdTok -> BrdTok -> Maybe Action
 buildPush brd (Player p1Loc p1Ht) (Player p2Loc p2Ht)
@@ -81,7 +82,7 @@ capGen in_tup = builds
   where
     agnt = fst in_tup
     brd = snd in_tup
-    actions = mapMaybe buildBuild (getProx brd agnt)
+    actions = mapMaybe buildCap (getProx brd agnt)
     tups = map (mutTup in_tup) actions
     builds  = zip actions tups
 

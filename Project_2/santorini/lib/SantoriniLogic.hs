@@ -255,7 +255,7 @@ swapPlayer brd (l1, l2) = newBrd
 
     potPlayer = getPlayer brd l2 "Swap Player: Second location is not a player."
     p2 = if p1 == potPlayer
-         then throw $ UndefinedElement "Swap Player: Both players are on the same team."
+         then error $ "Swap Player: Both players are on the same team. l1: " ++ show l1 ++ " l2: " ++ show l2
          else potPlayer
 
     -- Swap the players.
