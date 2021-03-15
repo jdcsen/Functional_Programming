@@ -68,30 +68,24 @@ placeGen brd = places
 
 -- Generates all build options for a given board and IPlayer.
 buildGen :: (Agent, IBoard) -> [(Action, (Agent, IBoard))]
-buildGen in_tup = builds
+buildGen in_tup@(agnt, brd) = builds
   where
-    agnt = fst in_tup
-    brd = snd in_tup
     actions = mapMaybe buildBuild (getProx brd agnt)
     tups = map (mutTup in_tup) actions
     builds  = zip actions tups
 
 -- Generates all cap options for a given board and IPlayer.
 capGen :: (Agent, IBoard) -> [(Action, (Agent, IBoard))]
-capGen in_tup = builds
+capGen in_tup@(agnt, brd) = builds
   where
-    agnt = fst in_tup
-    brd = snd in_tup
     actions = mapMaybe buildCap (getProx brd agnt)
     tups = map (mutTup in_tup) actions
     builds  = zip actions tups
 
 -- Generates all move options for a given board and IPlayer.
 moveGen  :: (Agent, IBoard) -> [(Action, (Agent, IBoard))]
-moveGen in_tup = moves
+moveGen in_tup@(agnt, brd) = moves
   where
-    agnt = fst in_tup
-    brd = snd in_tup
     actions =
       mapMaybe
         (buildMove $ getTok brd agnt)
@@ -101,10 +95,8 @@ moveGen in_tup = moves
 
 -- Generates all Swap options for a given board and IPlayer
 swapGen  :: (Agent, IBoard) -> [(Action, (Agent, IBoard))]
-swapGen in_tup = swaps
+swapGen in_tup@(agnt, brd) = swaps
   where
-    agnt = fst in_tup
-    brd = snd in_tup
     actions =
       mapMaybe
         (buildSwap $ getTok brd agnt)
@@ -114,10 +106,8 @@ swapGen in_tup = swaps
 
 -- Generates all Push options for a given board and IPlayer
 pushGen  :: (Agent, IBoard) -> [(Action, (Agent, IBoard))]
-pushGen in_tup = pushes
+pushGen in_tup@(agnt, brd) = pushes
   where
-    agnt = fst in_tup
-    brd = snd in_tup
     actions =
       mapMaybe
         (buildPush brd $ getTok brd agnt)
