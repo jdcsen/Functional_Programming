@@ -12,9 +12,11 @@ data WinState =
 -- If associating Win/Loss states, defer to the earliest
 -- Win/Lose result.
 instance Semigroup WinState where
-  (<>) Win     l = Win
-  (<>) Loss    l = Loss
-  (<>) Neither l = l
+  (<>) Win Loss  = Win
+  (<>) l Loss    = Loss
+  (<>) Loss Win  = Loss
+  (<>) l Win     = Win
+  (<>) l Neither = l
 
 class WinDetector dtr where
   isWon :: dtr -> IBoard -> Action -> WinState

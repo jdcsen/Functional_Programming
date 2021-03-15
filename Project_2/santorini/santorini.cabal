@@ -118,7 +118,8 @@ test-suite santorini-test
                        RepTest,
                        KernelTest,
                        TurnTest,
-                       TurnGenTest
+                       TurnGenTest,
+                       WinDetectorTest
 
   -- Test dependencies.
   build-depends:       base ^>=4.13.0.0,
