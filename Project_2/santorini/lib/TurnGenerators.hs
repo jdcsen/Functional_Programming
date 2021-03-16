@@ -33,7 +33,7 @@ buildCap _ = Nothing
 -- us to feed build* functions from proximity alone.
 buildMove  :: BrdTok -> BrdTok -> Maybe Action
 buildMove (Player ploc pht) (Space sloc sht)
-  | abs(pht - sht) <= 1 = Just $ Move ploc sloc
+  | (sht - pht) <= gMaxTravelUp = Just $ Move ploc sloc
   | otherwise           = Nothing
 
 buildMove _ _ = Nothing
@@ -41,7 +41,7 @@ buildMove _ _ = Nothing
 buildSwap  :: BrdTok -> BrdTok -> Maybe Action
 buildSwap (Player p1Loc p1Ht) (Player p2Loc p2Ht)
   | p1Loc == p2Loc        = Nothing -- Special case: Can't swap with ourselves.
-  | abs(p1Ht - p2Ht) <= 1 = Just $ Swap p1Loc p2Loc
+  | abs(p2Ht - p1Ht) <= gMaxTravelUp = Just $ Swap p1Loc p2Loc
   | otherwise             = Nothing
 
 buildSwap _ _ = Nothing

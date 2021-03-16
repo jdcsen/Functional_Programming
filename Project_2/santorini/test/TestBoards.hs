@@ -188,6 +188,26 @@ moundJBoard =
     }
 moundIBoard = fromJBoard moundJBoard
 
+-- A board where all players are surrounded by movable, but uneven, spaces.
+-- Version without players in the pits.
+moundNoPlayersJBoard =
+  JBoard
+    { turn = Just 1,
+      spaces =
+        Just
+          [ [1, 1, 1, 1, 1],
+            [1, 0, 2, 0, 1],
+            [1, 2, 1, 2, 1],
+            [1, 0, 2, 0, 1],
+            [1, 1, 1, 1, 1]
+          ],
+      players =
+        [ JPlayer { card = "Apollo", tokens = Nothing},
+          JPlayer { card = "Artemis", tokens = Nothing}
+        ]
+    }
+moundNoPlayersIBoard = fromJBoard moundNoPlayersJBoard
+
 -- A board where all players are trapped. Buildable, just not movable.
 btrapJBoard =
   JBoard

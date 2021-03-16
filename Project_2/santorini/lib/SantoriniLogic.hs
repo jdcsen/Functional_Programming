@@ -102,7 +102,7 @@ getMoveable brd pt = moveable
   where
     hght = getHeight $ getTok brd pt
     predicate = \case
-      (Space _ shght) -> abs (hght - shght) <= gMaxTravel
+      (Space _ shght) -> (shght - hght) <= gMaxTravelUp
       _ -> False
     filt = filter predicate
     moveable = filt $ getProx brd pt

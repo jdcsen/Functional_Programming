@@ -254,7 +254,7 @@ moveableTests =
       TestLabel "Players cannot be moved to" nmPlayers,
       TestLabel "We can move to flat spaces" mFlat,
       TestLabel "We can move up by 1 vertical level" mUp,
-      TestLabel "We can move down by one vertical level" mDown,
+      TestLabel "We can move down by one or more vertical level" mDown,
       TestLabel "We can move either up or down" mUpDown
     ]
 
@@ -307,12 +307,12 @@ mUp =
 mDown =
   TestCase
   ( assertEqual
-      "Assert that we can't move to planes more than 1 step below the source space"
+      "Assert that we can move to planes 1 step or more below the source space"
       [ Space (IPt 0 1) 1, Space (IPt 0 2)  1, Space (IPt 0 3) 1,
-        {-   Too Low    -} Space (IPt 1 2)  2, {-   Too Low    -}
+        Space (IPt 1 1) 0, Space (IPt 1 2)  2, Space (IPt 1 3) 0,
         Space (IPt 2 1) 2, Space (IPt 2 2)  1, Space (IPt 2 3) 2
       ]
-      (getMoveable moundIBoard (IPt 1 2))
+      (getMoveable moundNoPlayersIBoard (IPt 1 2))
   )
 
 mUpDown =
