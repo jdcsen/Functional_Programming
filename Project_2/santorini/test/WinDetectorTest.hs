@@ -179,5 +179,45 @@ minotaurPanLossTest =
 
 trimTurnTests =
   TestList
-    [
+    [ TestLabel "Empty Turns are unchanged" trimEmptTest,
+      TestLabel "Neither Turns are unchanged" trimNeitherTest,
+      TestLabel "Actions past wins are trimmed." trimWinTest,
+      TestLabel "Actions past losses are trimmed." trimLossTest
     ]
+
+trimEmptTest =
+  TestCase
+    ( assertEqual
+        "Assert that trimming an empty turn list leaves the list unchanged."
+        (Turn [])
+        (trimTurn Pan panWinIBoard (Turn []))
+    )
+
+trimNeitherTest =
+  TestCase
+    ( assertEqual
+        "Assert that non-winning/losing moves are unchanged."
+        (Turn [Move (IPt 1 1) (IPt 0 1), Build (IPt 1 1)])
+        (trimTurn Pan panWinIBoard (Turn [Move (IPt 1 1) (IPt 0 1), Build (IPt 1 1)]))
+    )
+
+-- NOTE: According to Dr. Flatt, Pan can ~technically~ build after dropping, and
+--       the win is optional. Since we don't check other player's move, I've just
+--       made the choice to accept the win in every case, as it seems foolish not to.
+--       It kind of mixes turn decisions with win logic, but it's enough of a time
+--       saver that I think I'll just accept it.
+trimWinTest =
+  TestCase
+    ( assertEqual
+        "Assert that moves after wins are trimmed."
+        (Turn [Move (IPt 1 1) (IPt 0 0)])
+        (trimTurn Pan panWinIBoard (Turn [Move (IPt 1 1) (IPt 0 0), Build (IPt 1 1)]))
+    )
+
+trimLossTest =
+  TestCase
+    ( assertEqual
+        "Assert that moves after Losses are trimmed.."
+        (Turn [Push (IPt 3 1) (IPt 2 1)])
+        (trimTurn Minotaur minotaurLossIBoard (Turn [Push (IPt 3 1) (IPt 2 1), Build (IPt 0 0)]))
+    )
