@@ -246,7 +246,15 @@ getOurPlayer brd = players
   where
     players = case iplayers brd of
       (pa: pas) -> pa
-      _         -> throw $ UndefinedElement "getOurPlayers: No players."
+      _         -> error  "getOurPlayers: No players."
+
+-- Error checking function to get the other player.
+getOtherPlayer :: IBoard -> IPlayer
+getOtherPlayer brd = players
+  where
+    players = case iplayers brd of
+      (pa: pb: pas) -> pb
+      _         -> error "getOurPlayers: Fewer than two players."
 
 -- TODO: Parameterize isFullBoard by board type and move it here.
 isFullJBoard :: JBoard -> Bool

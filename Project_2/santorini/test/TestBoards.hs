@@ -952,8 +952,8 @@ minotaurLossJBoard =
             [0,            gJWallHeight, gJWallHeight, gJWallHeight, 0]
           ],
       players =
-        [ JPlayer { card = "Pan",      tokens = Just [[2, 1], [1, 5]]},
-          JPlayer { card = "Minotaur", tokens = Just [[3, 1], [5, 5]]}
+        [ JPlayer { card = "Minotaur", tokens = Just [[3, 1], [5, 5]]},
+          JPlayer { card = "Pan",      tokens = Just [[2, 1], [1, 5]]}
         ]
     }
 minotaurLossIBoard = fromJBoard minotaurLossJBoard
