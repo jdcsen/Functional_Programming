@@ -4,12 +4,16 @@ import Test.HUnit
 import SantoriniRep
 import TestBoards
 import WinDetector
+import Turns
 
 
 -- Top level test case.
 winDetectorTests =
   TestList
-    [ TestLabel "WinState Tests" winStateTests
+    [ TestLabel "WinState Tests" winStateTests,
+      TestLabel "baseIsWon Tests" baseIsWonTests,
+      TestLabel "Card isWon Tests" cardIsWonTests,
+      TestLabel "trimTurn Tests" trimTurnTests
     ]
 
 -- Single action tests
@@ -81,3 +85,99 @@ winLossPriorityTest =
         (Neither <> Loss <> Win)
         Loss
     )
+
+baseIsWonTests =
+  TestList
+    [ TestLabel "No Win Test: Sub-level 3" noWinTest,
+      TestLabel "No Win Test: Level 3"     noWinLvl3Test,
+      TestLabel "Win Test"                 winLvl3Test
+    ]
+
+noWinTest =
+  TestCase
+    ( assertEqual
+        "Assert that a move from a sub-L3 level to another sub-L3 level is not a win."
+        Neither
+        (baseIsWon panWinIBoard (Move (IPt 1 1) (IPt 0 1)))
+    )
+
+noWinLvl3Test =
+  TestCase
+    ( assertEqual
+        "Assert that a move from a L3 level to another L3 level is not a win."
+        Neither
+        (baseIsWon panL3WinIBoard (Move (IPt 1 1) (IPt 1 0)))
+    )
+
+winLvl3Test =
+  TestCase
+    ( assertEqual
+        "Assert that a move from a sub-L3 level to a L3 level is a win."
+        Win
+        (baseIsWon panWinIBoard (Move (IPt 1 1) (IPt 1 0)))
+    )
+
+-- NOTE: Because the only card whose win states differ from standard is Pan, we
+--       only test Pan here.
+cardIsWonTests =
+  TestList
+    [ TestLabel "Pan No Win Test: Sub-2 drop"         panNoWinTest,
+      TestLabel "Pan No Win Test: Level 3 to Level 3" panNoWinLvl3Test,
+      TestLabel "Pan Win Test: Standard"              panWinStdTest,
+      TestLabel "Pan Win Test: 2 Drop"                panWin2DropTest,
+      TestLabel "Pan Win Test: 3 Drop"                panWin3DropTest,
+      TestLabel "Minotaur Loss Test: Pan Push"        minotaurPanLossTest
+    ]
+
+panNoWinTest =
+  TestCase
+    ( assertEqual
+        "Assert that with pan, a drop of 1 space is not a win."
+        Neither
+        (isWon Pan panWinIBoard (Move (IPt 1 1) (IPt 0 1)))
+    )
+
+panNoWinLvl3Test =
+  TestCase
+    ( assertEqual
+        "Assert that, even with Pan, a move from a L3 level to another L3 level is not a win."
+        Neither
+        (isWon Pan panL3WinIBoard (Move (IPt 1 1) (IPt 1 0)))
+    )
+
+panWinStdTest =
+  TestCase
+    ( assertEqual
+        "Assert that, even with Pan, a move from a sub-L3 level to a L3 level is a win."
+        Win
+        (isWon Pan panWinIBoard (Move (IPt 1 1) (IPt 1 0)))
+    )
+
+panWin2DropTest =
+  TestCase
+    ( assertEqual
+        "Assert that with Pan, a move down two levels is a win."
+        Win
+        (isWon Pan panWinIBoard (Move (IPt 1 1) (IPt 0 0)))
+    )
+
+panWin3DropTest =
+  TestCase
+    ( assertEqual
+        "Assert that with Pan, a move down two levels is a win."
+        Win
+        (isWon Pan panL3WinIBoard (Move (IPt 1 1) (IPt 0 0)))
+    )
+
+minotaurPanLossTest =
+  TestCase
+    ( assertEqual
+        "Assert that with Minotaur, shoving Pan down two levels is a Loss."
+        Loss
+        (isWon Minotaur minotaurLossIBoard (Push (IPt 3 1) (IPt 2 1)))
+    )
+
+trimTurnTests =
+  TestList
+    [
+    ]

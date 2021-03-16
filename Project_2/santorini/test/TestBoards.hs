@@ -903,3 +903,57 @@ singlePushJBoard =
         ]
     }
 singlePushIBoard = fromJBoard singlePushJBoard
+
+panWinJBoard =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [           0,            1, gJWallHeight, gJWallHeight, 0],
+            [           3,            2, gJWallHeight, gJWallHeight, gJWallHeight],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [0,            gJWallHeight, gJWallHeight, gJWallHeight, 0]
+          ],
+      players =
+        [ JPlayer { card = "Pan",      tokens = Just [[2, 2], [1, 5]]},
+          JPlayer { card = "Artemis",  tokens = Just [[5, 1], [5, 5]]}
+        ]
+    }
+panWinIBoard = fromJBoard panWinJBoard
+
+panL3WinJBoard =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [           0,            2, gJWallHeight, gJWallHeight, 0],
+            [           3,            3, gJWallHeight, gJWallHeight, gJWallHeight],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [0,            gJWallHeight, gJWallHeight, gJWallHeight, 0]
+          ],
+      players =
+        [ JPlayer { card = "Pan",      tokens = Just [[2, 2], [1, 5]]},
+          JPlayer { card = "Minotaur", tokens = Just [[5, 1], [5, 5]]}
+        ]
+    }
+panL3WinIBoard = fromJBoard panL3WinJBoard
+
+minotaurLossJBoard =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [           0,            2, gJWallHeight, gJWallHeight, 0],
+            [           3,            3, gJWallHeight, gJWallHeight, gJWallHeight],
+            [           3, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight, gJWallHeight],
+            [0,            gJWallHeight, gJWallHeight, gJWallHeight, 0]
+          ],
+      players =
+        [ JPlayer { card = "Pan",      tokens = Just [[2, 1], [1, 5]]},
+          JPlayer { card = "Minotaur", tokens = Just [[3, 1], [5, 5]]}
+        ]
+    }
+minotaurLossIBoard = fromJBoard minotaurLossJBoard
