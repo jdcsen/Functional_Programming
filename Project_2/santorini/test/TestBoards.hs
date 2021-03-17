@@ -971,7 +971,7 @@ winChannelJBoard =
           ],
       players =
         [ JPlayer { card = "Pan",      tokens = Just [[1, 1], [1, 5]]},
-          JPlayer { card = "Artemis",  tokens = Just [[1, 2], [5, 5]]}
+          JPlayer { card = "Artemis",  tokens = Just [[5, 1], [5, 5]]}
         ]
     }
 winChannelIBoard = fromJBoard winChannelJBoard

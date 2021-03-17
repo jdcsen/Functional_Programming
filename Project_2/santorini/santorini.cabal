@@ -66,7 +66,7 @@ library
   -- other-extensions:
 
   -- Other library packages from which modules are imported.
-  build-depends:       base ^>=4.13.0.0,
+  build-depends:       base ^>=4.14.0.0,
                        aeson,
                        bytestring,
                        containers
@@ -89,7 +89,7 @@ executable santorini
   -- other-extensions:
 
   -- Other library packages from which modules are imported.
-  build-depends:       base ^>=4.13.0.0, santorini
+  build-depends:       base ^>=4.14.0.0, santorini
 
   -- Directories containing source files.
   hs-source-dirs:      app
@@ -122,7 +122,7 @@ test-suite santorini-test
                        WinDetectorTest
 
   -- Test dependencies.
-  build-depends:       base ^>=4.13.0.0,
+  build-depends:       base ^>=4.14.0.0,
                        santorini,
                        HUnit,
                        containers

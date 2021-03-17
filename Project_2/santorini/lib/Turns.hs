@@ -5,6 +5,9 @@ module Turns where
 import SantoriniRep
 import SantoriniLogic
 
+gMaxRowPriority = 9
+gMaxColPriority = 9
+
 -- Actions provide certain guarantees. All actions can be applied in their
 -- entirety without having to worry about a win or a lose state interrupting
 -- the action.
@@ -34,13 +37,37 @@ data Action where
 type Agent = IPt
 
 -- To simply order actions, assign each a priority.
+-- Priorities are unique and deterministic. These form a rough priority, mostly
+-- just to build TurnSets to be later re-prioritized by AI-specific rating functions.
+--
+
+-- Include coordinates in priority function, so moves of the same type aren't
+-- considered equal.
+-- Point priority ranges from 0 to 99. These priorities are entirely arbitrary,
+-- but following would favor solutions in the bottom left of the board.
+ptPriority :: IPt -> Int
+ptPriority (IPt row col)
+  | row < gMaxRowPriority && col < gMaxColPriority = (10 * row) + col
+  | otherwise = error "You called ptPriority with row/col greater than the expected ranges"
+
+-- Stacks two point priorities to ensure that the combined two point priority is
+-- one-to-one in priority space. Two point priorities range from 0 to 9,999
+pt2Priority :: IPt -> IPt -> Int
+pt2Priority p1 p2 =
+  (100 * ptPriority p1) + ptPriority p2
+
 toPriority :: Action -> Int
-toPriority (Place _)   = 0
-toPriority (Build _)   = 10
-toPriority (Push _ _)  = 30
-toPriority (Cap _)     = 40
-toPriority (Swap _ _)  = 50
-toPriority (Move _ _)  = 60
+toPriority (Place p1)   = 0    + ptPriority p1
+-- 100 Element single point priority space.
+toPriority (Build p1)   = 100  + ptPriority p1
+-- 100 Element single point priority space.
+toPriority (Cap p1)     = 200  + ptPriority p1
+-- 100 Element single point priority space.
+toPriority (Push p1 p2) = 300  + pt2Priority p1 p2
+-- 1000 Element double point priority space.
+toPriority (Swap p1 p2) = 1300 + pt2Priority p1 p2
+-- 1000 Element double point priority space.
+toPriority (Move p1 p2) = 2300 + pt2Priority p1 p2
 
 -- Order actions by priority
 instance Ord Action where

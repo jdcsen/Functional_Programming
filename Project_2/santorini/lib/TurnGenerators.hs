@@ -148,9 +148,9 @@ genAgentTurn actE tup = turnList
 genAgentTurn' :: [(Turn, (Agent, IBoard))] -> ActionE -> [(Turn, (Agent, IBoard))]
 genAgentTurn' turnList action = concatMap (genAgentTurn action) turnList
 
--- Allows us to generate chains of actions, specifying certain actions as optional.
+-- Allows us to generate chains of actions from an array of ActionE possible turn actions.
 genAgentTurns :: [ActionE] -> (Agent, IBoard) -> [(Turn, (Agent, IBoard))]
-genAgentTurns actions tup = []
+genAgentTurns actions tup = turns
   where
     -- Build our initial accumulator.
     emptAcc = [(Turn [], tup)]
@@ -176,7 +176,8 @@ baseGen brd = baseMoves
     actionTypes = [MoveE, BuildE]
     agents = zip (itokens $ getOurPlayer brd) (repeat brd) :: [(Agent, IBoard)]
     allTurns = concatMap (genAgentTurns actionTypes) agents :: [(Turn, (Agent, IBoard))]
-    baseMoves = S.fromList $ map fst allTurns
+    justTurns = map fst allTurns :: [Turn]
+    baseMoves = S.fromList justTurns
 
 -- Generates moves from a list of ActionE actions, applying the specified
 -- filtering, as well as trimming for Win/Loss states.

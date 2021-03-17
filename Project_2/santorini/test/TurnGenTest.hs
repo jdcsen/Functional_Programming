@@ -15,6 +15,7 @@ turnGenTests =
       TestLabel "genAgentAction Tests" genAgentTests,
       TestLabel "genAgentTurn Tests" genAgentTurnTests,
       TestLabel "genAgentTurn' Tests" genAgentTurn'Tests,
+      TestLabel "genAgentTurns Tests" genAgentTurnsTests,
       TestLabel "baseGen Tests" baseGenTests
     ]
 
@@ -573,7 +574,7 @@ genAgentTurnBuildMoveTest =
                       },
                     IPlayer
                       { icard = Artemis,
-                        itokens = [IPt {row = 0, col = 1},IPt {row = 4, col = 4}]
+                        itokens = [IPt {row = 4, col = 0},IPt {row = 4, col = 4}]
                       }
                   ]
               }
@@ -596,7 +597,7 @@ genAgentTurnBuildMoveTest =
                       },
                     IPlayer
                       { icard = Artemis,
-                        itokens = [IPt {row = 0, col = 1},IPt {row = 4, col = 4}]
+                        itokens = [IPt {row = 4, col = 0},IPt {row = 4, col = 4}]
                       }
                   ]
               }
@@ -619,7 +620,7 @@ genAgentTurnBuildMoveTest =
                        },
                      IPlayer
                        { icard = Artemis,
-                         itokens = [IPt {row = 0, col = 1},IPt {row = 4, col = 4}]
+                         itokens = [IPt {row = 4, col = 0},IPt {row = 4, col = 4}]
                        }
                    ]
                }
@@ -658,7 +659,7 @@ genAgentTurn'SingleMoveTest =
                       },
                     IPlayer
                       { icard = Artemis,
-                        itokens = [IPt {row = 0, col = 1},IPt {row = 4, col = 4}]
+                        itokens = [IPt {row = 4, col = 0},IPt {row = 4, col = 4}]
                       }
                   ]
               }
@@ -681,7 +682,7 @@ genAgentTurn'SingleMoveTest =
                       },
                     IPlayer
                       { icard = Artemis,
-                        itokens = [IPt {row = 0, col = 1},IPt {row = 4, col = 4}]
+                        itokens = [IPt {row = 4, col = 0},IPt {row = 4, col = 4}]
                       }
                   ]
               }
@@ -704,7 +705,7 @@ genAgentTurn'SingleMoveTest =
                        },
                      IPlayer
                        { icard = Artemis,
-                         itokens = [IPt {row = 0, col = 1},IPt {row = 4, col = 4}]
+                         itokens = [IPt {row = 4, col = 0},IPt {row = 4, col = 4}]
                        }
                    ]
                }
@@ -739,7 +740,7 @@ genAgentTurn'DoubleMoveTest =
                     },
                   IPlayer
                     {icard = Artemis,
-                     itokens = [IPt {row = 0, col = 1},IPt {row = 4, col = 4}]
+                     itokens = [IPt {row = 4, col = 0},IPt {row = 4, col = 4}]
                     }
                  ]
               }
@@ -761,7 +762,8 @@ genAgentTurn'DoubleMoveTest =
                      { icard = Pan,
                        itokens = [IPt {row = 0, col = 1},IPt {row = 0, col = 4}]},
                    IPlayer
-                     { icard = Artemis, itokens = [IPt {row = 0, col = 1},IPt {row = 4, col = 4}]
+                     { icard = Artemis,
+                       itokens = [IPt {row = 4, col = 0},IPt {row = 4, col = 4}]
                      }
                  ]
               }
@@ -784,7 +786,7 @@ genAgentTurn'DoubleMoveTest =
                        itokens = [IPt {row = 0, col = 1},IPt {row = 0, col = 4}]},
                    IPlayer
                      { icard = Artemis,
-                       itokens = [IPt {row = 0, col = 1},IPt {row = 4, col = 4}]
+                       itokens = [IPt {row = 4, col = 0},IPt {row = 4, col = 4}]
                      }
                  ]
               }
@@ -807,7 +809,7 @@ genAgentTurn'DoubleMoveTest =
                        itokens = [IPt {row = 0, col = 3},IPt {row = 0, col = 0}]},
                    IPlayer
                      { icard = Artemis,
-                       itokens = [IPt {row = 0, col = 1},IPt {row = 4, col = 4}]
+                       itokens = [IPt {row = 4, col = 0},IPt {row = 4, col = 4}]
                      }
                  ]
               }
@@ -830,7 +832,7 @@ genAgentTurn'DoubleMoveTest =
                        itokens = [IPt {row = 0, col = 3},IPt {row = 0, col = 0}]},
                    IPlayer
                      { icard = Artemis,
-                       itokens = [IPt {row = 0, col = 1},IPt {row = 4, col = 4}]
+                       itokens = [IPt {row = 4, col = 0},IPt {row = 4, col = 4}]
                      }
                  ]
               }
@@ -853,7 +855,7 @@ genAgentTurn'DoubleMoveTest =
                        itokens = [IPt {row = 0, col = 3},IPt {row = 0, col = 0}]},
                    IPlayer
                      { icard = Artemis,
-                       itokens = [IPt {row = 0, col = 1},IPt {row = 4, col = 4}]
+                       itokens = [IPt {row = 4, col = 0},IPt {row = 4, col = 4}]
                      }
                  ]
               }
@@ -863,13 +865,98 @@ genAgentTurn'DoubleMoveTest =
         (genAgentTurn' [(gatMoveTurn, (IPt 0 1, gatMoveBrd)),
                         (secondMoveTurn, (IPt 0 3, secondMoveBrd))] BuildE)
     )
+
+genAgentTurnsTests =
+  TestList
+    [ TestLabel "genAgentTurn' Build Test (Single Move Base)" genAgentTurnsMoveTest
+    ]
+
+genAgentTurnsMoveTest =
+  TestCase
+    ( assertEqual
+        "Assert that we generate build moves with genAgentTurns (Move and Build case)."
+        [ (Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 0, col = 1}),
+                 Build (IPt {row = 0, col = 0})],
+          ( IPt {row = 0, col = 1},
+            IBoard
+              { iturn = -1,
+                ispaces = [[           1,           1,2,           1,           0],
+                           [gIWallHeight,gIWallHeight,3,gIWallHeight,gIWallHeight],
+                           [gIWallHeight,gIWallHeight,3,gIWallHeight,gIWallHeight],
+                           [gIWallHeight,gIWallHeight,3,gIWallHeight,gIWallHeight],
+                           [           0,           1,2,           1,           0]],
+                iplayers =
+                  [ IPlayer
+                      { icard = Pan,
+                        itokens = [IPt {row = 0, col = 1},IPt {row = 0, col = 4}]
+                      },
+                    IPlayer
+                      { icard = Artemis,
+                        itokens = [IPt {row = 4, col = 0},IPt {row = 4, col = 4}]
+                      }
+                  ]
+              }
+          )
+          ),
+          (Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 0, col = 1}),
+                 Build (IPt {row = 0, col = 2})],
+           (IPt {row = 0, col = 1},
+            IBoard
+              { iturn = -1,
+                ispaces = [[           0,           1,3,           1,           0],
+                           [gIWallHeight,gIWallHeight,3,gIWallHeight,gIWallHeight],
+                           [gIWallHeight,gIWallHeight,3,gIWallHeight,gIWallHeight],
+                           [gIWallHeight,gIWallHeight,3,gIWallHeight,gIWallHeight],
+                           [           0,           1,2,           1,           0]],
+                iplayers =
+                  [ IPlayer
+                      { icard = Pan,
+                        itokens = [IPt {row = 0, col = 1},IPt {row = 0, col = 4}]
+                      },
+                    IPlayer
+                      { icard = Artemis,
+                        itokens = [IPt {row = 4, col = 0},IPt {row = 4, col = 4}]
+                      }
+                  ]
+              }
+           )
+          ),
+          (Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 0, col = 1}),
+                 Build (IPt {row = 1, col = 2})],
+           ( IPt {row = 0, col = 1},
+             IBoard
+               { iturn = -1,
+                 ispaces = [[           0,           1,           2,           1,           0],
+                            [gIWallHeight,gIWallHeight,gIWallHeight,gIWallHeight,gIWallHeight],
+                            [gIWallHeight,gIWallHeight,           3,gIWallHeight,gIWallHeight],
+                            [gIWallHeight,gIWallHeight,           3,gIWallHeight,gIWallHeight],
+                            [           0,           1,           2,           1,           0]],
+                 iplayers =
+                   [ IPlayer
+                       { icard = Pan,
+                         itokens = [IPt {row = 0, col = 1},IPt {row = 0, col = 4}]
+                       },
+                     IPlayer
+                       { icard = Artemis,
+                         itokens = [IPt {row = 4, col = 0},IPt {row = 4, col = 4}]
+                       }
+                   ]
+               }
+           )
+          )
+        ]
+        (genAgentTurns [MoveE, BuildE] (IPt 0 0, winChannelIBoard))
+    )
+
 -- Generic turn generation tests.
 -- Note: The functions implementing these actions are tested extensively, so testing
 --       here will be minimal.
 baseGenTests =
   TestList
     [ TestLabel "Trap Test" trapTest,
-      TestLabel "Single Move Test" singleMoveTest
+      TestLabel "Single Move Test" singleMoveTest,
+      TestLabel "Win Channel Test" winChannelTest,
+      TestLabel "Wide Open Test" wideOpenTest
     ]
 
 trapTest =
@@ -886,4 +973,51 @@ singleMoveTest =
         "Assert that, if our players have a single possible move, we take it. "
         (S.fromList [Turn [Move (IPt 0 0) (IPt 0 1), Build (IPt 0 0)]])
         (baseGen singleMoveIBoard)
+    )
+
+
+winChannelTest =
+  TestCase
+    ( assertEqual
+        "Assert that, if we have a winChannel starting case with players, we get the proper TurnSet from it."
+        (S.fromList
+          [Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 0, col = 1}),Build (IPt {row = 0, col = 0})],
+           Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 0, col = 1}),Build (IPt {row = 0, col = 2})],
+           Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 0, col = 1}),Build (IPt {row = 1, col = 2})],
+           Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 0, col = 3}),Build (IPt {row = 0, col = 2})],
+           Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 0, col = 3}),Build (IPt {row = 0, col = 4})],
+           Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 0, col = 3}),Build (IPt {row = 1, col = 2})]])
+        (baseGen winChannelIBoard)
+    )
+
+wideOpenTest =
+  TestCase
+    ( assertEqual
+        "Assert that, if we have a wide-open starting case with players in the corners, we get the proper TurnSet from it."
+        (S.fromList
+          [Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 0, col = 3}),Build (IPt {row = 0, col = 2})],
+           Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 0, col = 3}),Build (IPt {row = 0, col = 4})],
+           Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 1, col = 3}),Build (IPt {row = 0, col = 2})],
+           Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 1, col = 3}),Build (IPt {row = 0, col = 3})],
+           Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 1, col = 4}),Build (IPt {row = 0, col = 3})],
+           Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 1, col = 4}),Build (IPt {row = 0, col = 4})],
+           Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 1, col = 3}),Build (IPt {row = 1, col = 2})],
+           Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 1, col = 4}),Build (IPt {row = 1, col = 3})],
+           Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 1, col = 3}),Build (IPt {row = 2, col = 2})],
+           Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 1, col = 3}),Build (IPt {row = 2, col = 3})],
+           Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 1, col = 4}),Build (IPt {row = 2, col = 3})],
+           Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 1, col = 4}),Build (IPt {row = 2, col = 4})],
+           Turn [Move (IPt {row = 4, col = 0}) (IPt {row = 3, col = 0}),Build (IPt {row = 2, col = 0})],
+           Turn [Move (IPt {row = 4, col = 0}) (IPt {row = 3, col = 1}),Build (IPt {row = 2, col = 0})],
+           Turn [Move (IPt {row = 4, col = 0}) (IPt {row = 3, col = 1}),Build (IPt {row = 2, col = 1})],
+           Turn [Move (IPt {row = 4, col = 0}) (IPt {row = 3, col = 1}),Build (IPt {row = 2, col = 2})],
+           Turn [Move (IPt {row = 4, col = 0}) (IPt {row = 3, col = 1}),Build (IPt {row = 3, col = 0})],
+           Turn [Move (IPt {row = 4, col = 0}) (IPt {row = 3, col = 1}),Build (IPt {row = 3, col = 2})],
+           Turn [Move (IPt {row = 4, col = 0}) (IPt {row = 3, col = 0}),Build (IPt {row = 4, col = 0})],
+           Turn [Move (IPt {row = 4, col = 0}) (IPt {row = 4, col = 1}),Build (IPt {row = 3, col = 0})],
+           Turn [Move (IPt {row = 4, col = 0}) (IPt {row = 4, col = 1}),Build (IPt {row = 3, col = 1})],
+           Turn [Move (IPt {row = 4, col = 0}) (IPt {row = 4, col = 1}),Build (IPt {row = 3, col = 2})],
+           Turn [Move (IPt {row = 4, col = 0}) (IPt {row = 4, col = 1}),Build (IPt {row = 4, col = 0})],
+           Turn [Move (IPt {row = 4, col = 0}) (IPt {row = 4, col = 1}),Build (IPt {row = 4, col = 2})]])
+        (baseGen ccwiseIBoard)
     )
