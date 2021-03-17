@@ -957,3 +957,21 @@ minotaurLossJBoard =
         ]
     }
 minotaurLossIBoard = fromJBoard minotaurLossJBoard
+
+winChannelJBoard =
+  JBoard
+    { turn = Just (-1),
+      spaces =
+        Just
+          [ [           0,            1,            2,            1,            0],
+            [gJWallHeight, gJWallHeight,            3, gJWallHeight, gJWallHeight],
+            [gJWallHeight, gJWallHeight,            3, gJWallHeight, gJWallHeight],
+            [gJWallHeight, gJWallHeight,            3, gJWallHeight, gJWallHeight],
+            [0,                       1,            2,            1,            0]
+          ],
+      players =
+        [ JPlayer { card = "Pan",      tokens = Just [[1, 1], [1, 5]]},
+          JPlayer { card = "Artemis",  tokens = Just [[1, 2], [5, 5]]}
+        ]
+    }
+winChannelIBoard = fromJBoard winChannelJBoard
