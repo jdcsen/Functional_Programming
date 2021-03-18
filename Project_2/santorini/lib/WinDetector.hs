@@ -86,6 +86,16 @@ instance WinDetector CardE where
     baseIsWon brd action
 
 -- Given a turn, trims the turn until we have either a single Win, a single Loss,
+-- or all Neither. Version for operating with just the base win detector.
+trimBaseTurn :: IBoard -> Turn -> Turn
+trimBaseTurn brd (Turn actions) = trimmedTurn
+  where
+    sortedActions = span (\a -> baseIsWon brd a == Neither) actions
+    trimmedTurn = case sortedActions of
+                    (nMoves, []) -> Turn nMoves
+                    (nMoves, wlMoves) -> Turn (nMoves ++ [head wlMoves])
+
+-- Given a turn, trims the turn until we have either a single Win, a single Loss,
 -- or all Neither
 trimTurn :: (WinDetector a) => a -> IBoard -> Turn -> Turn
 trimTurn wd brd (Turn actions) = trimmedTurn

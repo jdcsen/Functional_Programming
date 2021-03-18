@@ -16,7 +16,9 @@ turnGenTests =
       TestLabel "genAgentTurn Tests" genAgentTurnTests,
       TestLabel "genAgentTurn' Tests" genAgentTurn'Tests,
       TestLabel "genAgentTurns Tests" genAgentTurnsTests,
-      TestLabel "baseGen Tests" baseGenTests
+      TestLabel "actionEGen Tests" actionEGenTests,
+      TestLabel "baseGen Tests" baseGenTests,
+      TestLabel "genMoves Tests" genMovesTests
     ]
 
 -- Tests of the basic move generation functions.
@@ -948,9 +950,30 @@ genAgentTurnsMoveTest =
         (genAgentTurns [MoveE, BuildE] (IPt 0 0, winChannelIBoard))
     )
 
+-- ActionEGen tests
+actionEGenTests =
+  TestList
+    [ TestLabel "Pan BAM Test" trapTest,
+      TestLabel "Apollo BAM Test" singleMoveTest
+    ]
+
+panBAMTest =
+  TestCase
+    ( assertEqual
+        "Assert that we trim builds after moves with actionEGen and Pan"
+        []
+        (actionEGen Pan apolloBuildAfterWinIBoard [MoveE, BuildE] (const True))
+    )
+
+apolloBAMTest =
+  TestCase
+    ( assertEqual
+        "Assert that we trim builds after moves with actionEGen and Pan"
+        []
+        (actionEGen Apollo apolloBuildAfterWinIBoard [SwapE, BuildE] (const True))
+    )
+
 -- Generic turn generation tests.
--- Note: The functions implementing these actions are tested extensively, so testing
---       here will be minimal.
 baseGenTests =
   TestList
     [ TestLabel "Trap Test" trapTest,
@@ -963,7 +986,7 @@ trapTest =
   TestCase
     ( assertEqual
         "Assert that, if our players are trapped, we get no moves."
-        S.empty
+        []
         (baseGen trapIBoard)
     )
 
@@ -971,7 +994,7 @@ singleMoveTest =
   TestCase
     ( assertEqual
         "Assert that, if our players have a single possible move, we take it. "
-        (S.fromList [Turn [Move (IPt 0 0) (IPt 0 1), Build (IPt 0 0)]])
+        [Turn [Move (IPt 0 0) (IPt 0 1), Build (IPt 0 0)]]
         (baseGen singleMoveIBoard)
     )
 
@@ -980,13 +1003,12 @@ winChannelTest =
   TestCase
     ( assertEqual
         "Assert that, if we have a winChannel starting case with players, we get the proper TurnSet from it."
-        (S.fromList
-          [Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 0, col = 1}),Build (IPt {row = 0, col = 0})],
-           Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 0, col = 1}),Build (IPt {row = 0, col = 2})],
-           Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 0, col = 1}),Build (IPt {row = 1, col = 2})],
-           Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 0, col = 3}),Build (IPt {row = 0, col = 2})],
-           Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 0, col = 3}),Build (IPt {row = 0, col = 4})],
-           Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 0, col = 3}),Build (IPt {row = 1, col = 2})]])
+        [Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 0, col = 1}),Build (IPt {row = 0, col = 0})],
+         Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 0, col = 1}),Build (IPt {row = 0, col = 2})],
+         Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 0, col = 1}),Build (IPt {row = 1, col = 2})],
+         Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 0, col = 3}),Build (IPt {row = 0, col = 2})],
+         Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 0, col = 3}),Build (IPt {row = 0, col = 4})],
+         Turn [Move (IPt {row = 0, col = 4}) (IPt {row = 0, col = 3}),Build (IPt {row = 1, col = 2})]]
         (baseGen winChannelIBoard)
     )
 
@@ -1019,5 +1041,46 @@ wideOpenTest =
            Turn [Move (IPt {row = 4, col = 0}) (IPt {row = 4, col = 1}),Build (IPt {row = 3, col = 2})],
            Turn [Move (IPt {row = 4, col = 0}) (IPt {row = 4, col = 1}),Build (IPt {row = 4, col = 0})],
            Turn [Move (IPt {row = 4, col = 0}) (IPt {row = 4, col = 1}),Build (IPt {row = 4, col = 2})]])
-        (baseGen ccwiseIBoard)
+        (S.fromList $ baseGen ccwiseIBoard)
+    )
+
+-- Card Specific turn generation tests.
+genMovesTests =
+  TestList
+    [ TestLabel "Apollo-endgame (Integration Test)" apolloEndgameTest
+    ]
+
+apolloEndgameTest =
+  TestCase
+    ( assertEqual
+        "Assert that, if we have a wide-open starting case with players in the corners, we get the proper TurnSet from it."
+        (S.fromList
+          [Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 0, col = 1}),Build (IPt {row = 0, col = 0})],
+           Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 0, col = 1}),Build (IPt {row = 0, col = 2})],
+           Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 1, col = 0}),Build (IPt {row = 0, col = 0})],
+           Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 1, col = 1}),Build (IPt {row = 0, col = 0})],
+           Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 1, col = 1}),Build (IPt {row = 0, col = 1})],
+           Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 1, col = 1}),Build (IPt {row = 0, col = 2})],
+           Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 1, col = 1}),Build (IPt {row = 1, col = 0})],
+           Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 1, col = 1}),Build (IPt {row = 1, col = 2})],
+           Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 1, col = 0}),Build (IPt {row = 2, col = 0})],
+           Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 1, col = 1}),Build (IPt {row = 2, col = 0})],
+           Turn [Move (IPt {row = 0, col = 0}) (IPt {row = 1, col = 1}),Build (IPt {row = 2, col = 1})],
+           Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 4, col = 4})],
+           Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 3, col = 2}),Build (IPt {row = 2, col = 1})],
+           Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 3, col = 2}),Build (IPt {row = 2, col = 3})],
+           Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 3, col = 3}),Build (IPt {row = 2, col = 3})],
+           Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 3, col = 4}),Build (IPt {row = 2, col = 3})],
+           Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 3, col = 4}),Build (IPt {row = 2, col = 4})],
+           Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 3, col = 2}),Build (IPt {row = 3, col = 1})],
+           Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 3, col = 3}),Build (IPt {row = 3, col = 2})],
+           Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 3, col = 4}),Build (IPt {row = 3, col = 3})],
+           Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 4, col = 2}),Build (IPt {row = 3, col = 1})],
+           Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 4, col = 2}),Build (IPt {row = 3, col = 2})],
+           Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 4, col = 2}),Build (IPt {row = 3, col = 3})],
+           Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 3, col = 3}),Build (IPt {row = 4, col = 3})],
+           Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 3, col = 4}),Build (IPt {row = 4, col = 3})],
+           Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 3, col = 4}),Build (IPt {row = 4, col = 4})],
+           Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 4, col = 2}),Build (IPt {row = 4, col = 3})]])
+        (genMoves Apollo apolloBuildAfterWinIBoard)
     )

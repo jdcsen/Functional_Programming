@@ -975,3 +975,32 @@ winChannelJBoard =
         ]
     }
 winChannelIBoard = fromJBoard winChannelJBoard
+
+-- Integration Boards:
+-- 2021-17-03 : 17:32:30: Apollo builds after winning.
+apolloBuildAfterWinStr =
+  "{\"players\":[{\"card\":\"Apollo\",\"tokens\":[[1,1],[5,4]]}, \
+                \{\"card\":\"Pan\",\"tokens\":[[3,3],[5,2]]}],\
+   \ \"spaces\":[[0,0,0,0,0],\
+                \[0,1,0,0,0],\
+                \[1,0,1,0,1],\
+                \[0,3,0,0,1],\
+                \[1,0,0,2,3]],\
+  \ \"turn\":14}"
+apolloBuildAfterWinJBoard =
+  JBoard
+    { turn = Just 18,
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0],
+            [1, 0, 1, 0, 1],
+            [0, 3, 0, 0, 1],
+            [1, 0, 0, 2, 3]
+          ],
+      players =
+        [ JPlayer { card = "Apollo", tokens = Just [[1, 1], [5, 4]]},
+          JPlayer { card = "Pan",    tokens = Just [[3, 3], [5, 2]]}
+        ]
+    }
+apolloBuildAfterWinIBoard = fromJBoard apolloBuildAfterWinJBoard

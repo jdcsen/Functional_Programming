@@ -182,7 +182,8 @@ trimTurnTests =
     [ TestLabel "Empty Turns are unchanged" trimEmptTest,
       TestLabel "Neither Turns are unchanged" trimNeitherTest,
       TestLabel "Actions past wins are trimmed." trimWinTest,
-      TestLabel "Actions past losses are trimmed." trimLossTest
+      TestLabel "Actions past losses are trimmed." trimLossTest,
+      TestLabel "Integration Test: Apollo builds after winning." trimApollowBAWTest
     ]
 
 trimEmptTest =
@@ -201,11 +202,6 @@ trimNeitherTest =
         (trimTurn Pan panWinIBoard (Turn [Move (IPt 1 1) (IPt 0 1), Build (IPt 1 1)]))
     )
 
--- NOTE: According to Dr. Flatt, Pan can ~technically~ build after dropping, and
---       the win is optional. Since we don't check other player's move, I've just
---       made the choice to accept the win in every case, as it seems foolish not to.
---       It kind of mixes turn decisions with win logic, but it's enough of a time
---       saver that I think I'll just accept it.
 trimWinTest =
   TestCase
     ( assertEqual
@@ -220,4 +216,23 @@ trimLossTest =
         "Assert that moves after Losses are trimmed.."
         (Turn [Push (IPt 3 1) (IPt 2 1)])
         (trimTurn Minotaur minotaurLossIBoard (Turn [Push (IPt 3 1) (IPt 2 1), Build (IPt 0 0)]))
+    )
+
+badTurns =
+  [Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 4, col = 4}),Build (IPt {row = 3, col = 3})],
+   Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 4, col = 4}),Build (IPt {row = 3, col = 4})],
+   Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 4, col = 4}),Build (IPt {row = 4, col = 3})]]
+trimApollowBAWTest =
+  TestCase
+    ( assertEqual
+        "This was observed as an instance of Apollo building after winning. Ensure it's trimmed properly."
+        [Turn [Move (IPt 4 3) (IPt 4 4)],
+         Turn [Move (IPt 4 3) (IPt 4 4)],
+         Turn [Move (IPt 4 3) (IPt 4 4)]]
+        (map
+          ( trimTurn
+              Apollo
+              apolloBuildAfterWinIBoard
+          )
+          badTurns)
     )
