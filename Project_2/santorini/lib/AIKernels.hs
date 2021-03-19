@@ -8,6 +8,7 @@ import SantoriniLogic
 import SantoriniRep
 import Turns
 import TurnGenerators
+import WinDetector
 
 import Data.List
 import qualified Data.Set as S
@@ -73,26 +74,26 @@ instance Eq Kernel where
 
 -- All Kernels define a tick method that applies their Kernel-specific logic
 -- to the board..
-tick :: (Kernel, IBoard) -> (Kernel, IBoard)
+tick :: (Kernel, IBoard) -> (Kernel, IBoard, Turn)
 
 -- Identity kernels.
-tick (NullKernel, brd) = (NullKernel, brd)
+tick (NullKernel, brd) = (NullKernel, brd, Turn [])
 
 -- Static Kernels.
-tick (CornerSetup,   brd) = (CornerSetup, cornerSetup brd)
-tick (ScorchedEarth, brd) = (ScorchedEarth, scorchedEarth brd)
-tick (HValueDefault, brd) = (HValueDefault, hmoveCard brd)
+tick (CornerSetup,   brd) = appKern CornerSetup   $ cornerSetup brd
+tick (ScorchedEarth, brd) = appKern ScorchedEarth $ scorchedEarth brd
+tick (HValueDefault, brd) = appKern HValueDefault $ hmoveCard brd
 
 -- The predicate kernel must match out the kernel, tick it, and replace it.
 tick (PredKernel preds, brd) = newPair
   where
     (pred, kern) = matchPair preds brd :: PredPair
     -- Tick the kernel.
-    (newKern, newBrd) = tick (kern, brd)
+    (newKern, newBrd, turn) = tick (kern, brd)
     -- Replace the kernel.
     rmKernPreds = deleteBy (\a b -> snd a == snd b) (pred, kern) preds :: [PredPair]
     newPreds = (pred, newKern) : rmKernPreds
-    newPair = (PredKernel newPreds, newBrd)
+    newPair = (PredKernel newPreds, newBrd, turn)
 
 -- The random kernel extracts its generator, uses it to pick a move, then passes
 -- it along to the next iteration.
@@ -106,7 +107,7 @@ tick (RandKernel gen, brd) = newPair
     move = S.elemAt moveIdx moves
     -- Apply the move to the board.
     newBrd = mut brd move
-    newPair = (RandKernel newGen, newBrd)
+    newPair = (RandKernel newGen, newBrd, move)
 
 -- Predicate Kernel pair
 type PredPair = (IBoard -> Bool, Kernel)
@@ -119,10 +120,12 @@ matchPair preds brd = pair
       [] -> error "Predicate kernel doesn't match"
       (x : xs) -> x :: PredPair
 
+appKern :: Kernel -> (IBoard, Turn) -> (Kernel, IBoard,Turn)
+appKern k (i, t) = (k, i, t)
 
 -- TODO: Kernel agnostic error checking wrapper.
-cornerSetup :: IBoard -> IBoard
-cornerSetup brd = newBrd
+cornerSetup :: IBoard -> (IBoard, Turn)
+cornerSetup brd = (newBrd, trn)
   where
     -- TODO: This is ugly. List comprehension, like getTok?
     tl = IPt 0 0
@@ -133,14 +136,16 @@ cornerSetup brd = newBrd
     -- TODO: isSpace
     freeSpaces = filter (isSpace . getTok brd) startingPts
     chosenSpaces = case freeSpaces of
-      (s1 : s2 : ss) -> [s1, s2]
+      (s1 : s2 : ss) -> [s1, s2] :: [IPt]
       _ -> error "Couldn't find a free space in cornerSetup"
     -- Place a player on the spaces.
     newBrd = foldl placePlayer brd chosenSpaces
+    -- Build our turn description.
+    trn = Turn $ map Place chosenSpaces
 
 
-scorchedEarth :: IBoard -> IBoard
-scorchedEarth brd = new_brd
+scorchedEarth :: IBoard -> (IBoard, Turn)
+scorchedEarth brd = (newBrd, trn)
   where
     -- Select the first movable player.
     -- If we don't have one, you lost. Currently crashes.
@@ -154,21 +159,24 @@ scorchedEarth brd = new_brd
       (move : ms) -> move :: BrdTok
       _            -> throw $ UndefinedElement "Scorched Earth: No target move."
 
-    target = getPos moveTok :: IPt
-
+    -- Choose our move.
+    move = Move source $ getPos moveTok :: Action
+    -- Build on the source location
+    build = Build source
+    trn = Turn [move, build]
+    -- Trim the turn.
+    bseTrim = trimBaseTurn brd trn
+    -- Trim the term, with the card.
+    crdTrim = trimTurn (icard player) brd bseTrim
     -- Execute the move.
-    moved_brd = movePlayer brd (source, target) :: IBoard
+    newBrd = mut brd crdTrim
 
-    -- Build on the source location, if we haven't won.
-    new_brd = if isStaticWon moved_brd
-              then moved_brd
-              else buildLvl moved_brd source
 
 
 -- A kernel that selects the highest value move from the card-specific turn
 -- generator.
-hmoveCard :: IBoard -> IBoard
-hmoveCard brd = newBrd
+hmoveCard :: IBoard -> (IBoard, Turn)
+hmoveCard brd = (newBrd, move)
   where
     -- Generate moves
     card = icard $ getOurPlayer brd
@@ -176,3 +184,7 @@ hmoveCard brd = newBrd
     move = fromMaybe (error "No available moves") $ S.lookupMax moves
     newBrd = mut brd move
 
+
+-- Plays out two kernels from a base state until one of them wins.
+playout :: IBoard -> (Kernel, Kernel)  -> IBoard
+playout brd (p1, p2) = brd
