@@ -24,6 +24,8 @@ type SErr = String
 -- The first handle is the input, the second the output.
 kernelRunner :: SIO.Handle -> SIO.Handle -> Kernel -> IO ()
 kernelRunner inHdl outHdl kernel = forever $ do
+  -- Note to self: Am I just piggy-backing off of the IO Monad to sequence these
+  -- transformations and resolve referential transparency issues? Not sure.
   line <- SIO.hGetLine inHdl
   kRes <- return $ kernelPipeline kernel line :: IO (Either SErr (Kernel, String))
   (kernel, outStr) <- return (fromRight (NullKernel, error "Parser Error") kRes)
@@ -43,7 +45,7 @@ kernelPipeline kernel str
     errStr = fromLeft "" parsed
     valid = fromRight gJBoardEmpty parsed
     deserBrd = fromJBoard valid
-    (newK, newBrd) = tick kernel deserBrd
+    (newK, newBrd) = tick (kernel, deserBrd)
     newStr = toBuffer . incrementTurn . flipPlayers . toJBoard $ newBrd
 
 fromBufferStart :: String -> Either SErr JBoard

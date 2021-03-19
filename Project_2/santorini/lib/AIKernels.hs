@@ -12,28 +12,24 @@ import TurnGenerators
 import Data.List
 import qualified Data.Set as S
 import Data.Maybe
-import Control.Monad.State.Strict
+import System.Random
 -- Note: The identityKernel is now just another term for id. It didn't need its
 --       own function alias.
 
 
 -- I specifically avoided making Kernels monadic, as I didn't think that it was
--- the right choice. It seemed like an over-abstraction.
+-- the right choice. It seemed like an over-abstraction, and I'm pretty hesitant
+-- to write code using something I don't understand, after prior incidents in
+-- this course.
 --
 -- In order to impose Data constructor constraints for Kernels, we group
 -- all kernels together into a GADT. Mostly useful for predKernel.
 data Kernel where
-  -- A null kernel. No transformations defined, intended to error. Used for parse
-  -- failures.
+  -- A null kernel. Identity over the board. Intended as an error state.
   NullKernel :: Kernel
-  -- Predicate kernels a list of Predicate-Kernel pairs.
-  -- Predicate kernels dynamically choose and tick one of their internal kernels
-  -- based on the passed board, updating the kernel, and marking it as last-used.
-  -- Throws an error if we fall through.
-  PredKernel     :: [PredPair] -> Kernel
 
   -- ####### Kernel State Invariant Kernels: ###############
-  --
+
   -- A pure setup kernel that tries to place pieces in all four corners of the
   -- board, in a clockwise manner, starting from the top. Not a great strategy,
   -- but great for validating startup kernel behavior externally.
@@ -48,6 +44,17 @@ data Kernel where
   -- generator. Uses default turn values.
   HValueDefault :: Kernel
 
+  -- ####### Kernel State Dependent Kernels: ###############
+
+  -- Predicate kernels a list of Predicate-Kernel pairs.
+  -- Predicate kernels dynamically choose and tick one of their internal kernels
+  -- based on the passed board, updating the kernel, and marking it as last-used.
+  -- Throws an error if we fall through.
+  PredKernel     :: [PredPair] -> Kernel
+
+  -- A random Kernel. Built with a random number generator, chooses an arbitrary move.
+  RandKernel :: StdGen -> Kernel
+
 -- Define Kernel equality shallowly: If two top-level kernel types are identical,
 -- the kernels are identical. Won't recursively check Predicate kernels.
 --
@@ -55,32 +62,51 @@ data Kernel where
 -- about it, and I'm not opening up that can of worms right now. We'll get a
 -- pattern match error if we're missing a case.
 instance Eq Kernel where
-  (PredKernel _)== (PredKernel _)  = True
+  NullKernel == NullKernel  = True
   CornerSetup == CornerSetup       = True
   ScorchedEarth == ScorchedEarth   = True
   HValueDefault == HValueDefault   = True
+  (PredKernel _)== (PredKernel _)  = True
+  (RandKernel _)== (RandKernel _)  = True
   -- If not explicitly defined as True, False.
   _ == _                           = False
 
 -- All Kernels define a tick method that applies their Kernel-specific logic
 -- to the board..
-tick :: Kernel -> IBoard -> (Kernel, IBoard)
-  -- Implementations for static kernels are fairly straightforward.
-tick CornerSetup   brd = (CornerSetup, cornerSetup brd)
-tick ScorchedEarth brd = (ScorchedEarth, scorchedEarth brd)
-tick HValueDefault brd = (HValueDefault, hmoveCard brd)
+tick :: (Kernel, IBoard) -> (Kernel, IBoard)
+
+-- Identity kernels.
+tick (NullKernel, brd) = (NullKernel, brd)
+
+-- Static Kernels.
+tick (CornerSetup,   brd) = (CornerSetup, cornerSetup brd)
+tick (ScorchedEarth, brd) = (ScorchedEarth, scorchedEarth brd)
+tick (HValueDefault, brd) = (HValueDefault, hmoveCard brd)
 
 -- The predicate kernel must match out the kernel, tick it, and replace it.
--- TODO: Implement
-tick (PredKernel preds) brd = newPair
+tick (PredKernel preds, brd) = newPair
   where
     (pred, kern) = matchPair preds brd :: PredPair
     -- Tick the kernel.
-    (newKern, newBrd) = tick kern brd
+    (newKern, newBrd) = tick (kern, brd)
     -- Replace the kernel.
     rmKernPreds = deleteBy (\a b -> snd a == snd b) (pred, kern) preds :: [PredPair]
     newPreds = (pred, newKern) : rmKernPreds
     newPair = (PredKernel newPreds, newBrd)
+
+-- The random kernel extracts its generator, uses it to pick a move, then passes
+-- it along to the next iteration.
+tick (RandKernel gen, brd) = newPair
+  where
+    -- Generate moves
+    card = icard $ getOurPlayer brd
+    moves = genMoves card brd
+    -- Select a random move index.
+    (moveIdx, newGen) = uniformR (0, S.size moves-1) gen
+    move = S.elemAt moveIdx moves
+    -- Apply the move to the board.
+    newBrd = mut brd move
+    newPair = (RandKernel newGen, newBrd)
 
 -- Predicate Kernel pair
 type PredPair = (IBoard -> Bool, Kernel)

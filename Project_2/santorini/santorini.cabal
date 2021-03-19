@@ -70,7 +70,7 @@ library
                        aeson,
                        bytestring,
                        containers,
-                       mtl
+                       random
 
   -- Directories containing source files.
   hs-source-dirs:      lib
@@ -90,7 +90,9 @@ executable santorini
   -- other-extensions:
 
   -- Other library packages from which modules are imported.
-  build-depends:       base ^>=4.14.0.0, santorini
+  build-depends:       base ^>=4.14.0.0,
+                       random,
+                       santorini
 
   -- Directories containing source files.
   hs-source-dirs:      app
