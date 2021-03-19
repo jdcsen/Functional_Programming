@@ -266,10 +266,6 @@ isFullJBoard
     } = False
 isFullJBoard _ = True
 
--- Our AI's are defined in terms of AI Kernels, which just
--- map IBoards to new IBoards.
-type AIKernel = IBoard -> IBoard
-
 -- Conversion functions.
 iPt2jPt :: IPt -> [Int]
 iPt2jPt bpt = [row bpt + 1, col bpt + 1]

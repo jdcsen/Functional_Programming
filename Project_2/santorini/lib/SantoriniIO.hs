@@ -10,6 +10,7 @@ import Data.Char
 import Data.Either
 import Data.Maybe
 import SantoriniRep
+import AIKernels
 import qualified System.IO as SIO
 
 -- Allows us to distinguish errors and valid string values syntactically
@@ -21,35 +22,29 @@ type SErr = String
 -- characters, they'll be trimmed.
 
 -- The first handle is the input, the second the output.
-kernelRunner :: SIO.Handle -> SIO.Handle -> AIKernel -> IO ()
+kernelRunner :: SIO.Handle -> SIO.Handle -> Kernel -> IO ()
 kernelRunner inHdl outHdl kernel = forever $ do
   line <- SIO.hGetLine inHdl
-  let outLine = case parPline line of
-        (Right str) -> str
-        (Left err) -> error "Failed to parse line: " ++ line ++ ", Error: " ++ err
-  SIO.hPutStrLn outHdl outLine
+  kRes <- return $ kernelPipeline kernel line :: IO (Either SErr (Kernel, String))
+  (kernel, outStr) <- return (fromRight (NullKernel, error "Parser Error") kRes)
+  -- NOTE: Currently discards the parser-specific error string.
+  SIO.hPutStrLn outHdl outStr
   -- Flush standard out.
   SIO.hFlush SIO.stdout
-  where
-    parPline = kernelPipeline kernel
 
 -- Given a kernel and a String, attempts to deserialize the String into a JBoard,
 -- run the kernel, and return the output, ready for printing.
-kernelPipeline :: AIKernel -> String -> Either SErr String
+kernelPipeline :: Kernel -> String -> Either SErr (Kernel, String)
 kernelPipeline kernel str
-  | isRight parsed = Right newStr
+  | isRight parsed = Right (newK, newStr)
   | otherwise = Left errStr
   where
     parsed = fromBuffer str
     errStr = fromLeft "" parsed
     valid = fromRight gJBoardEmpty parsed
-
-    newStr =
-      toBuffer . incrementTurn . flipPlayers . toJBoard
-        . kernel
-        . fromJBoard
-        $ valid ::
-        String
+    deserBrd = fromJBoard valid
+    (newK, newBrd) = tick kernel deserBrd
+    newStr = toBuffer . incrementTurn . flipPlayers . toJBoard $ newBrd
 
 fromBufferStart :: String -> Either SErr JBoard
 fromBufferStart buf

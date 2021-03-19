@@ -69,7 +69,8 @@ library
   build-depends:       base ^>=4.14.0.0,
                        aeson,
                        bytestring,
-                       containers
+                       containers,
+                       mtl
 
   -- Directories containing source files.
   hs-source-dirs:      lib

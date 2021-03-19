@@ -9,7 +9,7 @@ import qualified System.IO as SIO
 main :: IO ()
 main = do kernelRunner SIO.stdin SIO.stdout kernel
   where kernel =
-          predKernel
-            [ (not . isFullBoard, cornerSetup),
-              (isFullBoard, hmoveCard)
+          PredKernel
+            [ (not . isFullBoard, CornerSetup),
+              (isFullBoard, HValueDefault)
             ]
