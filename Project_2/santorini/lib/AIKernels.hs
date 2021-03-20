@@ -188,16 +188,21 @@ hmoveCard brd = (newBrd, move)
 -- Plays out two kernels from a base state until one of them wins.
 playout :: IBoard -> (Kernel, Kernel)  -> (IBoard, Turn)
 playout brd (p1, p2)
+  | not movable            = (newBrd, trn)
   | winningTurn /= Neither = (newBrd, trn)
-  | blocked                = (newBrd, trn)
-  | otherwise = playout newBrd (p2, newP1)
+  | otherwise              = playout newBrd (p2, newP1)
   where
     -- Note: Our win checker expects us to not even get a board if we don't have
     --       valid moves, as the drivers do it for us. Because of this, we have
     --       to check for blocked states in our playout, separate from other win
     --       states.
-    (newP1, newBrd, trn) = tick (p1, brd)
+    movable = head $ hasMoves brd
+    (newP1, trnBrd, trn) = if movable
+                              then tick (p1, brd)
+                              else (p1, brd, Turn [])
+    -- Increment turn (if we moved).
+    newBrd = if movable
+                then incrementTurn trnBrd
+                else trnBrd
+    -- Check for a winning turn.
     winningTurn = isWinningTurn newBrd trn
-    blocked = case hasMoves newBrd of
-                [_, False] -> True
-                _          -> False

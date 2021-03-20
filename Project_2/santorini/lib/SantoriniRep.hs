@@ -223,21 +223,20 @@ flipPlayers
           }
 
 -- Increment the turn number
-incrementTurn :: JBoard -> JBoard
+incrementTurn :: IBoard -> IBoard
 incrementTurn
-  JBoard
-    { turn = trn,
-      spaces = spc,
-      players = plrs
+  IBoard
+    { iturn = trn,
+      ispaces = spc,
+      iplayers = plrs
     } = newBrd
     where
       -- TODO: I _KNOW_ there's a better way to do this.
-      newTrn = (\a->Just (a+1)) =<< trn
       newBrd =
-        JBoard
-          { turn = newTrn,
-            spaces = spc,
-            players = plrs
+        IBoard
+          { iturn = trn + 1,
+            ispaces = spc,
+            iplayers = plrs
           }
 
 -- Error checking function to get our current player.

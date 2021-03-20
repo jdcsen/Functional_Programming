@@ -46,7 +46,7 @@ kernelPipeline kernel str
     valid = fromRight gJBoardEmpty parsed
     deserBrd = fromJBoard valid
     (newK, newBrd, _) = tick (kernel, deserBrd)
-    newStr = toBuffer . incrementTurn . toJBoard . flipPlayers $ newBrd
+    newStr = toBuffer . toJBoard . incrementTurn . flipPlayers $ newBrd
 
 fromBufferStart :: String -> Either SErr JBoard
 fromBufferStart buf
