@@ -15,9 +15,8 @@ import Data.List
 import qualified Data.Set as S
 import Data.Maybe
 import System.Random
--- Note: The identityKernel is now just another term for id. It didn't need its
---       own function alias.
 
+gMCTS1Samples = 100 :: Int
 
 -- I specifically avoided making Kernels monadic, as I didn't think that it was
 -- the right choice. It seemed like an over-abstraction, and I'm pretty hesitant
@@ -122,13 +121,17 @@ tick (MCTS1 gen numSamples, brd) = newPair
   where
     -- Generate moves
     card = icard $ getOurPlayer brd
-    moves = genMoves card brd
-    -- Select a random move index.
-    (moveIdx, newGen) = uniformR (0, S.size moves-1) gen
-    move = S.elemAt moveIdx moves
+    moves = genMoves card brd :: TurnSet
+    -- Rank the indices according to mcRank.
+    rankFunc = mcRank numSamples brd
+    (newGen, ranked) = mapAccumR rankFunc gen $ S.toList moves
+    rankedSet = S.fromList ranked
+    -- Select the highest ranked move.
+    RankedTurn _ move =
+      fromMaybe (error "MCTS1: No available moves") $ S.lookupMax rankedSet
     -- Apply the move to the board.
     newBrd = mut brd move
-    newPair = (RandKernel newGen, newBrd, move)
+    newPair = (MCTS1 newGen numSamples, newBrd, move)
 
 -- Predicate Kernel pair
 newtype PredPair = PP (IBoard -> Bool, Kernel)
@@ -234,8 +237,8 @@ playout brd (p1, p2)
 
 -- Given a board, take a single Monte Carlo sample from an initial board state,
 -- and return whether or not we won.
-sample :: StdGen -> IBoard -> (Bool, StdGen)
-sample gen brd = (isWon, newGen)
+sample :: StdGen -> IBoard -> (StdGen, Bool)
+sample gen brd = (newGen, isWon)
   where
     ourP = getOurPlayer brd
     kern = RandKernel gen
@@ -251,3 +254,31 @@ sample gen brd = (isWon, newGen)
                 _         -> False
     -- Our player won if it's the final player, AND it didn't get blocked.
     !isWon = isFp && not emptTurn
+
+-- Given a board, take N Monte Carlo samples from the initial board state, and
+-- return the average win/loss ratio.
+sampleN :: Int -> StdGen -> IBoard -> (StdGen, Float)
+sampleN nSamp gen brd = (newGen, ratio)
+  where
+    boards  = replicate nSamp brd
+    !(newGen, winLoss) = mapAccumR sample gen boards :: (StdGen, [Bool])
+    numeric = map (\a -> if a then 1.0 else 0.0) winLoss :: [Float]
+    ratio = sum numeric / fromIntegral (length numeric)
+
+-- Monte Carlo Rank: Takes the specified number of samples and the provided IBoard
+-- as a base, and returns a RankedTurn with the win ratio.
+mcRank :: Int -> IBoard -> StdGen -> Turn -> (StdGen, RankedTurn)
+mcRank nSamp brd gen turn = (newGen, RankedTurn ratio turn)
+  where
+    -- Apply the turn.
+    newBrd = mut brd turn
+    -- Collect the samples.
+    (newGen, ratio) = sampleN nSamp gen newBrd
+
+-- A ranked turn is just a TurnSet, with rankings.
+data RankedTurn = RankedTurn Float Turn deriving (Eq)
+
+instance Ord RankedTurn where
+  compare (RankedTurn ra _) (RankedTurn rb _) = compare ra rb
+
+type RankedSet = S.Set RankedTurn

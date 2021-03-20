@@ -11,5 +11,5 @@ main :: IO ()
 main = do
   stdGen <- getStdGen
   let kernel = PredKernel [PP (not . isFullBoard, CornerSetup),
-                           PP (isFullBoard, RandKernel stdGen)]
+                           PP (isFullBoard, HValueDefault)]
   kernelRunner SIO.stdin SIO.stdout kernel

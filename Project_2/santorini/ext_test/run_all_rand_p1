@@ -1,0 +1,11 @@
+#/bin/sh
+
+# TODO: Fix absolute paths.
+../utilities/santorini-cards-linux/bin/run --cards Apollo Pan     ../bin/santorini ../utilities/santorini-cards-linux/bin/play-random
+../utilities/santorini-cards-linux/bin/run --cards Artemis Pan    ../bin/santorini ../utilities/santorini-cards-linux/bin/play-random
+../utilities/santorini-cards-linux/bin/run --cards Atlas Pan      ../bin/santorini ../utilities/santorini-cards-linux/bin/play-random
+../utilities/santorini-cards-linux/bin/run --cards Demeter Pan    ../bin/santorini ../utilities/santorini-cards-linux/bin/play-random
+../utilities/santorini-cards-linux/bin/run --cards Hephastus Pan  ../bin/santorini ../utilities/santorini-cards-linux/bin/play-random
+../utilities/santorini-cards-linux/bin/run --cards Minotaur Pan   ../bin/santorini ../utilities/santorini-cards-linux/bin/play-random
+../utilities/santorini-cards-linux/bin/run --cards Pan Minotaur   ../bin/santorini ../utilities/santorini-cards-linux/bin/play-random
+../utilities/santorini-cards-linux/bin/run --cards Prometheus Pan ../bin/santorini ../utilities/santorini-cards-linux/bin/play-random

@@ -48,7 +48,7 @@ gCardStPairs =
     ("Artemis",    Artemis),
     ("Atlas",      Atlas),
     ("Demeter",    Demeter),
-    ("Hephastus,", Hephastus),
+    ("Hephastus", Hephastus),
     ("Minotaur",   Minotaur),
     ("Pan",        Pan),
     ("Prometheus", Prometheus)
@@ -234,7 +234,7 @@ incrementTurn
       -- TODO: I _KNOW_ there's a better way to do this.
       newBrd =
         IBoard
-          { iturn = trn + 1,
+          { iturn = if trn == -1 then -1 else trn + 1,
             ispaces = spc,
             iplayers = plrs
           }

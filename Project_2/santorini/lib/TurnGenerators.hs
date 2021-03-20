@@ -51,6 +51,10 @@ buildSwap _ _ _ = Nothing
 
 buildPush  :: IBoard -> BrdTok -> BrdTok -> Maybe Action
 buildPush brd (Player p1Loc p1Ht) (Player p2Loc p2Ht)
+  -- Special case: Can't push ourselves.
+  | p1Loc == p2Loc = Nothing
+  -- Special case: Can't swap with same team.
+  | getPlayer brd p1Loc "" == getPlayer brd p2Loc "" = Nothing
   | abs(p1Ht - p2Ht) <= 1 &&
     isSpace (getTok brd (pushLoc (p1Loc, p2Loc))) = Just $ Push p1Loc p2Loc
   | otherwise           = Nothing
@@ -184,22 +188,30 @@ baseGen brd = moves
     turns = map fst allMoves :: [Turn]
     moves = map (trimBaseTurn brd) turns
 
+type TurnPred = (IBoard, Turn) -> Bool
+type ActionPred = [Action] -> Bool
+
+-- A filter that ignores the board state in favor of just filtering actions
+pureAction :: ActionPred -> TurnPred
+pureAction aPred (_, Turn actions) = aPred actions
+
 -- Generates moves from a list of ActionE actions, applying the specified
 -- filtering, as well as trimming for Win/Loss states. Only returns card-specific
 -- turns (or turns that become general turns, after being trimmed).
 --
 -- Turns are trimmed by the card-specific trimTurn function.
-actionEGen :: (WinDetector a) => a -> IBoard -> [ActionE] -> ([Action] -> Bool) -> [Turn]
+actionEGen :: (WinDetector a) => a -> IBoard -> [ActionE] -> TurnPred -> [Turn]
 actionEGen wd brd actions pred = moves
   where
       agents = zip (itokens $ getOurPlayer brd) (repeat brd) :: [(Agent, IBoard)]
       allTurns = concatMap (genAgentTurns actions) agents :: [(Turn, (Agent, IBoard))]
-      filtMoves = filter (pred . getActions) $ map fst allTurns
+      boardTurns = zip (map (snd . snd) allTurns) (map fst allTurns) :: [(IBoard, Turn)]
+      filtMoves = map snd $ filter pred boardTurns
       moves = map (trimTurn wd brd) filtMoves
 
 -- Generates moves from actionEGen AND baseGen, trims them both by the card win
 -- detector.
-comboGen :: (WinDetector a) => a -> IBoard -> [ActionE] -> ([Action] -> Bool) -> TurnSet
+comboGen :: (WinDetector a) => a -> IBoard -> [ActionE] -> TurnPred -> TurnSet
 comboGen wd brd actions pred = moveSet
   where
     allMoves = baseGen brd ++ actionEGen wd brd actions pred
@@ -229,7 +241,17 @@ instance TGen CardE where
   genMoves Artemis    brd = artemisMoves
     where
       actionTypes = [MoveE, MoveE, BuildE]
-      filt = \ case (reverse -> _ : Move b _ : Move a _ : xs ) -> a /= b
+
+      -- The Artemis filter.
+      filt :: TurnPred
+      filt (fBrd, Turn actions) = valid
+        where
+          revAct = reverse actions
+          (loc1, loc2) = case reverse actions of
+                              (_ : Move loc1 _ : Move _ loc2 : xs) -> (loc1, loc2)
+                              (Move loc1 _ : Move _ loc2 : xs) -> (loc1, loc2)
+          valid = loc1 /= loc2
+
       artemisMoves = comboGen Artemis brd actionTypes filt
 
   -- Atlas — The build phase can build a space currently at level 0, 1, 2 to
@@ -249,7 +271,14 @@ instance TGen CardE where
       actionTypes = [MoveE, BuildE, BuildE]
       agents = zip (itokens $ getOurPlayer brd) (repeat brd) :: [(Agent, IBoard)]
       allTurns = concatMap (genAgentTurns actionTypes) agents :: [(Turn, (Agent, IBoard))]
-      filt = \ case (reverse -> Build b : Build a : xs ) -> a /= b
+
+      -- The Demeter filter.
+      filt :: TurnPred
+      filt (fBrd, Turn actions) = valid
+        where
+          (Build loc1 : Build loc2 : xs) = reverse actions
+          valid = loc1 /= loc2
+
       demeterMoves = comboGen Demeter brd actionTypes filt
 
   -- Hephaestus — The moved token can optionally build a second time, but only
@@ -258,9 +287,15 @@ instance TGen CardE where
   genMoves Hephastus  brd = hepastusMoves
     where
       actionTypes = [MoveE, BuildE, BuildE]
-      locHeightFilt = \ a b -> a == b && not (isWall (getTok brd b))
-      filt =
-        \ case (reverse -> Build b : Build a : xs ) -> locHeightFilt a b
+
+      -- The Hephastus filter.
+      filt :: TurnPred
+      filt (fBrd, Turn actions) = valid
+        where
+          revAct = reverse actions
+          (Build bLoc : Build aLoc : xs) = reverse actions
+          valid = aLoc == bLoc && not (isWall (getTok fBrd bLoc))
+
       hepastusMoves = comboGen Hephastus brd actionTypes filt
 
   -- Minotaur — A token’s move can optionally enter the space of an opponent’s
@@ -297,9 +332,16 @@ instance TGen CardE where
     where
       actionTypes = [BuildE, MoveE, BuildE]
       -- TODO: Filter
-      heightFilt = \ a b -> getHeight (getTok brd a) >= getHeight (getTok brd b)
-      filt =
-        \ case (reverse -> _ : Move a b : xs ) -> heightFilt a b
+      -- The Prometheus filter.
+      filt :: TurnPred
+      filt (fBrd, Turn actions) = valid
+        where
+          (Build sBuild : Move fromLoc toLoc : Build fBuild : xs) = reverse actions
+          baseHeight = if sBuild == fromLoc
+                          then getHeight (getTok fBrd fromLoc) - 1
+                          else getHeight (getTok fBrd fromLoc)
+          valid = baseHeight >= getHeight (getTok fBrd toLoc)
+
       prometheusMoves = comboGen Prometheus brd actionTypes filt
 
 -- Attempts to generate moves for both players, returns a list of

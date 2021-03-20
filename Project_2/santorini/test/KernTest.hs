@@ -35,23 +35,22 @@ playoutDualHValueTest =
         "Assert that the playout for two HMove kernels is as expected."
         (HValueDefault,
          IBoard
-          {iturn = 36,
-           ispaces = [[0,0,0,0,2],
-                      [1,1,2,0,0],
-                      [1,0,0,3,0],
-                      [2,5,5,5,0],
-                      [0,5,0,5,5]],
-           iplayers =
-             [IPlayer
-               {icard = Artemis,
-                itokens = [IPt {row = 4, col = 0},IPt {row = 4, col = 2}]
-               },
-             IPlayer
-               {icard = Prometheus,
-                itokens = [IPt {row = 1, col = 4},IPt {row = 2, col = 4}]
-               }
-             ]
-          },
-          Turn [])
+           {iturn = 80,
+            ispaces = [[0,2,3,3,5],
+                       [5,5,5,5,0],
+                       [5,5,5,5,0],
+                       [5,5,5,5,0],
+                       [5,5,5,5,5]],
+            iplayers =
+              [IPlayer
+                {icard = Artemis,
+                 itokens = [IPt {row = 0, col = 0},IPt {row = 3, col = 4}]
+                },
+               IPlayer
+                 {icard = Prometheus,
+                  itokens = [IPt {row = 1, col = 4},IPt {row = 2, col = 4}]
+                 }
+              ]
+           },Turn [])
         (playout provIBoard (HValueDefault, HValueDefault))
     )
