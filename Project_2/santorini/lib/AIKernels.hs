@@ -186,5 +186,5 @@ hmoveCard brd = (newBrd, move)
 
 
 -- Plays out two kernels from a base state until one of them wins.
-playout :: IBoard -> (Kernel, Kernel)  -> IBoard
-playout brd (p1, p2) = brd
+playout :: IBoard -> (Kernel, Kernel)  -> (IBoard, Turn)
+playout brd (p1, p2) = (brd, Turn [])

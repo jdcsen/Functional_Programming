@@ -119,7 +119,6 @@ test-suite santorini-test
                        SerDesTest,
                        LogicTest,
                        RepTest,
-                       KernelTest,
                        TurnTest,
                        TurnGenTest,
                        WinDetectorTest

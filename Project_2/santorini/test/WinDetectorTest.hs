@@ -181,6 +181,7 @@ trimTurnTests =
   TestList
     [ TestLabel "Empty Turns are unchanged" trimEmptTest,
       TestLabel "Neither Turns are unchanged" trimNeitherTest,
+      TestLabel "Inter-turn board mutation is taken into account." trimInterTurnMutTest,
       TestLabel "Actions past wins are trimmed." trimWinTest,
       TestLabel "Actions past losses are trimmed." trimLossTest,
       TestLabel "Integration Test: Apollo builds after winning." trimApollowBAWTest
@@ -193,6 +194,15 @@ trimEmptTest =
         (Turn [])
         (trimTurn Pan panWinIBoard (Turn []))
     )
+
+trimInterTurnMutTest =
+  TestCase
+    ( assertEqual
+        "Assert that modifications within the turn chain are taken account in trimming. Test by making a bad build."
+        (Turn [Build (IPt 0 0), Move (IPt 1 1) (IPt 0 0), Build (IPt 1 1)])
+        (trimTurn Pan panWinIBoard (Turn [Build (IPt 0 0), Move (IPt 1 1) (IPt 0 0), Build (IPt 1 1)]))
+    )
+
 
 trimNeitherTest =
   TestCase

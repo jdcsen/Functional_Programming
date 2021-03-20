@@ -1,3 +1,4 @@
+{-# LANGUAGE LambdaCase #-}
 
 module WinDetector where
 
@@ -85,25 +86,36 @@ instance WinDetector CardE where
   isWon Prometheus brd action =
     baseIsWon brd action
 
+-- Given a board and a turn, returns WinState of that turn.
+-- NOTE: Not valid on non-trimmed turns! Only checks the final action!
+isWinningTurn :: IBoard -> Turn -> WinState
+isWinningTurn brd (Turn (xs : x)) = Neither
+
 -- Given a turn, trims the turn until we have either a single Win, a single Loss,
 -- or all Neither. Version for operating with just the base win detector.
 trimBaseTurn :: IBoard -> Turn -> Turn
 trimBaseTurn brd (Turn actions) = trimmedTurn
   where
-    sortedActions = span (\a -> baseIsWon brd a == Neither) actions
-    trimmedTurn = case sortedActions of
-                    (nMoves, []) -> Turn nMoves
-                    (nMoves, wlMoves) -> Turn (nMoves ++ [head wlMoves])
+    -- Build intermediate board states and pair the actions.
+    pairs = zip actions $ scanl mut brd actions :: [(Action, IBoard)]
+    sortedActions = span (\case (action, board) -> baseIsWon board action  == Neither) pairs
+    trimmedPairs = case sortedActions of
+                        (nMoves, []) -> nMoves
+                        (nMoves, wlMoves) -> nMoves ++ [head wlMoves]
+    trimmedTurn = Turn $ map fst trimmedPairs
 
 -- Given a turn, trims the turn until we have either a single Win, a single Loss,
 -- or all Neither
 trimTurn :: (WinDetector a) => a -> IBoard -> Turn -> Turn
 trimTurn wd brd (Turn actions) = trimmedTurn
   where
-    sortedActions = span (\a -> isWon wd brd a == Neither) actions
-    trimmedTurn = case sortedActions of
-                    (nMoves, []) -> Turn nMoves
-                    (nMoves, wlMoves) -> Turn (nMoves ++ [head wlMoves])
+    -- Build intermediate board states and pair the actions.
+    pairs = zip actions $ scanl mut brd actions :: [(Action, IBoard)]
+    sortedActions = span (\case (action, board) -> isWon wd board action  == Neither) pairs
+    trimmedPairs = case sortedActions of
+                        (nMoves, []) -> nMoves
+                        (nMoves, wlMoves) -> nMoves ++ [head wlMoves]
+    trimmedTurn = Turn $ map fst trimmedPairs
 
 -- Given a Board and a list of actions, splits the list of actions into winning,
 -- losing, and neither moves.

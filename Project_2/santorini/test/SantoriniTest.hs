@@ -3,7 +3,6 @@ module Main (main) where
 import LogicTest (logicTests)
 import SerDesTest (serDesTests)
 import RepTest (repTests)
-import KernelTest (kernelTests)
 import TurnTest (turnTests)
 import TurnGenTest (turnGenTests)
 import WinDetectorTest (winDetectorTests)
