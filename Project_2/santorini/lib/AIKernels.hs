@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE BangPatterns #-}
 
 module AIKernels where
 import Control.Exception
@@ -56,6 +57,12 @@ data Kernel where
   -- A random Kernel. Built with a random number generator, chooses an arbitrary move.
   RandKernel :: StdGen -> Kernel
 
+  -- A Monte Carlo Tree Search with a depth of 1. Contains a generator to drive
+  -- the Monte Carlo method, and an integer to specify how many samples to take.
+  MCTS1 :: StdGen -> Int -> Kernel
+
+  deriving (Show)
+
 -- Define Kernel equality shallowly: If two top-level kernel types are identical,
 -- the kernels are identical. Won't recursively check Predicate kernels.
 --
@@ -87,12 +94,13 @@ tick (HValueDefault, brd) = appKern HValueDefault $ hmoveCard brd
 -- The predicate kernel must match out the kernel, tick it, and replace it.
 tick (PredKernel preds, brd) = newPair
   where
-    (pred, kern) = matchPair preds brd :: PredPair
+    PP(pred, kern) = matchPair preds brd :: PredPair
+    pair = PP(pred, kern)
     -- Tick the kernel.
     (newKern, newBrd, turn) = tick (kern, brd)
     -- Replace the kernel.
-    rmKernPreds = deleteBy (\a b -> snd a == snd b) (pred, kern) preds :: [PredPair]
-    newPreds = (pred, newKern) : rmKernPreds
+    rmKernPreds = delete pair preds :: [PredPair]
+    newPreds = PP (pred, newKern) : rmKernPreds
     newPair = (PredKernel newPreds, newBrd, turn)
 
 -- The random kernel extracts its generator, uses it to pick a move, then passes
@@ -109,14 +117,34 @@ tick (RandKernel gen, brd) = newPair
     newBrd = mut brd move
     newPair = (RandKernel newGen, newBrd, move)
 
+-- The Monte Carlo Tree Search (Depth 1) Kernel
+tick (MCTS1 gen numSamples, brd) = newPair
+  where
+    -- Generate moves
+    card = icard $ getOurPlayer brd
+    moves = genMoves card brd
+    -- Select a random move index.
+    (moveIdx, newGen) = uniformR (0, S.size moves-1) gen
+    move = S.elemAt moveIdx moves
+    -- Apply the move to the board.
+    newBrd = mut brd move
+    newPair = (RandKernel newGen, newBrd, move)
+
 -- Predicate Kernel pair
-type PredPair = (IBoard -> Bool, Kernel)
+newtype PredPair = PP (IBoard -> Bool, Kernel)
+
+instance Show PredPair where
+  show p = "Predicate."
+
+instance Eq PredPair where
+  (==) (PP (_, a)) (PP (_, b)) = a == b
+
 
 matchPair :: [PredPair] -> IBoard -> PredPair
 matchPair [] _ = error "Predicate Kernel has no PredPairs"
 matchPair preds brd = pair
   where
-    pair = case dropWhile (\case (pred, kern) -> not (pred brd)) preds of
+    pair = case dropWhile (\case PP (pred, kern) -> not (pred brd)) preds of
       [] -> error "Predicate kernel doesn't match"
       (x : xs) -> x :: PredPair
 
@@ -171,8 +199,6 @@ scorchedEarth brd = (newBrd, trn)
     -- Execute the move.
     newBrd = mut brd crdTrim
 
-
-
 -- A kernel that selects the highest value move from the card-specific turn
 -- generator.
 hmoveCard :: IBoard -> (IBoard, Turn)
@@ -184,12 +210,11 @@ hmoveCard brd = (newBrd, move)
     move   = fromMaybe (error "No available moves") $ S.lookupMax moves
     newBrd = mut brd move
 
-
 -- Plays out two kernels from a base state until one of them wins.
-playout :: IBoard -> (Kernel, Kernel)  -> (IBoard, Turn)
+playout :: IBoard -> (Kernel, Kernel)  -> (Kernel, IBoard, Turn)
 playout brd (p1, p2)
-  | not movable            = (newBrd, trn)
-  | winningTurn /= Neither = (newBrd, trn)
+  | not movable            = (p1, newBrd, trn)
+  | wonLost /= Neither     = (p1, newBrd, trn)
   | otherwise              = playout newBrd (p2, newP1)
   where
     -- Note: Our win checker expects us to not even get a board if we don't have
@@ -205,4 +230,24 @@ playout brd (p1, p2)
                 then incrementTurn trnBrd
                 else trnBrd
     -- Check for a winning turn.
-    winningTurn = isWinningTurn newBrd trn
+    wonLost = isWinningTurn newBrd trn
+
+-- Given a board, take a single Monte Carlo sample from an initial board state,
+-- and return whether or not we won.
+sample :: StdGen -> IBoard -> (Bool, StdGen)
+sample gen brd = (isWon, newGen)
+  where
+    ourP = getOurPlayer brd
+    kern = RandKernel gen
+    (outKern, outBoard, outTurn) = playout brd (kern, kern)
+    -- Extract the random number generator from the out kernel.
+    !newGen = case outKern of
+               (RandKernel postRunGen) -> postRunGen
+    -- If we're the first player
+    isFp = getOurPlayer outBoard == ourP
+    -- The turn is empty
+    emptTurn = case outTurn of
+                (Turn []) -> True
+                _         -> False
+    -- Our player won if it's the final player, AND it didn't get blocked.
+    !isWon = isFp && not emptTurn

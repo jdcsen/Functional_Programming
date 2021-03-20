@@ -10,6 +10,6 @@ import qualified System.IO as SIO
 main :: IO ()
 main = do
   stdGen <- getStdGen
-  let kernel = PredKernel [(not . isFullBoard, CornerSetup),
-                           (isFullBoard, RandKernel stdGen)]
+  let kernel = PredKernel [PP (not . isFullBoard, CornerSetup),
+                           PP (isFullBoard, RandKernel stdGen)]
   kernelRunner SIO.stdin SIO.stdout kernel

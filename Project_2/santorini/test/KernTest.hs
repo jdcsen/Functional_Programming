@@ -25,7 +25,7 @@ playoutIdent =
   TestCase
     ( assertEqual
         "Assert that a playout of a trapped board returns an empty turn."
-        (p1TrapIBoard, Turn [])
+        (HValueDefault, p1TrapIBoard, Turn [])
         (playout p1TrapIBoard (HValueDefault, HValueDefault))
     )
 
@@ -33,7 +33,8 @@ playoutDualHValueTest =
   TestCase
     ( assertEqual
         "Assert that the playout for two HMove kernels is as expected."
-        (IBoard
+        (HValueDefault,
+         IBoard
           {iturn = 36,
            ispaces = [[0,0,0,0,2],
                       [1,1,2,0,0],
