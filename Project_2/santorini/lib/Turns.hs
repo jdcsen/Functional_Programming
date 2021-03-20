@@ -36,6 +36,19 @@ data Action where
 -- a single agent per turn.
 type Agent = IPt
 
+-- Given an IBoard, and an action that's just been applied to said
+-- IBoard, returns the agent if it can be determined.
+getAgent :: IBoard -> Action -> Maybe Agent
+-- Agent can't be derived from Build or Cap, but we don't win
+-- through those anyway.
+getAgent brd (Build _)   = Nothing
+getAgent brd (Cap _)     = Nothing
+getAgent brd (Place pt)  = Just pt
+getAgent brd (Move _ pt) = Just pt
+getAgent brd (Swap _ pt) = Just pt
+getAgent brd (Push _ pt) = Just pt
+
+
 -- To simply order actions, assign each a priority.
 -- Priorities are unique and deterministic. These form a rough priority, mostly
 -- just to build TurnSets to be later re-prioritized by AI-specific rating functions.

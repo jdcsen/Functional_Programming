@@ -204,22 +204,22 @@ toJBoard
 -- tokens once we're done with them
 --   NOTE: Still need to get single-element replacement working for record syntax.
 --         This is extremely fragile wrt. changes in representation
-flipPlayers :: JBoard -> JBoard
+flipPlayers :: IBoard -> IBoard
 flipPlayers
-  JBoard
-    { turn = trn,
-      spaces = spc,
-      players = plrs
+  IBoard
+    { iturn = trn,
+      ispaces = spc,
+      iplayers = plrs
     } = newBrd
     where
       newPlrs = case plrs of
         [a, b] -> [b, a]
         [a] -> [a]
       newBrd =
-        JBoard
-          { turn = trn,
-            spaces = spc,
-            players = newPlrs
+        IBoard
+          { iturn = trn,
+            ispaces = spc,
+            iplayers = newPlrs
           }
 
 -- Increment the turn number

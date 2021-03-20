@@ -5,6 +5,7 @@ module WinDetector where
 import SantoriniRep
 import SantoriniLogic
 import Turns
+import Data.Maybe
 
 gPanDropWin = 2
 
@@ -32,6 +33,9 @@ class WinDetector dtr where
 
 -- The base win detector. For all cards, a Move which results
 -- in the token reaching level 3 from a lower level is considered a win.
+--
+-- Note: We also need to check to see if the other player can move after ours.
+--       If they're blocked, we win.
 baseIsWon :: IBoard -> Action -> WinState
 baseIsWon brd (Move a b) = winState
   where
@@ -88,8 +92,28 @@ instance WinDetector CardE where
 
 -- Given a board and a turn, returns WinState of that turn.
 -- NOTE: Not valid on non-trimmed turns! Only checks the final action!
+--
+-- NOTE: Have I _finally_ found a good place for do notation outside of IO?
+-- I should try it.
 isWinningTurn :: IBoard -> Turn -> WinState
-isWinningTurn brd (Turn (xs : x)) = Neither
+isWinningTurn brd (Turn actions) = winState
+  where
+    maybeWinState =
+      do -- Get the action
+        action <- case reverse actions of
+                  [] -> Nothing
+                  (x : xs) -> Just x
+        -- Get the actor
+        actor <- getAgent brd action
+        -- Get the player.
+        player <- Just $ getPlayer brd actor "isWinningTurn Actor is not a player"
+        -- Get the card.
+        card <- Just $ icard player
+        -- Determine win state.
+        Just $ isWon card brd action
+
+    winState = fromMaybe Neither maybeWinState :: WinState
+
 
 -- Given a turn, trims the turn until we have either a single Win, a single Loss,
 -- or all Neither. Version for operating with just the base win detector.

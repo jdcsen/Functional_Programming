@@ -301,3 +301,15 @@ instance TGen CardE where
       filt =
         \ case (reverse -> _ : Move a b : xs ) -> heightFilt a b
       prometheusMoves = comboGen Prometheus brd actionTypes filt
+
+-- Attempts to generate moves for both players, returns a list of
+-- players with a valid move.
+hasMoves :: IBoard -> [Bool]
+hasMoves brd = moveStatus
+  where
+    brds = [brd, flipPlayers brd]
+    cardTup = zip (map (icard . getOurPlayer) brds) brds
+    hasMoves =
+      \ (card, brd) -> S.size (genMoves card brd) /= 0
+    moveStatus = map hasMoves cardTup
+

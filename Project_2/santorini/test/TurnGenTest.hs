@@ -18,7 +18,8 @@ turnGenTests =
       TestLabel "genAgentTurns Tests" genAgentTurnsTests,
       TestLabel "actionEGen Tests" actionEGenTests,
       TestLabel "baseGen Tests" baseGenTests,
-      TestLabel "genMoves Tests" genMovesTests
+      TestLabel "genMoves Tests" genMovesTests,
+      TestLabel "hasMoves Tests" hasMovesTests
     ]
 
 -- Tests of the basic move generation functions.
@@ -1083,4 +1084,46 @@ apolloEndgameTest =
            Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 3, col = 4}),Build (IPt {row = 4, col = 4})],
            Turn [Move (IPt {row = 4, col = 3}) (IPt {row = 4, col = 2}),Build (IPt {row = 4, col = 3})]])
         (genMoves Apollo apolloBuildAfterWinIBoard)
+    )
+
+hasMovesTests =
+  TestList
+    [ TestLabel "hasMoves Wide Open" hasMovesWideOpenTest,
+      TestLabel "hasMoves Both Trapped" hasMovesBothBlockedTest,
+      TestLabel "hasMoves P1 Open" hasMovesP1OpenTest,
+      TestLabel "hasMoves P2 Open" hasMovesP2OpenTest
+    ]
+
+hasMovesWideOpenTest =
+  TestCase
+    ( assertEqual
+        "Assert that, if given a wide-open board, both players will have moves."
+        [True, True]
+        (hasMoves cwPlayersIBoard4)
+    )
+
+hasMovesBothBlockedTest =
+  TestCase
+    ( assertEqual
+        "Assert that, if given a board where both players are trapped, neither has moves."
+        [False, False]
+        (hasMoves trapIBoard)
+    )
+
+hasMovesP1OpenTest =
+  TestCase
+    ( assertEqual
+        "Assert that, if given a board where the first player is open and the \
+        \ second is trapped, we get the proper hasMoves array."
+        [True, False]
+        (hasMoves p2TrapIBoard)
+    )
+
+hasMovesP2OpenTest =
+  TestCase
+    ( assertEqual
+        "Assert that, if given a board where the second player is open and the \
+        \ first is trapped, we get the proper hasMoves array."
+        [False, True]
+        (hasMoves p1TrapIBoard)
     )

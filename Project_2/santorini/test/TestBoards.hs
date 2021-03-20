@@ -169,6 +169,44 @@ trapJBoard =
     }
 trapIBoard = fromJBoard trapJBoard
 
+-- A board where P1 is free, and P2 is trapped.
+p2TrapJBoard =
+  JBoard
+    { turn = Just 1,
+      spaces =
+        Just
+          [ [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [4, 4, 4, 4, 4],
+            [4, 0, 4, 0, 4],
+            [4, 4, 4, 4, 4]
+          ],
+      players =
+        [ JPlayer { card = "Apollo", tokens = Just [[2, 2], [2, 4]]},
+          JPlayer { card = "Artemis", tokens = Just [[4, 2], [4, 4]]}
+        ]
+    }
+p2TrapIBoard = fromJBoard p2TrapJBoard
+
+-- A board where P2 is free, and P1 is trapped.
+p1TrapJBoard =
+  JBoard
+    { turn = Just 1,
+      spaces =
+        Just
+          [ [4, 4, 4, 4, 4],
+            [4, 0, 4, 0, 4],
+            [4, 4, 4, 4, 4],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+          ],
+      players =
+        [ JPlayer { card = "Apollo", tokens = Just [[2, 2], [2, 4]]},
+          JPlayer { card = "Artemis", tokens = Just [[4, 2], [4, 4]]}
+        ]
+    }
+p1TrapIBoard = fromJBoard p1TrapJBoard
+
 -- A board where all players are surrounded by movable, but uneven, spaces.
 moundJBoard =
   JBoard

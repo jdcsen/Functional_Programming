@@ -179,12 +179,25 @@ hmoveCard :: IBoard -> (IBoard, Turn)
 hmoveCard brd = (newBrd, move)
   where
     -- Generate moves
-    card = icard $ getOurPlayer brd
-    moves = genMoves card brd
-    move = fromMaybe (error "No available moves") $ S.lookupMax moves
+    card   = icard $ getOurPlayer brd
+    moves  = genMoves card brd
+    move   = fromMaybe (error "No available moves") $ S.lookupMax moves
     newBrd = mut brd move
 
 
 -- Plays out two kernels from a base state until one of them wins.
 playout :: IBoard -> (Kernel, Kernel)  -> (IBoard, Turn)
-playout brd (p1, p2) = (brd, Turn [])
+playout brd (p1, p2)
+  | winningTurn /= Neither = (newBrd, trn)
+  | blocked                = (newBrd, trn)
+  | otherwise = playout newBrd (p2, newP1)
+  where
+    -- Note: Our win checker expects us to not even get a board if we don't have
+    --       valid moves, as the drivers do it for us. Because of this, we have
+    --       to check for blocked states in our playout, separate from other win
+    --       states.
+    (newP1, newBrd, trn) = tick (p1, brd)
+    winningTurn = isWinningTurn newBrd trn
+    blocked = case hasMoves newBrd of
+                [_, False] -> True
+                _          -> False
